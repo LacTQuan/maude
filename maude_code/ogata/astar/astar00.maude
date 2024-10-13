@@ -1,0 +1,337 @@
+fmod NAT+INF is
+  pr NAT .
+  sorts Inf NatInf .
+  subsorts Nat Inf < NatInf .
+  op oo : -> Inf [ctor] .
+  var N : Nat .
+  eq N < oo = true .
+  eq oo < N = false .
+  eq oo < oo = false .
+  eq N > oo = false .
+  eq oo > N = true .
+  eq oo > oo = false .
+  eq oo + N = oo .
+  eq oo + oo = oo .
+endfm
+
+fmod NID is
+  pr NAT .
+  sort NId .
+  ops n0 n1 n2 n3 n4 n5 : -> NId [ctor] .
+  op goal? : NId -> Bool .
+  op h : NId -> Nat .
+  var NI : NId .
+  eq goal?(n3) = true .
+  eq goal?(NI) = false [owise] .
+***(
+  eq h(n1) = 2 .
+  eq h(n3) = 0 .
+  eq h(NI) = 1 [owise] .
+)***
+***(
+  eq h(n1) = 3 .
+  eq h(n5) = 4 .
+  eq h(n3) = 0 .
+  eq h(NI) = 1 [owise] .
+)***
+  eq h(n1) = 3 .
+  eq h(n3) = 0 .
+  eq h(NI) = 1 [owise] .
+endfm
+
+fmod NID-QUEUE is
+  pr NID .
+  sort NIdQueue .
+  subsort NId < NIdQueue .
+  op enidq : -> NIdQueue [ctor] .
+  op _|_ : NIdQueue NIdQueue -> NIdQueue [ctor assoc id: enidq] .
+endfm
+
+fmod LIST {D :: TRIV} is
+  sort List{D} .
+  subsort D$Elt < List{D} .
+  op nil : -> List{D} [ctor] .
+  op _-> _ : List{D} List{D} -> List{D} [ctor assoc id: nil] .
+endfm
+
+view NId from TRIV to NID is
+  sort Elt to NId .
+endv
+
+fmod NNPAIR is
+  pr NID .
+  pr NAT .
+  sort NNPair .
+  op <_,_> : NId Nat -> NNPair [ctor] .
+endfm
+
+view NNPair from TRIV to NNPAIR is
+  sort Elt to NNPair .
+endv
+
+view NIdList from TRIV to LIST{NId} is
+  sort Elt to List{NId} .
+endv
+
+fmod SOUP {D :: TRIV} is
+  sort Soup{D} .
+  subsort D$Elt < Soup{D} .
+  op empty : -> Soup{D} [ctor] .
+  op _ _ : Soup{D} Soup{D} -> Soup{D} [ctor assoc comm id: empty] .
+  op _\in_ : D$Elt Soup{D} -> Bool .
+  var E : D$Elt .
+  var S : Soup{D} .
+  eq E \in empty = false .
+  eq E \in E S = true .
+  eq E \in S = false [owise] .
+endfm
+
+fmod NNIDLPAIR is
+  pr NAT .
+  pr SOUP{NIdList} .
+  sort NNIDLPair .
+  op <_,_> : Nat List{NId} -> NNIDLPair [ctor] .
+endfm
+
+view NNIDLPair from TRIV to NNIDLPAIR is
+  sort Elt to NNIDLPair .
+endv
+
+fmod NNIDLPSOUP is
+  pr SOUP{NNIDLPair} .
+  op add : Soup{NNIDLPair} NId Nat -> Soup{NNIDLPair} .
+  op extract : Soup{NNIDLPair} -> Soup{NNIDLPair} .
+  op extract' : Soup{NNIDLPair} Soup{NNIDLPair} -> Soup{NNIDLPair} .
+  var NI : NId .
+  vars W D D' : Nat .
+  vars L L' : List{NId} .
+  vars Ls Ls' : Soup{NNIDLPair} .
+  eq add(empty,NI,W) = < W,NI > .
+  eq add(< D,L >,NI,W) = < D + W,L -> NI > .
+  eq add(< D,L > < D',L' > Ls,NI,W) = < D + W,L -> NI > add(< D',L' > Ls,NI,W) .
+  eq extract(Ls) = extract'(Ls,empty) .
+  eq extract'(empty,Ls') = Ls' .
+  eq extract'(< D,L > Ls,empty) = extract'(Ls,< D,L >) .
+  ceq extract'(< D,L > Ls,< D',L' > Ls')  = extract'(Ls,< D,L >) if D < D' .
+  ceq extract'(< D,L > Ls,< D',L' > Ls')  = extract'(Ls,< D',L' > Ls') if D > D' .
+  ceq extract'(< D,L > Ls,< D',L' > Ls')  = extract'(Ls,< D,L > < D',L' > Ls') if D = D' .
+endfm
+
+fmod ORDEREDQUEUE is
+  pr NNPAIR .
+  sort OQueue .
+  subsort NNPair < OQueue .
+  op empq : -> OQueue [ctor] .
+  op _|_ : OQueue OQueue -> OQueue [ctor assoc id: empq] .
+  op put : OQueue NNPair -> OQueue .
+  op enq : OQueue NNPair -> OQueue .
+  op del : OQueue NId -> OQueue .
+  vars D D' : Nat .
+  vars NI NI' : NId .
+  var Q : OQueue .
+  eq put(empq,< NI',D' >) = < NI',D' > | empq .
+  eq put(< NI,D > | Q,< NI',D' >)
+       = (if D' < D then < NI',D' > | < NI,D > | Q 
+                           else < NI,D > | put(Q,< NI',D' >) fi) .
+  eq enq(empq,< NI',D' >) = < NI',D' > | empq .
+  eq enq(< NI',D > | Q,< NI',D' >)
+       = (if D' < D then enq(Q,< NI',D' >) else < NI',D > | Q fi) .
+  eq enq(< NI,D > | Q,< NI',D' >)
+       = (if D' < D then < NI',D' > | < NI,D > | del(Q,NI') 
+                           else < NI,D > | enq(Q,< NI',D' >) fi)
+       [owise] .
+  eq del(empq,NI') = empq .
+  eq del(< NI',D > | Q,NI') = Q .
+  eq del(< NI,D > | Q,NI') = < NI,D > | del(Q,NI') [owise] .
+endfm
+
+fmod GSTATUS is
+  sort GStat .
+  ops nFin fin initializing finding found : -> GStat [ctor] .
+endfm
+
+fmod OCOMP is
+  pr SOUP{NNPair} .
+  pr NNIDLPSOUP .
+  pr ORDEREDQUEUE .
+  pr GSTATUS .
+  pr NAT+INF .
+  pr NID-QUEUE .
+  sort OComp .
+  op (node[_]: _,_,_,_) : NId NatInf Soup{NNPair} Soup{NNPair} List{NId} -> OComp [ctor] .
+  op (gstat:_) : GStat -> OComp [ctor] .
+  op (path:_) : NNIDLPair -> OComp [ctor] .
+  op (oq:_) : OQueue -> OComp [ctor] .
+  op (spaths:_) : Soup{NNIDLPair} -> OComp [ctor] .
+  op (bfs-node[_]: _,_,_,_) : NId Nat Soup{NNPair} Soup{NNPair} Soup{NNIDLPair} -> OComp [ctor] .
+  op (bfs-gstat:_) : GStat -> OComp [ctor] .
+  op (bfs-q:_) : NIdQueue -> OComp [ctor] .
+endfm
+
+view OComp from TRIV to OCOMP is
+  sort Elt to OComp .
+endv
+
+fmod OCOMP-SOUP is
+  pr SOUP{OComp} .
+endfm
+
+fmod CONFIG is
+  pr OCOMP-SOUP .
+  sorts Config .
+  op {_} : Soup{OComp} -> Config [ctor] .
+  ---
+  op (bfs-conf:_) : Config  -> OComp [ctor] .
+  ---
+  --- initial BFS configuration
+  op bfs-init : -> Config .
+  eq bfs-init = {(bfs-gstat: nFin) (bfs-q: n0)
+                    (bfs-node[n0]: 0,(< n1,4 > < n2,1 > < n3,6 >),empty,< 0,n0 >)
+                    (bfs-node[n1]: 3,(< n4,1 >),empty,empty)
+                    (bfs-node[n2]: 1,(< n1,2 > < n5,1 >),empty,empty)
+                    (bfs-node[n3]: 3,empty,empty,empty)
+                    (bfs-node[n4]: 1,(< n3,1 >),empty,empty)
+                    (bfs-node[n5]: 1,(< n1,1 > < n3,3 >),empty,empty)} .
+  --- initial conifiguration
+  op init : -> Config .
+  eq init = {(gstat: initializing) (oq: (< n0,0 >)) (path: (< 0,nil >))
+                    (spaths: empty) (bfs-conf: (bfs-init))
+                    (node[n0]: 0,(< n1,4 > < n2,1 > < n3,6 >),empty,n0)
+                    (node[n1]: oo,(< n4,1 >),empty,nil)
+                    (node[n2]: oo,(< n1,2 > < n5,1 >),empty,nil)
+                    (node[n3]: oo,empty,empty,nil)
+                    (node[n4]: oo,(< n3,1 >),empty,nil)
+                    (node[n5]: oo,(< n1,1 > < n3,3 >),empty,nil)} .
+endfm
+
+mod ASTAR is
+  inc CONFIG .
+  vars NI NI' : NId .
+  vars D W D'' D''' N' : Nat .
+  var D' : NatInf .
+  var Q : OQueue .
+  var NQ : NIdQueue .
+  vars NNPs1 NNPs2 NNPs1' NNPs2' : Soup{NNPair} .
+  vars L L' L'' : List{NId} .
+  vars NLs NLs' : Soup{NNIDLPair} .
+  vars OCs OCs2 : Soup{OComp} .
+
+  rl [A*-stutter] : {(gstat: found) OCs} => {(gstat: found) OCs} . --- makes T total.
+
+  crl [A*-goal] : 
+  {(gstat: finding) (oq: (< NI,D''' > | Q)) (path: (< D'',L'' >))
+    (node[NI]: D,NNPs1,NNPs2,L) OCs}
+  => 
+  {(gstat: found) (oq: (< NI,D''' > | Q)) (path: (< D,L >))
+    (node[NI]: D,NNPs1,NNPs2,L) OCs}
+  if goal?(NI) .
+
+  crl [A*-srch1] : 
+  {(gstat: finding) (oq: (< NI,D'' > | Q)) 
+    (node[NI]: D,< NI',W > NNPs1,NNPs2,L)
+    (node[NI']: D',NNPs1',NNPs2',L') OCs}
+  => 
+  {(gstat: finding) (oq: enq(< NI,D'' > | Q,< NI',(D + W + h(NI')) >))
+    (node[NI]: D,NNPs1,< NI',W > NNPs2,L)
+    (node[NI']: D + W,NNPs1',NNPs2',L -> NI') OCs}
+  if D + W < D' /\ NNPs1 =/= empty .
+
+  crl [A*-srch2] : 
+  {(gstat: finding) (oq: (< NI,D'' > | Q)) 
+    (node[NI]: D,< NI',W > NNPs1,NNPs2,L)
+    (node[NI']: D',NNPs1',NNPs2',L') OCs}
+  => 
+  {(gstat: finding) (oq: enq(Q,< NI',(D + W + h(NI')) >))
+    (node[NI]: D,NNPs1,< NI',W > NNPs2,L)
+    (node[NI']: D + W,NNPs1',NNPs2',L -> NI') OCs}
+  if D + W < D' /\ NNPs1 = empty .
+
+  crl [A*-srch3] : 
+  {(gstat: finding) (oq: (< NI,D'' > | Q)) 
+    (node[NI]: D,< NI',W > NNPs1,NNPs2,L)
+    (node[NI']: D',NNPs1',NNPs2',L') OCs}
+  => 
+  {(gstat: finding) (oq: (< NI,D'' > | Q)) 
+    (node[NI]: D,NNPs1,< NI',W > NNPs2,L)
+    (node[NI']: D',NNPs1',NNPs2',L') OCs}
+  if not (D + W < D') /\ NNPs1 =/= empty .
+
+  crl [A*-srch4] : 
+  {(gstat: finding) (oq: (< NI,D'' > | Q)) 
+    (node[NI]: D,< NI',W > NNPs1,NNPs2,L)
+    (node[NI']: D',NNPs1',NNPs2',L') OCs}
+  => 
+  {(gstat: finding) (oq: Q) 
+    (node[NI]: D,NNPs1,< NI',W > NNPs2,L)
+    (node[NI']: D',NNPs1',NNPs2',L') OCs}
+  if not (D + W < D') /\ NNPs1 = empty .
+
+***
+*** BFS-based path finding
+***
+  crl [bfs-done] : 
+  {(gstat: initializing) (spaths: NLs')
+    (bfs-conf: {(bfs-gstat: nFin) (bfs-node[NI]: 0,NNPs1,NNPs2,NLs) OCs2}) OCs}
+  => 
+  {(gstat: finding) (spaths: extract(NLs))
+    (bfs-conf: {(bfs-gstat: fin) (bfs-node[NI]: 0,NNPs1,NNPs2,NLs) OCs2 }) OCs}
+  if goal?(NI) .
+
+  rl [bfs-frwrd] : 
+  {(gstat: initializing) 
+    (bfs-conf: {(bfs-gstat: nFin) (bfs-q: (NI | NQ))
+                       (bfs-node[NI]: 0,empty,NNPs2,NLs) OCs2}) OCs}
+  => 
+  {(gstat: initializing) 
+    (bfs-conf: {(bfs-gstat: nFin) (bfs-q: NQ)
+                       (bfs-node[NI]: 0,empty,NNPs2,NLs) OCs2}) OCs} .
+
+  rl [bfs-srch] : 
+  {(gstat: initializing) 
+    (bfs-conf: {(bfs-gstat: nFin) (bfs-q: (NI | NQ))
+                       (bfs-node[NI]: 0,< NI',W > NNPs1,NNPs2,NLs)
+                       (bfs-node[NI']: s(N'),NNPs1',NNPs2',NLs') OCs2}) OCs}
+   => 
+  {(gstat: initializing) 
+    (bfs-conf: {(bfs-gstat: nFin) (bfs-q: (if N' == 0 then NI | NQ | NI' else NI | NQ fi))
+                        (bfs-node[NI]: 0,NNPs1,< NI',W > NNPs2,NLs)
+                        (bfs-node[NI']: N',NNPs1',NNPs2',NLs' add(NLs,NI',W)) OCs2}) OCs} .
+
+endm
+
+***(
+search [1] in ASTAR : init =>* {(gstat: found) OCs} .
+search [1] in ASTAR : init =>! {OCs} .
+)***
+
+in model-checker .
+
+mod ASTAR-PREDS is
+  pr ASTAR .
+  inc SATISFACTION .
+  subsort Config < State .
+  ops ini fin isSPath : -> Prop .
+  var OCs : Soup{OComp} .
+  var D : Nat .
+  var L : List{NId} .
+  var PATHS : Soup{NNIDLPair} .
+  var PROP : Prop .
+  eq {(gstat: initializing) OCs} |= ini = true .
+  eq {(gstat: found) OCs} |= fin = true .
+  eq {(path: (< D,L >)) (spaths: (< D,L > PATHS)) OCs} |= isSPath = true .
+  eq {OCs} |= PROP = false [owise] .
+endm
+
+mod ASTAR-CHECK is
+  inc ASTAR-PREDS .
+  inc MODEL-CHECKER .
+  inc LTL-SIMPLIFIER .
+  ops halt correct : -> Formula .
+  eq halt = ini |-> fin .
+  eq correct = [](fin -> isSPath) .
+endm
+
+***(
+red in ASTAR-CHECK : modelCheck(init,halt) .
+red in ASTAR-CHECK : modelCheck(init,correct) .
+)***

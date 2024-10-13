@@ -1,0 +1,91 @@
+***
+*** Loop {
+***      Remainder Section
+***  rs: tmp := enqueue(queue,i);
+***  es: queue := tmp;
+***  ws: repeat until top(queue) = i;
+***      Critical Section
+***  cs: tmp := dequeue(queue);
+***  ds: queue := tmp
+*** }
+***
+*** One or more processes execute this program and share queue that is a
+*** queue of process IDs.
+*** rs, es, ws, cs and ds stand for remainder section,  enqueuing section,
+*** waiting section, critical section and dequeuing section.
+*** Each process is located at one of rs, es, ws, cs and ds.
+*** Each statement located at rs, es, cs and ds is atomically processed.
+*** Morevoer, going to rs from ds is conducted at the same moment when
+*** the statement located at ds is processed.
+*** Each iteration of the loop located at we is atomically processed.
+*** Nothing is done in both Remainder Section and Critical Section in
+*** the formal model.
+*** Initially, each process is located at rs and queue is empty.
+***
+
+fmod LABEL is
+  sort Label .
+  ops rs es ws cs ds : -> Label [ctor] .
+endfm
+
+fmod PID is
+  sort Pid .
+  ops p1 p2 : -> Pid [ctor] .
+endfm
+
+fmod  QUEUE is
+  pr PID .
+  pr NAT .
+  sort Queue .
+  op empty : -> Queue [ctor] .
+  op __ : Pid Queue -> Queue [ctor] .
+  op enq : Queue Pid -> Queue .
+  op deq : Queue -> Queue .
+  op len : Queue -> Nat .
+  var Q : Queue .
+  vars X Y : Pid .
+  eq enq(empty,X) = X empty .
+  eq enq((Y Q),X) = Y enq(Q,X) .
+  eq deq(empty) = empty .
+  eq deq((X Q)) = Q .
+  eq len(empty) = 0 .
+  eq len((X Q)) = len(Q) + 1 .
+endfm
+
+mod FQLOCK0 is
+  pr LABEL .
+  pr PID .
+  pr QUEUE .
+  sorts Val Sys .
+  subsorts Val < Sys .
+*** Configurations
+  *** op none : -> Sys [ctor] .
+  *** op __ : Sys Sys -> Sys [ctor assoc comm id: none] .
+  op __ : Sys Sys -> Sys [ctor assoc comm] .
+*** Observable components
+  op pc[_]:_ : Pid Label -> Val [ctor] .
+  op queue:_ : Queue -> Val [ctor] .
+  op tmp[_]:_ : Pid Queue -> Val [ctor] .
+*** Maude variables
+  vars Q R : Queue .
+  var I : Pid .
+  var S : Sys .
+*** Rewrite rules
+  rl [eq1] : (pc[I]: rs) (queue: Q) (tmp[I]: R) => (pc[I]: es) (queue: Q) (tmp[I]: enq(Q,I)) .
+  rl [eq2] : (pc[I]: es) (queue: Q) (tmp[I]: R) => (pc[I]: ws) (queue: R) (tmp[I]: R) .
+  rl [wt] : (pc[I]: ws) (queue: (I Q)) => (pc[I]: cs) (queue: (I Q)) .
+  rl [dq1] : (pc[I]: cs) (queue: Q) (tmp[I]: R) => (pc[I]: ds) (queue: Q) (tmp[I]: deq(Q)) .
+  rl [dq2] : (pc[I]: ds) (queue: Q) (tmp[I]: R) => (pc[I]: rs) (queue: R) (tmp[I]: R) .
+*** Initial state
+  op init : -> Sys .
+  eq init = (pc[p1]: rs) (pc[p2]: rs) (queue: empty) (tmp[p1]: empty) (tmp[p2]: empty) .
+endm
+
+*** 
+*** search [1] in FQLOCK0 : init =>* (pc[p1]: cs) (pc[p2]: cs) S .
+*** show path 33 .
+*** 
+
+***
+*** search [1] in DBS0 : init =>* S such that false .
+***
