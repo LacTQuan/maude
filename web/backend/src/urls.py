@@ -17,8 +17,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from directory.views import ListFilesView
+from run_maude.views import MaudeView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('list-files/', ListFilesView.as_view(), name='list-files'),
+    path('run-maude/', MaudeView.as_view(), name='run-maude'),
 ]

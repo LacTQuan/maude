@@ -1,0 +1,536 @@
+fmod NAT+INF is
+  pr NAT .
+  sorts Inf NatInf .
+  subsorts Nat Inf < NatInf .
+  op oo : -> Inf [ctor] .
+  vars N N1 N2 : Nat .
+  eq N < oo = true .
+  eq oo < N = false .
+  eq oo < oo = false .
+  eq N > oo = false .
+  eq oo > N = true .
+  eq oo > oo = false .
+  eq oo + N = oo .
+  eq oo + oo = oo .
+  eq min(oo,N2) = N2 .
+  eq min(N1,oo) = N1 .
+  eq min(oo,oo) = oo .
+endfm
+
+fmod KEY is
+  pr NAT+INF .
+  sort Key .
+  op <_,_> : NatInf NatInf -> Key [ctor] .
+  op calKey : NatInf NatInf Nat -> Key .
+  op _<_ : Key Key -> Bool .
+  vars NTI11 NTI12 NTI21 NTI22 : NatInf .
+  vars G RHS : NatInf .
+  var H : Nat .
+  eq (< NTI11,NTI12 >) < (< NTI21,NTI22 >)
+  = if NTI11 < NTI21 then true
+     else (if NTI21 < NTI11 then false
+              else NTI12 < NTI22 fi) fi .
+  eq calKey(G,RHS,H) = < min(G,RHS) + H, min(G,RHS) > .
+endfm
+
+fmod NID is
+  pr NAT .
+  sort NId .
+  op dNId : -> NId [ctor] .
+  ops n0 n1 n2 n3 n4 n5 nX : -> NId [ctor] .
+  op start? : NId -> Bool .
+  op goal? : NId -> Bool .
+  op h* : NId -> Nat .
+  var NI : NId .
+  eq start?(n0) = true .
+  eq start?(NI) = false [owise] .
+  eq goal?(n3) = true .
+  eq goal?(NI) = false [owise] .
+  eq h(n1) = 2 .
+  eq h(n3) = 0 .
+  eq h(NI) = 1 [owise] .
+***(
+  eq h(n1) = 3 .
+  eq h(n5) = 4 .
+  eq h(n3) = 0 .
+  eq h(NI) = 1 [owise] .
+)***
+***(
+  eq h(n1) = 3 .
+  eq h(n3) = 0 .
+  eq h(NI) = 1 [owise] .
+)***
+endfm
+
+fmod NID-QUEUE is
+  pr NID .
+  sort NIdQueue .
+  subsort NId < NIdQueue .
+  op enidq : -> NIdQueue [ctor] .
+  op _|_ : NIdQueue NIdQueue -> NIdQueue [ctor assoc id: enidq] .
+endfm
+
+fmod LIST {D :: TRIV} is
+  sort List{D} .
+  subsort D$Elt < List{D} .
+  op nil : -> List{D} [ctor] .
+  op _-> _ : List{D} List{D} -> List{D} [ctor assoc id: nil] .
+endfm
+
+view NId from TRIV to NID is
+  sort Elt to NId .
+endv
+
+fmod NNPAIR is
+  pr NID .
+  pr NAT+INF .
+  sort NNPair .
+  op <_,_> : NId NatInf -> NNPair [ctor] .
+endfm
+
+view NNPair from TRIV to NNPAIR is
+  sort Elt to NNPair .
+endv
+
+view NIdList from TRIV to LIST{NId} is
+  sort Elt to List{NId} .
+endv
+
+fmod NKPAIR is
+  pr NID .
+  pr KEY .
+  sort NKPair .
+  op dNKPair : -> NKPair [ctor] .
+  op <_,_> : NId Key -> NKPair [ctor] .
+endfm
+
+view NKPair from TRIV to NKPAIR is
+  sort Elt to NKPair .
+endv
+
+fmod SOUP {D :: TRIV} is
+  sort Soup{D} .
+  subsort D$Elt < Soup{D} .
+  op empty : -> Soup{D} [ctor] .
+  op _ _ : Soup{D} Soup{D} -> Soup{D} [ctor assoc comm id: empty] .
+  op _\in_ : D$Elt Soup{D} -> Bool .
+  var E : D$Elt .
+  var S : Soup{D} .
+  eq E \in empty = false .
+  eq E \in E S = true .
+  eq E \in S = false [owise] .
+endfm
+
+fmod NNIDLPAIR is
+  pr NAT+INF .
+  pr SOUP{NIdList} .
+  sort NNIDLPair .
+  op <_,_> : NatInf List{NId} -> NNIDLPair [ctor] .
+endfm
+
+view NNIDLPair from TRIV to NNIDLPAIR is
+  sort Elt to NNIDLPair .
+endv
+
+fmod NNIDLPSOUP is
+  pr SOUP{NNIDLPair} .
+  op add : Soup{NNIDLPair} NId Nat -> Soup{NNIDLPair} .
+  op extract : Soup{NNIDLPair} -> Soup{NNIDLPair} .
+  op extract' : Soup{NNIDLPair} Soup{NNIDLPair} -> Soup{NNIDLPair} .
+  var NI : NId .
+  vars W D D' : Nat .
+  vars L L' : List{NId} .
+  vars Ls Ls' : Soup{NNIDLPair} .
+  eq add(empty,NI,W) = < W,NI > .
+  eq add(< D,L >,NI,W) = < D + W,L -> NI > .
+  eq add(< D,L > < D',L' > Ls,NI,W) = < D + W,L -> NI > add(< D',L' > Ls,NI,W) .
+  eq extract(Ls) = extract'(Ls,empty) .
+  eq extract'(empty,Ls') = Ls' .
+  eq extract'(< D,L > Ls,empty) = extract'(Ls,< D,L >) .
+  ceq extract'(< D,L > Ls,< D',L' > Ls')  = extract'(Ls,< D,L >) if D < D' .
+  ceq extract'(< D,L > Ls,< D',L' > Ls')  = extract'(Ls,< D',L' > Ls') if D > D' .
+  ceq extract'(< D,L > Ls,< D',L' > Ls')  = extract'(Ls,< D,L > < D',L' > Ls') if D = D' .
+endfm
+
+fmod ORDEREDQUEUE is
+  pr NKPAIR .
+  sort OQueue .
+  subsort NKPair < OQueue .
+  op empq : -> OQueue [ctor] .
+  op _|_ : OQueue OQueue -> OQueue [ctor assoc id: empq] .
+  op put : OQueue NKPair -> OQueue .
+  op enq : OQueue NKPair -> OQueue .
+  op del : OQueue NId -> OQueue .
+  vars K K' : Key .
+  vars NI NI' : NId .
+  var Q : OQueue .
+  eq put(empq,< NI',K' >) = < NI',K' > | empq .
+  eq put(< NI,K > | Q,< NI',K' >)
+       = (if K' < K then < NI',K' > | < NI,K > | Q 
+                           else < NI,K > | put(Q,< NI',K' >) fi) .
+  eq enq(empq,< NI',K' >) = < NI',K' > | empq .
+  eq enq(< NI',K > | Q,< NI',K' >)
+       = (if K' < K then enq(Q,< NI',K' >) else < NI',K > | Q fi) .
+  eq enq(< NI,K > | Q,< NI',K' >)
+       = (if K' < K then < NI',K' > | < NI,K > | del(Q,NI') 
+                           else < NI,K > | enq(Q,< NI',K' >) fi)
+       [owise] .
+  eq del(empq,NI') = empq .
+  eq del(< NI',K > | Q,NI') = Q .
+  eq del(< NI,K > | Q,NI') = < NI,K > | del(Q,NI') [owise] .
+endfm
+
+fmod GSTATUS is
+  sort GStat .
+  ops nFin fin initializing finding building done : -> GStat [ctor] .
+endfm
+
+fmod OCOMP is
+  pr SOUP{NNPair} .
+  pr SOUP{Nat} .
+  pr NNIDLPSOUP .
+  pr ORDEREDQUEUE .
+  pr GSTATUS .
+  pr NAT+INF .
+  pr NID-QUEUE .
+  sort OComp .
+  --- (node[u]: g(u), rhs(u), succ1(u), succ2(u), pred1(u), pred2(u))
+  --- u is a node ID
+  --- g(u) & rhs(u) are those used in LPA*
+  --- succ1(u) is the soup of (u',w), where u' is a successor node of u and w is the wright of the edge between u & u',
+  --- so is succ2(u); a successor node in succ1(u) has not been tackled, while one in succ2(u) has been,
+  --- pred1(u) is the list of the u's predecessor nodes, 
+  --- so is pred2(u); a predecessor node in pred1(u) has not been tackled, while one in pred2(u) has been,
+  op (node[_]: _,_,_,_,_,_) 
+     : NId NatInf NatInf Soup{NNPair} Soup{NNPair} List{NId} List{NId} -> OComp [ctor] .
+  op (gstat:_) : GStat -> OComp [ctor] .
+  op (path:_) : NNIDLPair -> OComp [ctor] .
+  op (oq:_) : OQueue -> OComp [ctor] .
+  op (csp:_) : NKPair -> OComp [ctor] .
+  op (uv:_) : NId -> OComp [ctor] .
+  op (min:_) : NatInf -> OComp [ctor] .
+  op (costs:_) : Soup{Nat} -> OComp [ctor] .
+  op (spaths:_) : Soup{NNIDLPair} -> OComp [ctor] .
+  op (bfs-node[_]: _,_,_,_) : NId Nat Soup{NNPair} Soup{NNPair} Soup{NNIDLPair} -> OComp [ctor] .
+  op (bfs-gstat:_) : GStat -> OComp [ctor] .
+  op (bfs-q:_) : NIdQueue -> OComp [ctor] .
+  op (bld:_,_) : NNPair NatInf -> OComp [ctor] .
+endfm
+
+view OComp from TRIV to OCOMP is
+  sort Elt to OComp .
+endv
+
+fmod OCOMP-SOUP is
+  pr SOUP{OComp} .
+endfm
+
+fmod CONFIG is
+  pr OCOMP-SOUP .
+  sorts Config .
+  op {_} : Soup{OComp} -> Config [ctor] .
+  op _\in_ : NId Config -> Bool .
+  ---
+  op (bfs-conf:_) : Config  -> OComp [ctor] .
+  op (bfs-init:_) : Config  -> OComp [ctor] .
+  ---
+  var GS : GStat .
+  var NI : NId .
+  vars NTI1 NTI2 : NatInf .
+  vars NNPs1 NNPs2 : Soup{NNPair} .
+  vars NIL1 NIL2 PTH : List{NId} .
+  var OCs :  Soup{OComp} .
+  --- _\in_
+  op _\in_ : NId Config -> Bool .
+  eq NI \in {(node[NI]: NTI1,NTI2,NNPs1,NNPs2,NIL1,NIL2) OCs} = true .
+  eq NI \in {OCs} = false [owise] .
+  --- updateNode
+  --- op updateNode :
+  --- initial BFS configuration
+  op bfs-init : -> Config .
+  eq bfs-init = {(bfs-gstat: nFin) (bfs-q: n0)
+                    (bfs-node[n0]: 0,(< n1,4 > < n2,1 > < n3,6 >),empty,< 0,n0 >)
+                    (bfs-node[n1]: 3,(< n4,1 >),empty,empty)
+                    (bfs-node[n2]: 1,(< n1,2 > < n5,1 >),empty,empty)
+                    (bfs-node[n3]: 3,empty,empty,empty)
+                    (bfs-node[n4]: 1,(< n3,1 >),empty,empty)
+                    (bfs-node[n5]: 1,(< n1,1 > < n3,3 >),empty,empty)} .
+  --- initial conifiguration
+  op init : -> Config .
+  eq init = {(gstat: initializing) (oq: (< n0,< h*(n0),0 > >)) (path: (< 0,nil >)) 
+                    (csp: dNKPair) (uv: dNId) (min: oo) (costs: (1)) (bld: < dNId,oo >,oo)
+                    (spaths: empty) (bfs-conf: (bfs-init))  (bfs-init: (bfs-init)) 
+                    (node[n0]: oo,0,(< n1,4 > < n2,1 > < n3,6 >),empty,nil,nil)
+                    (node[n1]: oo,oo,(< n4,1 >),empty,n0 -> n2 -> n5 -> nil,nil)
+                    (node[n2]: oo,oo,(< n1,2 > < n5,1 >),empty,n0 -> nil,nil)
+                    (node[n3]: oo,oo,empty,empty,n0 -> n4 -> n5 -> nil,nil)
+                    (node[n4]: oo,oo,(< n3,1 >),empty,n1 -> nil,nil)
+                    (node[n5]: oo,oo,(< n1,1 > < n3,3 >),empty,n2 -> nil,nil)} .
+endfm
+
+mod LPASTAR is
+  inc CONFIG .
+  var C : Nat .
+  var Cs : Soup{Nat} .
+  vars NI1 NI2 NI NI' : NId .
+  vars K1 K : Key .
+  var Q : OQueue .
+  var NQ : NIdQueue .
+  vars W N' : Nat .
+  vars NLs NLs' : Soup{NNIDLPair} .
+  vars MIN D D1 D' D1' D2 : NatInf .
+  vars G1 G2 G : NatInf .
+  vars RHS1 RHS2 RHS : NatInf .
+  vars SUCs11 SUCs12 SUCs21 SUCs22 SUCs1 SUCs2 : Soup{NNPair} .
+  vars NNPs1 NNPs2 NNPs1' NNPs2' NNPs : Soup{NNPair} .
+  vars L1 L2 L L' PATH : List{NId} .
+  vars PRDs11 PRDs12 PRDs21 PRDs22 PRDs1 PRDs2 : List{NId} .
+  vars OCs OCs2 OCs3 OCs4 : Soup{OComp} .
+***(
+procedure CalculateKey(s)
+{01} return [min(g(s),rhs(s))+h(s,s_goal); min(g(s),rhs(s))];
+
+procedure Initialize()
+{02} U = \empset
+{03} for all s \in S rhs(s) = g(s) = oo;
+{04} rhs(s_start) = 0;
+{05} U.Insert(s_start, CalculateKey(s_start));
+
+procedure UpdateVertex(u)
+{06} if (u =/= s_start) rhs(u) = min_{s' \in Pred(u)} (g(s') + c(s',u));
+{07} if (u \in U) U.Remove(u);
+{08} if (g(u) =/= rhs(u)) U.Insert(u, CalculateKey(u));
+
+procedure ComputeShortestPath()
+{09} while (U.TopKey() < CalculateKey(s_goal) OR rhs(s_goal) =/= g(s_goal))
+{10}     u = U.Top()
+{11}      if (g(u) > rhs(u))
+{12}          g(u) = rhs(u)
+{13}           for all s \in Succ(u) UpdateVertex(s)
+{14}      else
+{15}           g(u) = oo
+{16}           for all s \in Succ(u) \Cup {u} UpdateVertex(s)
+
+procedure Main()
+{17} Initialize()
+{18} forever
+{19}     ComputeShortestPath();
+{20}     Wait for changes in edge costs;
+{21}     for all directed edges (u,v) with changed edge costs
+{22}         Update the edge cost c(u,v);
+{23}         UpdateVertex(v);
+)
+
+  rl [LPA*-stutter] : {(gstat: done) (costs: empty) OCs} => {(gstat: done) (costs: empty) OCs} . --- makes T total.
+
+  crl [LPA*-Build1] :
+  {(gstat: building) (path: < D,NI -> L >) (bld: < NI1,D1 >,D1')
+    (node[NI]: G,RHS,SUCs1,SUCs2,nil,PRDs2) OCs}
+  =>
+  {(gstat: done) (path: < D + D1,NI1 -> NI -> L >) (bld: < dNId,oo > ,oo)
+    (node[NI]: G,RHS,SUCs1,SUCs2,PRDs2,nil) OCs}
+  if start?(NI1) .
+
+  crl [LPA*-Build2] :
+  {(gstat: building) (path: < D,NI -> L >) (bld: < NI1,D1 >,D1')
+    (node[NI]: G,RHS,SUCs1,SUCs2,nil,PRDs2) OCs}
+  =>
+  {(gstat: building) (path: < D + D1,NI1 -> NI -> L >) (bld: < dNId,oo >,oo)
+    (node[NI]: G,RHS,SUCs1,SUCs2,PRDs2,nil) OCs}
+  if not start?(NI1) .
+
+  crl [LPA*-Build3] :
+  {(gstat: building) (path: < D,NI -> L >) (bld: < NI1,D1 >,D1')
+    (node[NI]: G,RHS,SUCs1,SUCs2,NI2 -> PRDs1,PRDs2) 
+    (node[NI2]: G2,RHS2,SUCs21,SUCs22,PRDs21,PRDs22) OCs}
+  =>
+  {(gstat: building) (path: < D,NI -> L >) 
+    (if RHS2 + D' < D1' then (bld: < NI2,D' >,RHS2 + D') else (bld: < NI1,D1 >,D1') fi)
+    (node[NI]: G,RHS,SUCs1,SUCs2,PRDs1,NI2 -> PRDs2) 
+    (node[NI2]: G2,RHS2,SUCs21,SUCs22,PRDs21,PRDs22) OCs}
+  if < NI,D' > NNPs := SUCs21 SUCs22 .
+
+--- The rewrite rule seems never to be applied...
+  crl [LPA*-Goal1] : 
+  {(gstat: finding) (csp: dNKPair) (uv: dNId) (oq: empq) (path: (< D,L' >))
+    (node[NI]: G,RHS,SUCs1,SUCs2,PRDs1,PRDs2) OCs}
+  => 
+  {(gstat: building) (csp: dNKPair) (uv: dNId) (oq: empq) (path: (< 0,NI >))
+    (node[NI]: G,RHS,SUCs1,SUCs2,PRDs1,PRDs2) OCs}
+  if goal?(NI) /\ G = RHS .
+
+--- The rewrite rule seems to be always used when the path has been found.
+  crl [LPA*-Goal2] : 
+  {(gstat: finding) (csp: dNKPair) (uv: dNId) (oq: (< NI1,K1 > | Q)) (path: (< D,L' >))
+    (node[NI]: G,RHS,SUCs1,SUCs2,PRDs1,PRDs2) OCs}
+  => 
+  {(gstat: building) (csp: dNKPair) (uv: dNId) (oq: (< NI1,K1 > | Q)) (path: (< 0,NI >))
+    (node[NI]: G,RHS,SUCs1,SUCs2,PRDs1,PRDs2) OCs}
+  if goal?(NI) /\ not(K1 < calKey(G,RHS,h*(NI))) /\ G = RHS .
+
+*** g(u) > rhs(u) and u is s_goal 
+  crl [LPA*-CompShortPath1] : 
+  {(gstat: finding) (csp: dNKPair) (uv: dNId) (oq: (< NI,K > | Q)) 
+    (node[NI]: G,RHS,empty,empty,PRDs1,nil) OCs}
+  => 
+  {(gstat: finding) (csp: < NI,K >) (uv: dNId) (oq: Q) 
+    (node[NI]: RHS,RHS,empty,empty,PRDs1,nil) OCs}
+  if goal?(NI) /\ K < calKey(G,RHS,h*(NI)) or G =/= RHS /\
+      G > RHS .
+
+*** not(g(u) > rhs(u)) and u is s_goal 
+  crl [LPA*-CompShortPath2] : 
+  {(gstat: finding) (csp: dNKPair) (uv: dNId) (oq: (< NI,K > | Q)) 
+    (node[NI]: G,RHS,empty,empty,PRDs1,nil) OCs}
+  => 
+  {(gstat: finding) (csp: < NI,K >) (uv: NI) (oq: Q) 
+    (node[NI]: oo,RHS,empty,empty,PRDs1,nil) OCs}
+  if goal?(NI) /\ K < calKey(G,RHS,h*(NI)) or G =/= RHS /\
+      not(G > RHS) .
+
+*** g(u) > rhs(u) and u is not s_goal 
+  crl [LPA*-CompShortPath3] : 
+  {(gstat: finding) (csp: dNKPair) (uv: dNId) (oq: (< NI1,K1 > | Q)) 
+    (node[NI1]: G1,RHS1,SUCs11,empty,PRDs11,nil) 
+    (node[NI]: G,RHS,empty,empty,PRDs1,nil) OCs}
+  => 
+  {(gstat: finding) (csp: < NI1,K1 >) (uv: dNId) (oq: Q) 
+    (node[NI1]: RHS1,RHS1,SUCs11,empty,PRDs11,nil) 
+    (node[NI]: G,RHS,empty,empty,PRDs1,nil) OCs}
+  if goal?(NI) /\ K1 < calKey(G,RHS,h*(NI)) or G =/= RHS /\
+      G1 > RHS1 .
+
+*** not(g(u) > rhs(u)) and u is not s_goal 
+  crl [LPA*-CompShortPath4] : 
+  {(gstat: finding) (csp: dNKPair) (uv: dNId) (oq: (< NI1,K1 > | Q)) 
+    (node[NI1]: G1,RHS1,SUCs11,empty,PRDs11,nil) 
+    (node[NI]: G,RHS,empty,empty,PRDs1,nil) OCs}
+  => 
+  {(gstat: finding) (csp: < NI1,K1 >) (uv: NI1) (oq: Q) 
+    (node[NI1]: oo,RHS1,SUCs11,empty,PRDs11,nil) 
+    (node[NI]: G,RHS,empty,empty,PRDs1,nil) OCs}
+  if goal?(NI) /\ K1 < calKey(G,RHS,h*(NI)) or G =/= RHS /\
+      not(G1 > RHS1) .
+
+  rl [LPA*-CompShortPath5] : 
+  {(gstat: finding) (csp: < NI,K >) (uv: dNId)
+    (node[NI]: G,RHS,empty,SUCs2,PRDs1,PRDs2) OCs}
+  => 
+  {(gstat: finding) (csp: dNKPair) (uv: dNId)
+    (node[NI]: G,RHS,SUCs2,empty,PRDs1,PRDs2) OCs} .
+
+  rl [LPA*-CompShortPath6] : 
+  {(gstat: finding) (csp: < NI,K >) (uv: dNId)
+    (node[NI]: G,RHS,< NI1,D1 > SUCs1,SUCs2,PRDs1,PRDs2) OCs}
+  => 
+  {(gstat: finding) (csp: < NI,K >) (uv: NI1)
+    (node[NI]: G,RHS,SUCs1,< NI1,D1 > SUCs2,PRDs1,PRDs2) OCs} .
+
+*** UpdateVertex(s)
+  crl [LPA*-UpdateVertex1] : 
+  {(gstat: finding) (uv: NI) (min: MIN) (oq: Q) 
+    (node[NI]: G,RHS,SUCs1,SUCs2,nil,PRDs2) OCs}
+  =>
+  {(gstat: finding) (uv: dNId) (min: oo)
+    (oq: (if G =/= MIN then enq(del(Q,NI),< NI,calKey(G,MIN,h*(NI)) >) else  del(Q,NI) fi))
+    (node[NI]: G,MIN,SUCs1,SUCs2,PRDs2,nil) OCs}
+  if NI =/= dNId .
+
+  crl [LPA*-UpdateVertex2] : 
+  {(gstat: finding) (uv: NI) (min: MIN)
+    (node[NI]: G,RHS,SUCs1,SUCs2,NI1 -> PRDs1,PRDs2)
+    (node[NI1]: G1,RHS1,SUCs11,SUCs12,PRDs11,PRDs12) OCs}
+  =>
+  {(gstat: finding) (uv: NI) 
+    (min: (if G1 + D < MIN then G1 + D else MIN fi))
+    (node[NI]: G,RHS,SUCs1,SUCs2,PRDs1,PRDs2 -> NI1)
+    (node[NI1]: G1,RHS1,SUCs11,SUCs12,PRDs11,PRDs12) OCs}
+  if NI =/= dNId /\ < NI,D > NNPs := SUCs11 SUCs12 .
+
+*** Change an edge weight (or cost)
+  crl [LPA*-ChangeEdgeCost] : 
+  {(gstat: done) (uv: dNId) (costs: (C Cs))
+    (node[NI]: G,RHS,< NI1,D1 > SUCs1,empty,PRDs1,nil) 
+    (bfs-conf: {OCs3}) (bfs-init: {OCs4}) OCs}
+  =>
+  {(gstat: initializing) (uv: NI1) (costs: Cs)
+    (node[NI]: G,RHS,< NI1,C > SUCs1,empty,PRDs1,nil)
+    (bfs-conf: {(bfs-node[NI]: D,< NI1,C > NNPs1,empty,NLs) OCs2}) 
+    (bfs-init: {(bfs-node[NI]: D,< NI1,C > NNPs1,empty,NLs) OCs2}) OCs}
+  if {(bfs-node[NI]: D,< NI1,D1 > NNPs1,empty,NLs) OCs2} := {OCs4} .
+
+***
+*** BFS-based path finding
+***
+  crl [bfs-done] : 
+  {(gstat: initializing) (spaths: NLs')
+    (bfs-conf: {(bfs-gstat: nFin) (bfs-node[NI]: 0,NNPs1,NNPs2,NLs) OCs2}) OCs}
+  => 
+  {(gstat: finding) (spaths: extract(NLs))
+    (bfs-conf: {(bfs-gstat: fin) (bfs-node[NI]: 0,NNPs1,NNPs2,NLs) OCs2 }) OCs}
+  if goal?(NI) .
+
+  rl [bfs-frwrd] : 
+  {(gstat: initializing) 
+    (bfs-conf: {(bfs-gstat: nFin) (bfs-q: (NI | NQ))
+                       (bfs-node[NI]: 0,empty,NNPs2,NLs) OCs2}) OCs}
+  => 
+  {(gstat: initializing) 
+    (bfs-conf: {(bfs-gstat: nFin) (bfs-q: NQ)
+                       (bfs-node[NI]: 0,empty,NNPs2,NLs) OCs2}) OCs} .
+
+  rl [bfs-srch] : 
+  {(gstat: initializing) 
+    (bfs-conf: {(bfs-gstat: nFin) (bfs-q: (NI | NQ))
+                       (bfs-node[NI]: 0,< NI',W > NNPs1,NNPs2,NLs)
+                       (bfs-node[NI']: s(N'),NNPs1',NNPs2',NLs') OCs2}) OCs}
+   => 
+  {(gstat: initializing) 
+    (bfs-conf: {(bfs-gstat: nFin) (bfs-q: (if N' == 0 then NI | NQ | NI' else NI | NQ fi))
+                        (bfs-node[NI]: 0,NNPs1,< NI',W > NNPs2,NLs)
+                        (bfs-node[NI']: N',NNPs1',NNPs2',NLs' add(NLs,NI',W)) OCs2}) OCs} .
+
+endm
+
+***(
+search in LPASTAR : init =>* {(node[n4]: oo,oo,(< n10,6 >),empty,n0 -> nil,nil) OCs} .
+search in LPASTAR : init =>* {(node[n4]: D1,D2,< n10,6 >,empty,n0 -> nil,nil) OCs} .
+search [1] in LPASTAR : init =>* {(gstat: done) (node[n4]: D1,D2,(< n10,1 >),empty,n0 -> nil,nil) OCs} .
+search in LPASTAR : init =>* {(gstat: done) OCs} .
+search [1] in LPASTAR : init =>* {(gstat: done) OCs} .
+search [1] in LPASTAR : init =>* {(gstat: done) (oq: empq) OCs} .
+search [1] in LPASTAR : init =>! {OCs} .
+search [1] in LPASTAR : init =>! {(path: < 2,n0 -> n4 -> n10 >) OCs} .
+)***
+
+in model-checker .
+
+mod LPASTAR-PREDS is
+  pr LPASTAR .
+  inc SATISFACTION .
+  subsort Config < State .
+  ops ini fin isSPath : -> Prop .
+  var OCs : Soup{OComp} .
+  var D : Nat .
+  var L : List{NId} .
+  var PATHS : Soup{NNIDLPair} .
+  var PROP : Prop .
+  eq {(gstat: initializing) OCs} |= ini = true .
+  eq {(gstat: done) OCs} |= fin = true .
+  eq {(path: (< D,L >)) (spaths: (< D,L > PATHS)) OCs} |= isSPath = true .
+  eq {OCs} |= PROP = false [owise] .
+endm
+
+mod LPASTAR-CHECK is
+  inc LPASTAR-PREDS .
+  inc MODEL-CHECKER .
+  inc LTL-SIMPLIFIER .
+  ops halt correct : -> Formula .
+  eq halt = ini |-> fin .
+  eq correct = [](fin -> isSPath) .
+endm
+
+***(
+red in LPASTAR-CHECK : modelCheck(init,halt) .
+red in LPASTAR-CHECK : modelCheck(init,correct) .
+)***

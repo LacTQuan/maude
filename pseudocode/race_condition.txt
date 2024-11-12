@@ -1,0 +1,15 @@
+accountA.balance = 100
+accountB.balance = 200
+
+function transfer(from_account, to_account, amount):
+    if from_account.balance >= amount:
+        from_account.balance -= amount
+        to_account.balance += amount
+
+# Thread 1: Transfer $50 from accountA to accountB
+Thread1:
+    transfer(accountA, accountB, 50)
+
+# Thread 2: Transfer $30 from accountB to accountA
+Thread2:
+    transfer(accountB, accountA, 30)

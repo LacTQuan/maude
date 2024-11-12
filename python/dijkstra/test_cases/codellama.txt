@@ -1,0 +1,101 @@
+Test Case 1:
+Init state:
+{(gstat: initializing)
+(oq: <n1,0>)
+(path: <0,nil>)
+(spaths: empty)
+(bfs-conf: bfs-init)
+(node[n0]: 0,<n1,4>,empty,n0)
+(node[n1]: oo,<n4,1>,empty,nil)
+(node[n2]: oo,<n1,2>,empty,nil)
+(node[n3]: oo,empty,empty,nil)
+(node[n4]: oo,<n3,1>,empty,nil)
+(node[n5]: oo,<n1,1>,<n3,3>,empty,nil)}
+
+Goal state:
+{(gstat: found) OCs}
+
+Test Case 2:
+Init state:
+{(gstat: visiting n1)
+(oq: <n2,0>)
+(path: <0,n1>)
+(spaths: empty)
+(bfs-conf: bfs-visiting)
+(node[n0]: 0,<n1,4>,empty,n0)
+(node[n1]: oo,<n4,1>,empty,nil)
+(node[n2]: oo,<n1,2>,empty,nil)
+(node[n3]: oo,empty,empty,nil)
+(node[n4]: oo,<n3,1>,empty,nil)
+(node[n5]: oo,<n1,1>,<n3,3>,empty,nil)}
+
+Goal state:
+{(gstat: found) OCs}
+
+Test Case 3:
+Init state:
+{(gstat: visiting n2)
+(oq: <n5,0>)
+(path: <0,n1,n2>)
+(spaths: empty)
+(bfs-conf: bfs-visiting)
+(node[n0]: 0,<n1,4>,empty,n0)
+(node[n1]: oo,<n4,1>,empty,nil)
+(node[n2]: oo,<n1,2>,empty,nil)
+(node[n3]: oo,empty,empty,nil)
+(node[n4]: oo,<n3,1>,empty,nil)
+(node[n5]: oo,<n1,1>,<n3,3>,empty,nil)}
+
+Goal state:
+{(gstat: found) OCs}
+
+Test Case 4:
+Init state:
+{(gstat: visiting n5)
+(oq: <n3,0>)
+(path: <0,n1,n2,n5>)
+(spaths: empty)
+(bfs-conf: bfs-visiting)
+(node[n0]: 0,<n1,4>,empty,n0)
+(node[n1]: oo,<n4,1>,empty,nil)
+(node[n2]: oo,<n1,2>,empty,nil)
+(node[n3]: oo,empty,empty,nil)
+(node[n4]: oo,<n3,1>,empty,nil)
+(node[n5]: oo,<n1,1>,<n3,3>,empty,nil)}
+
+Goal state:
+{(gstat: found) OCs}
+
+Test Case 5:
+Init state:
+{(gstat: visiting n3)
+(oq: empty)
+(path: <0,n1,n2,n5,n3>)
+(spaths: empty)
+(bfs-conf: bfs-visiting)
+(node[n0]: 0,<n1,4>,empty,n0)
+(node[n1]: oo,<n4,1>,empty,nil)
+(node[n2]: oo,<n1,2>,empty,nil)
+(node[n3]: oo,empty,empty,nil)
+(node[n4]: oo,<n3,1>,empty,nil)
+(node[n5]: oo,<n1,1>,<n3,3>,empty,nil)}
+
+Goal state:
+{(gstat: found) OCs}
+
+Test Case 6:
+Init state:
+{(gstat: finished)
+(oq: empty)
+(path: <0,n1,n2,n5,n3>)
+(spaths: empty)
+(bfs-conf: bfs-finished)
+(node[n0]: 0,<n1,4>,empty,n0)
+(node[n1]: oo,<n4,1>,empty,nil)
+(node[n2]: oo,<n1,2>,empty,nil)
+(node[n3]: oo,empty,empty,nil)
+(node[n4]: oo,<n3,1>,empty,nil)
+(node[n5]: oo,<n1,1>,<n3,3>,empty,nil)}
+
+Goal state:
+{(gstat: found) OCs}

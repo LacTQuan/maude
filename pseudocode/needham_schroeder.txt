@@ -1,0 +1,29 @@
+# Symbols:
+# X = Department X (initiator)
+# Y = Department Y (responder)
+# K_X, K_Y = Public keys of Departments X and Y
+# K_X⁻¹, K_Y⁻¹ = Private keys of Departments X and Y
+# E(P, M) = Encryption of message M with key P
+
+# Step 0: Public keys exchange
+# Departments ask each other for their public keys (Department X has the public key of department Y and vice versa)
+Exchange: X -> Y : (X, K_X)
+Exchange: Y -> X : (Y, K_Y)
+
+# Step 1: Department X generates a unique access token T_X for this session
+# Department X initiates the exchange by sending Department Y an encrypted message
+# containing X’s identifier and the access token T_X
+Message 1: X → Y : E(K_Y, (X, T_X))
+
+# Step 2: Department Y receives the message, decrypts it with its private key K_Y⁻¹
+# Y retrieves X’s identifier and access token T_X, then generates its own token T_Y
+# Y responds by sending T_X and T_Y, encrypted with Department X’s public key K_X
+Message 2: Y → X : E(K_X, (T_X, T_Y))
+
+# Step 3: Department X decrypts the response using its private key K_X⁻¹
+# X verifies that T_X matches the token it originally sent, confirming the response is valid
+# X extracts T_Y
+# X sends T_Y back to Y, encrypted with Y’s public key K_Y
+Message 3: X → Y : E(K_Y, T_Y)
+
+# Step 4: Department Y decrypts the final message, verifies that T_Y matches the token it sent

@@ -1,0 +1,62 @@
+# Proposer code
+function propose(value) {
+    n = generate_unique_number() // Unique, increasing proposal number
+    v = value
+    
+    // Step 1: Prepare Phase
+    send PREPARE(n) to a majority of Acceptors
+
+    // Wait for responses from a majority of Acceptors
+    responses = collectResponses()
+
+    if responses contain promise from majority:
+        // Determine highest accepted proposal number and value among responses
+        highest_accepted = max(responses.n_a)
+        if highest_accepted exists:
+            v = responses[highest_accepted].v_a // Adopt highest accepted value
+        else:
+            v = value // Use initial value if no acceptor has accepted a proposal
+
+        // Step 2: Accept Phase
+        send ACCEPT(n, v) to a majority of Acceptors
+
+        // Collect responses
+        if ACCEPTED by a majority:
+            // Consensus is reached on value v
+            broadcast DECIDE(v) to all Learners
+        else:
+            // Retry if majority does not accept
+            propose(value)
+    else:
+        // Retry if majority does not promise
+        propose(value)
+}
+
+
+# Acceptor code
+on receive PREPARE(n) {
+    if n > n_a: // If proposal number is higher than any seen before
+        n_a = n // Promise not to accept lower numbers
+        send PROMISE(n, n_a, v_a) to Proposer
+    else:
+        // Ignore the prepare request if n is lower
+        send REJECT(n) to Proposer
+}
+
+on receive ACCEPT(n, v) {
+    if n >= n_a: // If proposal number matches or exceeds promised number
+        n_a = n
+        v_a = v
+        send ACCEPTED(n, v) to Proposer
+    else:
+        // Reject if promise already made to higher proposal number
+        send REJECT(n) to Proposer
+}
+
+
+# Learner code
+on receive DECIDE(v) {
+    // Learn the final agreed-upon value
+    chosen_value = v
+    // Take action based on consensus (e.g., update system state)
+}

@@ -1,0 +1,19 @@
+procedure main()
+    OL = 0 //Initialize the open list. Priority queue sorted by cost + heuristic cost value
+    CL = 0 //Initialize the closed list
+    OL <— sstart
+    while(!OL.empty())
+        q <— OL.pop()
+        for all s in Succ(q)
+            if(s=sgoal) return path found
+            if(s is obstacle) continue
+            s.parent <— q
+            s.cost = q.cost + distance between successor and q
+            s.h_cost = heuristic(s, sgoal)
+            if(s` = s in OL && s`.cost + s`.h_cost < s.cost + s.h_cost)
+                continue
+            if(s` = s in CL && s`.cost + s`.h_cost < s.cost + s.h_cost)
+                continue
+            OL <— s
+        CL <— q
+    return no path

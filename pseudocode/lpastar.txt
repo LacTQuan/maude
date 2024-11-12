@@ -1,0 +1,33 @@
+procedure CalculateKey(s)
+    return [min(g(s), rhs(s)) + h(sstart, s); min(g(s),rhs(s))];
+
+procedure Initialize()
+    U = 0;
+    for all s in S rhs(s) = g(s) = inf
+    rhs(sstart) = 0;
+    U.insert(sstart, CalculateKey(sstart));
+
+procedure UpdateVertex()
+    if(u!=sstart) rhs(s) = minfor all s’ in Succ(u)c(u, s’) + g(s’)
+    if(u in U) U.remove(u)
+    if(g(u)!=rhs(u)) U.insert(u, CalculateKey(u));
+
+procedure ComputeShortestPath()
+    while(U.TopKey() < CalculateKey(sgoal) OR rhs(sgoal) != g(sgoal))
+        u = U.Pop();
+        if(g(u) > rhs(u))
+            g(u) = rhs(u);
+            for all s in Succ(u) UpdateVertex(s);
+        else
+            g(u) = inf;
+            for all s in Succ(u) (union) {u} UpdateVertex(s)
+
+procedure Main()
+    Initialize();
+    forever: // This runs for n times by default in current implementation
+        ComputeShortestPath();
+        Scan graph for changed edge costs;
+        if any edge cost changed // this occurs with probability 1/n for every iteration
+        for all directed edges (u,v) with changed edge costs
+            Update the edge cost c(u,v);
+            UpdateVertex(u)

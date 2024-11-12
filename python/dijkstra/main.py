@@ -4,6 +4,7 @@ import sys
 def read_test_case(file_path):
     initial_terms = []
     goal_terms = []
+    test_titles = []
 
     with open(file_path, "r") as file:
         lines = file.readlines()
@@ -23,30 +24,32 @@ def read_test_case(file_path):
                     goal_terms.append(term)
                 
                 i = j
+            elif lines[i].strip().startswith("Test"):
+                test_titles.append(lines[i].strip())
 
-    return initial_terms, goal_terms
+    return initial_terms, goal_terms, test_titles
 
 if __name__ == "__main__":
+
     maude.init()
-    maude.load(sys.argv[1] or "./maude_code/ogata/dijkstra/dijkstra00.maude")
+    maude.load(sys.argv[1] if len(sys.argv) > 1 else "./maude_code/ogata/dijkstra/dijkstra00.maude")
 
     dijkstra_module = maude.getModule("DIJKSTRA")
     try:
-        initial_terms, goal_terms = read_test_case(sys.argv[2] or "./python/dijkstra/test_cases.txt")
+        initial_terms, goal_terms, test_titles = read_test_case(sys.argv[2] if len(sys.argv) > 2 else "./python/dijkstra/test_cases/qwen2.txt")
 
         for i in range(len(initial_terms)):
-            print("Test case", i + 1)
-            initial_term = dijkstra_module.parseTerm("init")
+            print(test_titles[i])
+            initial_term = dijkstra_module.parseTerm(initial_terms[i])
             goal_term = dijkstra_module.parseTerm(goal_terms[i])
 
-            search_result = initial_term.search(target=goal_term, type=1)
-
-            if search_result:
+            try:
+                search_result = initial_term.search(target=goal_term, type=1)
                 solution = next(search_result)
                 print("Solution found:")
                 print(solution)
-            else:
-                print("No solutions found.")
+            except Exception as e:
+                print(f"Cannot find solution {e}")
 
     except Exception as e:
         print(f"An error occurred: {e}")

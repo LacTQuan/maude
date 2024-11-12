@@ -1,0 +1,81 @@
+Test Case 1: Normal Path Discovery
+Init state:
+{(gstat: initializing) (oq: (< n0,0 >)) (path: (< 0,nil >)) (spaths: empty) 
+(bfs-conf: bfs-init)
+(node[n0]: 0,(< n1,4 > < n2,1 >),empty,n0)
+(node[n1]: oo,(< n4,1 >),empty,nil)
+(node[n2]: oo,(< n1,2 > < n5,1 >),empty,nil)
+(node[n3]: oo,empty,empty,nil)
+(node[n4]: oo,(< n3,1 >),empty,nil)
+(node[n5]: oo,(< n1,1 > < n3,3 >),empty,nil)}
+
+Goal state:
+{(gstat: found) OCs}
+
+Test Case 2: Disconnected Graph
+Init state:
+{(gstat: initializing) (oq: (< n0,0 >)) (path: (< 0,nil >)) (spaths: empty) 
+(bfs-conf: bfs-init)
+(node[n0]: 0,(< n1,2 >),empty,n0)
+(node[n1]: oo,(< n2,3 >),empty,nil)
+(node[n2]: oo,empty,empty,nil)
+(node[n3]: oo,(< n4,2 > < n5,4 >),empty,nil)
+(node[n4]: oo,empty,empty,nil)
+(node[n5]: oo,empty,empty,nil)}
+
+Goal state:
+{(gstat: found) OCs}
+
+Test Case 3: Multiple Paths with Same Cost
+Init state:
+{(gstat: initializing) (oq: (< n0,0 >)) (path: (< 0,nil >)) (spaths: empty) 
+(bfs-conf: bfs-init)
+(node[n0]: 0,(< n1,2 > < n2,2 >),empty,n0)
+(node[n1]: oo,(< n3,3 >),empty,nil)
+(node[n2]: oo,(< n3,3 >),empty,nil)
+(node[n3]: oo,empty,empty,nil)}
+
+Goal state:
+{(gstat: found) OCs}
+
+Test Case 4: No Edges (Isolated Nodes)
+Init state:
+{(gstat: initializing) (oq: (< n0,0 >)) (path: (< 0,nil >)) (spaths: empty) 
+(bfs-conf: bfs-init)
+(node[n0]: 0,empty,empty,n0)
+(node[n1]: oo,empty,empty,nil)
+(node[n2]: oo,empty,empty,nil)
+(node[n3]: oo,empty,empty,nil)
+(node[n4]: oo,empty,empty,nil)
+(node[n5]: oo,empty,empty,nil)}
+
+Goal state:
+{(gstat: found) OCs}
+
+Test Case 5: Negative Edge Weight (Algorithm Error Case)
+Init state:
+{(gstat: initializing) (oq: (< n0,0 >)) (path: (< 0,nil >)) (spaths: empty) 
+(bfs-conf: bfs-init)
+(node[n0]: 0,(< n1,-1 > < n2,2 >),empty,n0)
+(node[n1]: oo,(< n3,1 >),empty,nil)
+(node[n2]: oo,(< n1,3 > < n5,2 >),empty,nil)
+(node[n3]: oo,empty,empty,nil)
+(node[n4]: oo,empty,empty,nil)
+(node[n5]: oo,(< n3,3 >),empty,nil)}
+
+Goal state:
+{(gstat: found) OCs}
+
+Test Case 6: Node Already at Goal (Trivial Case)
+Init state:
+{(gstat: initializing) (oq: (< n3,0 >)) (path: (< 0,nil >)) (spaths: empty) 
+(bfs-conf: bfs-init)
+(node[n0]: oo,(< n1,4 > < n2,1 >),empty,nil)
+(node[n1]: oo,(< n4,1 >),empty,nil)
+(node[n2]: oo,(< n1,2 > < n5,1 >),empty,nil)
+(node[n3]: 0,empty,empty,n3)
+(node[n4]: oo,(< n3,1 >),empty,nil)
+(node[n5]: oo,(< n1,1 > < n3,3 >),empty,nil)}
+
+Goal state:
+{(gstat: found) OCs}

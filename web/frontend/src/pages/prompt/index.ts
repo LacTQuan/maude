@@ -1,0 +1,1 @@
+export { default as Prompt } from './main.tsx';
