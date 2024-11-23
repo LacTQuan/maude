@@ -1,15 +1,16 @@
 import maude
 maude.init()
 
-maude.load("../../maude_code/ogata/dijkstra/astar00.maude")
+maude.load("./python/astar/race_condition.maude")
 
-astar_module = maude.getModule("ASTAR")
+astar_module = maude.getModule("BANK-ACCOUNTS")
 initial_term = astar_module.parseTerm("init")
-search_pattern = astar_module.parseTerm("{(gstat: found) OCs}")
+search_pattern = astar_module.parseTerm("testTransferSuccess")
 print(type(search_pattern))
 
 try:
-    search_result = initial_term.search(target=search_pattern, type=1)
+    # search_result = initial_term.search(target=search_pattern, type=1)
+    search_result = search_pattern.reduce()
 
     if search_result:
         solution = next(search_result)

@@ -1,0 +1,97 @@
+Test Case 1: Basic successful case
+Init state:
+{(gstat: initializing) (oq: (< n0,0 >)) (path: (< 0,nil >))
+ (spaths: empty) (bfs-conf: (bfs-init))
+ (node[n0]: 0,(< n1,4 > < n2,1 > < n3,6 >),empty,n0)
+ (node[n1]: oo,(< n4,1 >),empty,nil)
+ (node[n2]: oo,(< n1,2 > < n5,1 >),empty,nil)
+ (node[n3]: oo,empty,empty,nil)
+ (node[n4]: oo,(< n3,1 >),empty,nil)
+ (node[n5]: oo,(< n1,1 > < n3,3 >),empty,nil)}
+
+Goal state:
+{(gstat: found) OCs}
+
+Test Case 2: Goal node is not reachable
+Init state:
+{(gstat: initializing) (oq: (< n0,0 >)) (path: (< 0,nil >))
+ (spaths: empty) (bfs-conf: (bfs-init))
+ (node[n0]: 0,(< n1,4 > < n2,1 >),empty,n0)
+ (node[n1]: oo,(< n4,1 >),empty,nil)
+ (node[n2]: oo,(< n1,2 > < n5,1 >),empty,nil)
+ (node[n3]: oo,empty,empty,nil)
+ (node[n4]: oo,(< n3,1 >),empty,nil)
+ (node[n5]: oo,(< n1,1 > < n3,3 >),empty,nil)}
+
+Goal state:
+{(gstat: found) OCs}
+
+Test Case 3: Goal node is an obstacle
+Init state:
+{(gstat: initializing) (oq: (< n0,0 >)) (path: (< 0,nil >))
+ (spaths: empty) (bfs-conf: (bfs-init))
+ (node[n0]: 0,(< n1,4 > < n2,1 > < n3,6 >),empty,n0)
+ (node[n1]: oo,(< n4,1 >),empty,nil)
+ (node[n2]: oo,(< n1,2 > < n5,1 >),empty,nil)
+ (node[n3]: oo,empty,empty,n3)
+ (node[n4]: oo,(< n3,1 >),empty,nil)
+ (node[n5]: oo,(< n1,1 > < n3,3 >),empty,nil)}
+
+Goal state:
+{(gstat: found) OCs}
+
+Test Case 4: No successor nodes
+Init state:
+{(gstat: initializing) (oq: (< n0,0 >)) (path: (< 0,nil >))
+ (spaths: empty) (bfs-conf: (bfs-init))
+ (node[n0]: 0,empty,empty,n0)
+ (node[n1]: oo,empty,empty,nil)
+ (node[n2]: oo,empty,empty,nil)
+ (node[n3]: oo,empty,empty,nil)
+ (node[n4]: oo,empty,empty,nil)
+ (node[n5]: oo,empty,empty,nil)}
+
+Goal state:
+{(gstat: found) OCs}
+
+Test Case 5: Duplicate node in open list with lower cost
+Init state:
+{(gstat: initializing) (oq: (< n0,0 >)) (path: (< 0,nil >))
+ (spaths: empty) (bfs-conf: (bfs-init))
+ (node[n0]: 0,(< n1,4 > < n2,1 > < n3,6 >),empty,n0)
+ (node[n1]: 2,(< n4,1 >),empty,n0)
+ (node[n2]: oo,(< n1,2 > < n5,1 >),empty,nil)
+ (node[n3]: oo,empty,empty,nil)
+ (node[n4]: oo,(< n3,1 >),empty,nil)
+ (node[n5]: oo,(< n1,1 > < n3,3 >),empty,nil)}
+
+Goal state:
+{(gstat: found) OCs}
+
+Test Case 6: Duplicate node in closed list with lower cost
+Init state:
+{(gstat: initializing) (oq: (< n0,0 >)) (path: (< 0,nil >))
+ (spaths: empty) (bfs-conf: (bfs-init))
+ (node[n0]: 0,(< n1,4 > < n2,1 > < n3,6 >),nil,n0)
+ (node[n1]: 2,(< n4,1 >),empty,n0)
+ (node[n2]: oo,(< n1,2 > < n5,1 >),empty,nil)
+ (node[n3]: oo,empty,empty,nil)
+ (node[n4]: oo,(< n3,1 >),empty,nil)
+ (node[n5]: oo,(< n1,1 > < n3,3 >),empty,nil)}
+
+Goal state:
+{(gstat: found) OCs}
+
+Test Case 7: Duplicate node in open list with higher cost
+Init state:
+{(gstat: initializing) (oq: (< n0,0 >)) (path: (< 0,nil >))
+ (spaths: empty) (bfs-conf: (bfs-init))
+ (node[n0]: 0,(< n1,4 > < n2,1 > < n3,6 >),empty,n0)
+ (node[n1]: 4,(< n4,1 >),empty,n0)
+ (node[n2]: oo,(< n1,2 > < n5,1 >),empty,nil)
+ (node[n3]: oo,empty,empty,nil)
+ (node[n4]: oo,(< n3,1 >),empty,nil)
+ (node[n5]: oo,(< n1,1 > < n3,3 >),empty,nil)}
+
+Goal state:
+{(gstat: found) OCs}

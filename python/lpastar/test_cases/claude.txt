@@ -1,0 +1,104 @@
+Test Case 1: Initial Test Case
+Init state:
+{(gstat: initializing) (oq: (< n0,< h*(n0),0 > >)) (path: (< 0,nil >)) 
+    (csp: dNKPair) (uv: dNId) (min: oo) (costs: (1)) (bld: < dNId,oo >,oo)
+    (spaths: empty) (bfs-conf: (bfs-init))  (bfs-init: (bfs-init)) 
+    (node[n0]: oo,0,(< n1,4 > < n2,1 > < n3,6 >),empty,nil,nil)
+    (node[n1]: oo,oo,(< n4,1 >),empty,n0 -> n2 -> n5 -> nil,nil)
+    (node[n2]: oo,oo,(< n1,2 > < n5,1 >),empty,n0 -> nil,nil)
+    (node[n3]: oo,oo,empty,empty,n0 -> n4 -> n5 -> nil,nil)
+    (node[n4]: oo,oo,(< n3,1 >),empty,n1 -> nil,nil)
+    (node[n5]: oo,oo,(< n1,1 > < n3,3 >),empty,n2 -> nil,nil)}
+
+Goal state:
+{(gstat: done) OCs}
+
+Test Case 2: Uniform Edge Costs
+Init state:
+{(gstat: initializing) (oq: (< n0,< h*(n0),0 > >)) (path: (< 0,nil >)) 
+    (csp: dNKPair) (uv: dNId) (min: oo) (costs: (1)) (bld: < dNId,oo >,oo)
+    (spaths: empty) (bfs-conf: (bfs-init))  (bfs-init: (bfs-init)) 
+    (node[n0]: oo,0,(< n1,4 > < n2,1 > < n3,6 >),empty,nil,nil)
+    (node[n1]: oo,oo,(< n4,1 >),empty,n0 -> n2 -> n5 -> nil,nil)
+    (node[n2]: oo,oo,(< n1,2 > < n5,1 >),empty,n0 -> nil,nil)
+    (node[n3]: oo,oo,empty,empty,n0 -> n4 -> n5 -> nil,nil)
+    (node[n4]: oo,oo,(< n3,1 >),empty,n1 -> nil,nil)
+    (node[n5]: oo,oo,(< n1,1 > < n3,3 >),empty,n2 -> nil,nil)}
+
+Goal state:
+{(gstat: done) OCs}
+
+Test Case 3: Goal Node with No Neighbors
+Init state:
+{(gstat: initializing) (oq: (< n0,< h*(n0),0 > >)) (path: (< 0,nil >)) 
+    (csp: dNKPair) (uv: dNId) (min: oo) (costs: (1)) (bld: < dNId,oo >,oo)
+    (spaths: empty) (bfs-conf: (bfs-init))  (bfs-init: (bfs-init)) 
+    (node[n0]: oo,0,(< n1,4 > < n2,1 > < n3,6 >),empty,nil,nil)
+    (node[n1]: oo,oo,(< n4,1 >),empty,n0 -> n2 -> n5 -> nil,nil)
+    (node[n2]: oo,oo,(< n1,2 > < n5,1 >),empty,n0 -> nil,nil)
+    (node[n3]: oo,oo,empty,empty,n0 -> n4 -> n5 -> nil,nil)
+    (node[n4]: oo,oo,(< n3,1 >),empty,n1 -> nil,nil)
+    (node[n5]: oo,oo,(< n1,1 > < n3,3 >),empty,n2 -> nil,nil)}
+
+Goal state:
+{(gstat: done) OCs}
+
+Test Case 4: Start Node with No Neighbors
+Init state:
+{(gstat: initializing) (oq: (< n0,< h*(n0),0 > >)) (path: (< 0,nil >)) 
+    (csp: dNKPair) (uv: dNId) (min: oo) (costs: (1)) (bld: < dNId,oo >,oo)
+    (spaths: empty) (bfs-conf: (bfs-init))  (bfs-init: (bfs-init)) 
+    (node[n0]: oo,0,(< n1,4 > < n2,1 > < n3,6 >),empty,nil,nil)
+    (node[n1]: oo,oo,(< n4,1 >),empty,n0 -> n2 -> n5 -> nil,nil)
+    (node[n2]: oo,oo,(< n1,2 > < n5,1 >),empty,n0 -> nil,nil)
+    (node[n3]: oo,oo,empty,empty,n0 -> n4 -> n5 -> nil,nil)
+    (node[n4]: oo,oo,(< n3,1 >),empty,n1 -> nil,nil)
+    (node[n5]: oo,oo,(< n1,1 > < n3,3 >),empty,n2 -> nil,nil)}
+
+Goal state:
+{(gstat: done) OCs}
+
+Test Case 5: Intermediate Nodes with No Neighbors
+Init state:
+{(gstat: initializing) (oq: (< n0,< h*(n0),0 > >)) (path: (< 0,nil >)) 
+    (csp: dNKPair) (uv: dNId) (min: oo) (costs: (1)) (bld: < dNId,oo >,oo)
+    (spaths: empty) (bfs-conf: (bfs-init))  (bfs-init: (bfs-init)) 
+    (node[n0]: oo,0,(< n1,4 > < n2,1 > < n3,6 >),empty,nil,nil)
+    (node[n1]: oo,oo,(< n4,1 >),empty,n0 -> n2 -> n5 -> nil,nil)
+    (node[n2]: oo,oo,(< n1,2 > < n5,1 >),empty,n0 -> nil,nil)
+    (node[n3]: oo,oo,empty,empty,n0 -> n4 -> n5 -> nil,nil)
+    (node[n4]: oo,oo,(< n3,1 >),empty,n1 -> nil,nil)
+    (node[n5]: oo,oo,(< n1,1 > < n3,3 >),empty,n2 -> nil,nil)}
+
+Goal state:
+{(gstat: done) OCs}
+
+Test Case 6: Uniform Costs with Goal Node No Neighbors
+Init state:
+{(gstat: initializing) (oq: (< n0,< h*(n0),0 > >)) (path: (< 0,nil >)) 
+    (csp: dNKPair) (uv: dNId) (min: oo) (costs: (1)) (bld: < dNId,oo >,oo)
+    (spaths: empty) (bfs-conf: (bfs-init))  (bfs-init: (bfs-init)) 
+    (node[n0]: oo,0,(< n1,4 > < n2,1 > < n3,6 >),empty,nil,nil)
+    (node[n1]: oo,oo,(< n4,1 >),empty,n0 -> n2 -> n5 -> nil,nil)
+    (node[n2]: oo,oo,(< n1,2 > < n5,1 >),empty,n0 -> nil,nil)
+    (node[n3]: oo,oo,empty,empty,n0 -> n4 -> n5 -> nil,nil)
+    (node[n4]: oo,oo,(< n3,1 >),empty,n1 -> nil,nil)
+    (node[n5]: oo,oo,(< n1,1 > < n3,3 >),empty,n2 -> nil,nil)}
+
+Goal state:
+{(gstat: done) OCs}
+
+Test Case 7: Uniform Costs, Start Node No Neighbors, Intermediate Nodes No Neighbors
+Init state:
+{(gstat: initializing) (oq: (< n0,< h*(n0),0 > >)) (path: (< 0,nil >)) 
+    (csp: dNKPair) (uv: dNId) (min: oo) (costs: (1)) (bld: < dNId,oo >,oo)
+    (spaths: empty) (bfs-conf: (bfs-init))  (bfs-init: (bfs-init)) 
+    (node[n0]: oo,0,(< n1,4 > < n2,1 > < n3,6 >),empty,nil,nil)
+    (node[n1]: oo,oo,(< n4,1 >),empty,n0 -> n2 -> n5 -> nil,nil)
+    (node[n2]: oo,oo,(< n1,2 > < n5,1 >),empty,n0 -> nil,nil)
+    (node[n3]: oo,oo,empty,empty,n0 -> n4 -> n5 -> nil,nil)
+    (node[n4]: oo,oo,(< n3,1 >),empty,n1 -> nil,nil)
+    (node[n5]: oo,oo,(< n1,1 > < n3,3 >),empty,n2 -> nil,nil)}
+
+Goal state:
+{(gstat: done) OCs}

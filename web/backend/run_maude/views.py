@@ -38,9 +38,12 @@ def read_test_case(file_path):
 class MaudeView(APIView):
     def get(self, request, format=None):
         maude.init()
-        maude.load("../../maude_code/ogata/dijkstra/dijkstra00.maude")
 
-        dijkstra_module = maude.getModule("DIJKSTRA")
+        algo_path = request.query_params.get('algo_path', None)
+        maude.load(algo_path)
+
+        module_name = request.query_params.get('module', None)
+        module = maude.getModule(module_name)
         test_case_path = request.query_params.get('test_case', None)
         try:
             initial_terms, goal_terms, test_titles = read_test_case(test_case_path if test_case_path != None else "./python/dijkstra/test_cases_gpt4o.txt")
@@ -52,8 +55,8 @@ class MaudeView(APIView):
                     'initial': initial_terms[i],
                     'goal': goal_terms[i],
                 })
-                initial_term = dijkstra_module.parseTerm(initial_terms[i])
-                goal_term = dijkstra_module.parseTerm(goal_terms[i])
+                initial_term = module.parseTerm(initial_terms[i])
+                goal_term = module.parseTerm(goal_terms[i])
 
                 try:
                     search_result = initial_term.search(target=goal_term, type=1)

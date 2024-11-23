@@ -1,0 +1,83 @@
+Test Case 1: Straight path to goal (no obstacles)
+Init state:
+{(gstat: initializing) (oq: (< n0,0 >)) (path: (< 0,nil >))
+    (spaths: empty) (bfs-conf: (bfs-init))
+    (node[n0]: 0,(< n1,1 > < n3,2 >),empty,n0)
+    (node[n1]: oo,(< n3,1 >),empty,nil)
+    (node[n3]: oo,empty,empty,nil)}
+
+Goal state:
+{(gstat: found) OCs}
+
+Test Case 2: Multiple paths to the goal
+Init state:
+{(gstat: initializing) (oq: (< n0,0 >)) (path: (< 0,nil >))
+    (spaths: empty) (bfs-conf: (bfs-init))
+    (node[n0]: 0,(< n1,3 > < n2,1 >),empty,n0)
+    (node[n1]: oo,(< n3,2 >),empty,nil)
+    (node[n2]: oo,(< n3,1 >),empty,nil)
+    (node[n3]: oo,empty,empty,nil)}
+
+Goal state:
+{(gstat: found) OCs}
+
+Test Case 3: Obstacle blocks the direct path
+Init state:
+{(gstat: initializing) (oq: (< n0,0 >)) (path: (< 0,nil >))
+    (spaths: empty) (bfs-conf: (bfs-init))
+    (node[n0]: 0,(< n1,4 > < n2,1 >),empty,n0)
+    (node[n1]: oo,(< n3,oo >),empty,nil)
+    (node[n2]: oo,(< n3,2 >),empty,nil)
+    (node[n3]: oo,empty,empty,nil)}
+
+Goal state:
+{(gstat: found) OCs}
+
+Test Case 4: Cycle in the graph
+Init state:
+{(gstat: initializing) (oq: (< n0,0 >)) (path: (< 0,nil >))
+    (spaths: empty) (bfs-conf: (bfs-init))
+    (node[n0]: 0,(< n1,1 >),empty,n0)
+    (node[n1]: oo,(< n2,2 >),empty,nil)
+    (node[n2]: oo,(< n1,1 > < n3,3 >),empty,nil)
+    (node[n3]: oo,empty,empty,nil)}
+
+Goal state:
+{(gstat: found) OCs}
+
+Test Case 5: All nodes are equidistant from the goal
+Init state:
+{(gstat: initializing) (oq: (< n0,0 >)) (path: (< 0,nil >))
+    (spaths: empty) (bfs-conf: (bfs-init))
+    (node[n0]: 0,(< n1,2 > < n2,2 >),empty,n0)
+    (node[n1]: oo,(< n3,2 >),empty,nil)
+    (node[n2]: oo,(< n3,2 >),empty,nil)
+    (node[n3]: oo,empty,empty,nil)}
+
+Goal state:
+{(gstat: found) OCs}
+
+Test Case 6: Isolated node with no connection to the goal
+Init state:
+{(gstat: initializing) (oq: (< n0,0 >)) (path: (< 0,nil >))
+    (spaths: empty) (bfs-conf: (bfs-init))
+    (node[n0]: 0,(< n1,3 > < n4,1 >),empty,n0)
+    (node[n1]: oo,(< n3,2 >),empty,nil)
+    (node[n4]: oo,empty,empty,nil)
+    (node[n3]: oo,empty,empty,nil)}
+
+Goal state:
+{(gstat: found) OCs}
+
+Test Case 7: Goal node is unreachable
+Init state:
+{(gstat: initializing) (oq: (< n0,0 >)) (path: (< 0,nil >))
+    (spaths: empty) (bfs-conf: (bfs-init))
+    (node[n0]: 0,(< n1,2 > < n2,3 >),empty,n0)
+    (node[n1]: oo,(< n4,1 >),empty,nil)
+    (node[n2]: oo,(< n4,2 >),empty,nil)
+    (node[n3]: oo,empty,empty,nil)
+    (node[n4]: oo,empty,empty,nil)}
+
+Goal state:
+{(gstat: found) OCs}

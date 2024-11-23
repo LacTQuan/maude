@@ -1,0 +1,87 @@
+Test Case 1: All Nodes Unvisited, Simple Edge Costs
+Init state:
+{(gstat: initializing) (oq: (< n0,< h*(n0),0 > >)) (path: (< 0,nil >)) 
+ (csp: dNKPair) (uv: dNId) (min: oo) (costs: (1)) (bld: < dNId,oo >,oo)
+ (spaths: empty) (bfs-conf: (bfs-init)) (bfs-init: (bfs-init)) 
+ (node[n0]: oo,0,(< n1,2 > < n2,2 > < n3,4 >),empty,nil,nil)
+ (node[n1]: oo,oo,(< n3,1 >),empty,n0 -> nil,nil)
+ (node[n2]: oo,oo,(< n3,1 >),empty,n0 -> nil,nil)
+ (node[n3]: oo,oo,empty,empty,n0 -> n1 -> nil,nil)}
+
+Goal state:
+{(gstat: done) OCs}
+
+Test Case 2: Node with High Edge Cost
+Init state:
+{(gstat: initializing) (oq: (< n0,< h*(n0),0 > >)) (path: (< 0,nil >)) 
+ (csp: dNKPair) (uv: dNId) (min: oo) (costs: (10)) (bld: < dNId,oo >,oo)
+ (spaths: empty) (bfs-conf: (bfs-init)) (bfs-init: (bfs-init)) 
+ (node[n0]: oo,0,(< n1,10 > < n2,10 > < n3,20 >),empty,nil,nil)
+ (node[n1]: oo,oo,(< n3,10 >),empty,n0 -> nil,nil)
+ (node[n2]: oo,oo,(< n3,10 >),empty,n0 -> nil,nil)
+ (node[n3]: oo,oo,empty,empty,n0 -> n1 -> nil,nil)}
+
+Goal state:
+{(gstat: done) OCs}
+
+Test Case 3: Node with Multiple Shortest Paths
+Init state:
+{(gstat: initializing) (oq: (< n0,< h*(n0),0 > >)) (path: (< 0,nil >)) 
+ (csp: dNKPair) (uv: dNId) (min: oo) (costs: (1)) (bld: < dNId,oo >,oo)
+ (spaths: empty) (bfs-conf: (bfs-init)) (bfs-init: (bfs-init)) 
+ (node[n0]: oo,0,(< n1,1 > < n2,1 >),empty,nil,nil)
+ (node[n1]: oo,oo,(< n3,1 >),empty,n0 -> nil,nil)
+ (node[n2]: oo,oo,(< n3,1 >),empty,n0 -> nil,nil)
+ (node[n3]: oo,oo,empty,empty,n0 -> n1 -> nil,nil)}
+
+Goal state:
+{(gstat: done) OCs}
+
+Test Case 4: A Blocked Path
+Init state:
+{(gstat: initializing) (oq: (< n0,< h*(n0),0 > >)) (path: (< 0,nil >)) 
+ (csp: dNKPair) (uv: dNId) (min: oo) (costs: (inf)) (bld: < dNId,oo >,oo)
+ (spaths: empty) (bfs-conf: (bfs-init)) (bfs-init: (bfs-init)) 
+ (node[n0]: oo,0,(< n1,inf > < n2,2 >),empty,nil,nil)
+ (node[n1]: oo,oo,(< n3,1 >),empty,n0 -> nil,nil)
+ (node[n2]: oo,oo,(< n3,1 >),empty,n0 -> nil,nil)
+ (node[n3]: oo,oo,empty,empty,n0 -> n2 -> nil,nil)}
+
+Goal state:
+{(gstat: done) OCs}
+
+Test Case 5: Starting Node is the Goal Node
+Init state:
+{(gstat: initializing) (oq: (< n3,< h*(n3),0 > >)) (path: (< 0,nil >)) 
+ (csp: dNKPair) (uv: dNId) (min: 0) (costs: (0)) (bld: < dNId,0 >,0)
+ (spaths: empty) (bfs-conf: (bfs-init)) (bfs-init: (bfs-init)) 
+ (node[n3]: 0,0,empty,empty,nil,nil)}
+
+Goal state:
+{(gstat: done) OCs}
+
+Test Case 6: Graph with Cycles
+Init state:
+{(gstat: initializing) (oq: (< n0,< h*(n0),0 > >)) (path: (< 0,nil >)) 
+ (csp: dNKPair) (uv: dNId) (min: oo) (costs: (1)) (bld: < dNId,oo >,oo)
+ (spaths: empty) (bfs-conf: (bfs-init)) (bfs-init: (bfs-init)) 
+ (node[n0]: oo,0,(< n1,2 >),empty,nil,nil)
+ (node[n1]: oo,oo,(< n2,2 >),empty,n0 -> nil,nil)
+ (node[n2]: oo,oo,(< n0,1 > < n3,1 >),empty,n0 -> n1 -> nil,nil)
+ (node[n3]: oo,oo,empty,empty,n0 -> n1 -> n2 -> nil,nil)}
+
+Goal state:
+{(gstat: done) OCs}
+
+Test Case 7: All Edge Costs Changed Midway
+Init state:
+{(gstat: initializing) (oq: (< n0,< h*(n0),0 > >)) (path: (< 0,nil >)) 
+ (csp: dNKPair) (uv: dNId) (min: oo) (costs: (5)) (bld: < dNId,oo >,oo)
+ (spaths: empty) (bfs-conf: (bfs-init)) (bfs-init: (bfs-init)) 
+ (node[n0]: oo,0,(< n1,1 > < n2,5 >),empty,nil,nil)
+ (node[n1]: oo,oo,(< n3,1 >),empty,n0 -> nil,nil)
+ (node[n2]: oo,oo,(< n3,2 >),empty,n0 -> nil,nil)
+ (node[n3]: oo,oo,empty,empty,n0 -> n1 -> nil,nil)}
+
+Goal state:
+{(gstat: done) OCs}

@@ -1,0 +1,54 @@
+mod BANK-ACCOUNTS is
+  sort Account .
+  ops accountA accountB : -> Account .
+  op balance : Account -> Nat .
+  op transfer : Account Account Nat -> Bool .
+
+  vars fromAccount toAccount : Account .
+  var amount : Nat .
+
+  eq balance(accountA) = 100 .
+  eq balance(accountB) = 200 .
+
+  eq transfer(fromAccount, toAccount, amount) = 
+     if balance(fromAccount) >= amount then
+       balance(fromAccount) = balance(fromAccount) - amount ;
+       balance(toAccount) = balance(toAccount) + amount ;
+       true
+     else
+       false
+     fi .
+
+  op thread1 : -> [Bool] .
+  eq thread1 = transfer(accountA, accountB, 50) .
+
+  op thread2 : -> [Bool] .
+  eq thread2 = transfer(accountB, accountA, 30) .
+
+  op runTransfers : -> [Bool] .
+  eq runTransfers = thread1 and thread2 .
+
+  *** Test Cases ***
+
+  op testTransferSuccess : -> [Bool] .
+  eq testTransferSuccess = 
+     let initialBalanceA = balance(accountA),
+         initialBalanceB = balance(accountB) in
+     transfer(accountA, accountB, 50) and
+     balance(accountA) == initialBalanceA - 50 and
+     balance(accountB) == initialBalanceB + 50 .
+
+  op testInsufficientFunds : -> [Bool] .
+  eq testInsufficientFunds =
+     let initialBalanceA = balance(accountA) in
+     not transfer(accountA, accountB, 200) and
+     balance(accountA) == initialBalanceA .
+
+  op testConcurrentTransfers : -> [Bool] .
+  eq testConcurrentTransfers =
+     let initialBalanceA = balance(accountA),
+         initialBalanceB = balance(accountB) in
+     runTransfers and
+     balance(accountA) == initialBalanceA - 20 and
+     balance(accountB) == initialBalanceB + 20 .
+endm
