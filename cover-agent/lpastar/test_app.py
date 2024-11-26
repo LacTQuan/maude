@@ -1,5 +1,4 @@
 from app import Solution
-from math import inf
 
 def test_main():
     # Define a heuristic function (Manhattan distance for grid)

@@ -1,58 +1,97 @@
 import heapq
 
 class Node:
-    def __init__(self, state, cost=0, parent=None):
-        self.state = state  # Unique identifier for the node
-        self.cost = cost  # Cost to reach this node
-        self.parent = parent  # Reference to the parent node for path reconstruction
+    def __init__(self, id):
+        self.id = id
+        self.g = float('inf')  # Cost to reach this node
+        self.rhs = float('inf')  # One-step lookahead cost
+        self.neighbors = {}  # {neighbor_node: edge_cost}
+        self.parent = None  # To track the shortest path
 
     def __lt__(self, other):
-        return self.cost < other.cost  # Comparison based on cost for priority queue
+        return (min(self.g, self.rhs), self.g) < (min(other.g, other.rhs), other.g)
 
-def main(start, goal, is_obstacle, successors, distance):
-    """
-    Find the path from start to goal using a cost-based search algorithm.
+class LPAStar:
+    def __init__(self, start, goal):
+        self.start = start
+        self.goal = goal
+        self.queue = []
+        self.nodes = {}  # Store all nodes
 
-    :param start: The start node/state
-    :param goal: The goal node/state
-    :param is_obstacle: Function to check if a node/state is an obstacle
-    :param successors: Function to generate successors for a node/state
-    :param distance: Function to calculate distance between two nodes/states
-    :return: A list representing the path from start to goal, or 'No path' if none exists
-    """
-    open_list = []  # Priority queue for nodes to be explored
-    closed_list = set()  # Set for already explored nodes
-    heapq.heappush(open_list, Node(start, cost=0))  # Add the start node to the open list
+    def initialize(self):
+        self.start.rhs = 0
+        heapq.heappush(self.queue, (self.calculate_key(self.start), self.start))
 
-    while open_list:
-        current_node = heapq.heappop(open_list)  # Get the node with the lowest cost
-        
-        # Check if the goal has been reached
-        if current_node.state == goal:
-            path = []
-            while current_node:
-                path.append(current_node.state)
-                current_node = current_node.parent
-            return path[::-1]  # Reverse the path to get the correct order
-        
-        closed_list.add(current_node.state)
+    def calculate_key(self, node):
+        return (min(node.g, node.rhs), node.g)
 
-        for succ_state in successors(current_node.state):
-            # if succ_state == goal:
-            #     return [current_node.state, goal]
-            
-            if is_obstacle(succ_state) or succ_state in closed_list:
-                continue
+    def update_node(self, node):
+        if node.g != node.rhs:
+            heapq.heappush(self.queue, (self.calculate_key(node), node))
 
-            succ_cost = current_node.cost + distance(current_node.state, succ_state)
-            succ_node = Node(succ_state, cost=succ_cost, parent=current_node)
-            
-            # Check if a better path already exists in the open list
-            existing_node = next((n for n in open_list if n.state == succ_state), None)
-            if existing_node and existing_node.cost <= succ_cost:
-                continue
-            
-            # Add the new node to the open list
-            heapq.heappush(open_list, succ_node)
+    def compute_shortest_path(self):
+        while self.queue and (
+            self.queue[0][0] < self.calculate_key(self.goal) or self.goal.rhs != self.goal.g
+        ):
+            _, current = heapq.heappop(self.queue)
+            if current.g > current.rhs:
+                current.g = current.rhs
+                for neighbor, cost in current.neighbors.items():
+                    # Update the parent for backtracking
+                    if neighbor.rhs > current.g + cost:
+                        neighbor.rhs = current.g + cost
+                        neighbor.parent = current  # Track the parent
+                    self.update_node(neighbor)
+            else:
+                current.g = float('inf')
+                for neighbor, cost in current.neighbors.items():
+                    if neighbor.rhs == current.g + cost:
+                        neighbor.rhs = min(
+                            [float('inf')] + [
+                                n.g + c for n, c in neighbor.neighbors.items()
+                            ]
+                        )
+                        neighbor.parent = None  # Reset the parent if invalid
+                    self.update_node(neighbor)
+            self.update_node(current)
 
-    return "No path"
+    def update_edge(self, node1, node2, new_cost):
+        node1.neighbors[node2] = new_cost
+        # node2.neighbors[node1] = new_cost  # Assume undirected graph
+        heapq.heappush(self.queue, (self.calculate_key(node1), node1))
+        # self.update_node(node2)
+
+    def reconstruct_path(self):
+        path = []
+        current = self.goal
+        while current is not None:
+            path.append(current.id)
+            current = current.parent
+        path.reverse()
+        return path
+
+
+# Example Usage
+start = Node("Start")
+goal = Node("Goal")
+nodeA = Node("A")
+nodeB = Node("B")
+
+start.neighbors = {nodeA: 1, nodeB: 2}
+nodeA.neighbors = {goal: 3}
+nodeB.neighbors = {goal: 1}
+
+lpa = LPAStar(start, goal)
+lpa.initialize()
+lpa.compute_shortest_path()
+
+# Print the initial shortest path
+print("Initial shortest path:", lpa.reconstruct_path())
+
+# Update edge weights dynamically
+lpa.update_edge(nodeB, goal, 5)
+lpa.compute_shortest_path()
+
+# Print the new shortest path
+print("Updated shortest path:", lpa.reconstruct_path())
+
