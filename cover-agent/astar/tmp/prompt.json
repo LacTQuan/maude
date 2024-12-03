@@ -1,0 +1,197 @@
+system: 
+user: ## Overview
+You are a specialized test analysis assistant focused on unit test regression results.
+Your role is to examine both standard output (stdout) and error output (stderr) from test executions, identify failures, and provide clear, actionable summaries to help understand and resolve test regressions effectively.
+
+
+Here is the file that contains the existing tests, called `test_app.py`:
+=========
+from app import main
+
+def test_main():
+    # 0: Free cell, 1: Obstacle
+    grid = [
+        [0, 0, 0, 0],
+        [1, 1, 0, 1],
+        [0, 0, 0, 0],
+        [0, 1, 1, 0],
+    ]
+    start = (0, 0)
+    goal = (3, 3)
+    
+    expected_path = [(0, 0), (0, 1), (0, 2), (1, 2), (2, 2), (2, 3), (3, 3)]
+    actual_path = main(grid, start, goal)
+    
+    assert actual_path == expected_path, f"Expected {expected_path}, but got {actual_path}"
+
+def test_no_path_found():
+    # 0: Free cell, 1: Obstacle
+    grid = [
+        [0, 0, 0, 0],
+        [1, 1, 1, 1],
+        [0, 0, 0, 0],
+        [0, 1, 1, 0],
+    ]
+    start = (0, 0)
+    goal = (3, 3)
+
+    expected_path = "No path found"
+    actual_path = main(grid, start, goal)
+
+    assert actual_path == expected_path, f"Expected {expected_path}, but got {actual_path}"
+
+
+def test_start_and_goal_opposite_corners():
+    # 0: Free cell, 1: Obstacle
+    grid = [
+        [0, 0, 0, 0],
+        [1, 1, 0, 1],
+        [0, 0, 0, 0],
+        [0, 1, 1, 0],
+    ]
+    start = (0, 0)
+    goal = (3, 3)
+
+    expected_path = [(0, 0), (0, 1), (0, 2), (0, 3), (1, 3), (2, 3), (3, 3)]
+    actual_path = main(grid, start, goal)
+
+    assert actual_path == expected_path, f"Expected {expected_path}, but got {actual_path}"
+=========
+
+
+Here is the source file that we are writing tests against, called `app.py`.
+=========
+import heapq
+
+class Node:
+    def __init__(self, position, cost=0, h_cost=0):
+        self.position = position  # (x, y) coordinates
+        self.cost = cost  # Cost to reach this node
+        self.h_cost = h_cost  # Heuristic cost to goal
+        self.parent = None  # To trace the path back
+
+    def __lt__(self, other):
+        return (self.cost + self.h_cost) < (other.cost + other.h_cost)
+
+
+def heuristic(node, goal):
+    # Example: Using Manhattan distance as a heuristic
+    return abs(node.position[0] - goal.position[0]) + abs(node.position[1] - goal.position[1])
+
+
+def get_successors(node, grid):
+    successors = []
+    rows, cols = len(grid), len(grid[0])
+    x, y = node.position
+    for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:  # Up, Down, Left, Right
+        nx, ny = x + dx, y + dy
+        if 0 <= nx < rows and 0 <= ny < cols and grid[nx][ny] != 1:  # Check bounds and obstacles
+            successors.append(Node((nx, ny)))
+    return successors
+
+
+def reconstruct_path(goal_node):
+    path = []
+    current = goal_node
+    while current:
+        path.append(current.position)
+        current = current.parent
+    return path[::-1]  # Reverse the path
+
+
+def main(grid, start, goal):
+    start_node = Node(start)
+    goal_node = Node(goal)
+    
+    open_list = []
+    closed_list = set()
+    heapq.heappush(open_list, start_node)
+    
+    while open_list:
+        current_node = heapq.heappop(open_list)
+        
+        if current_node.position == goal_node.position:
+            return reconstruct_path(current_node)
+        
+        closed_list.add(current_node.position)
+        
+        for successor in get_successors(current_node, grid):
+            if successor.position in closed_list:
+                continue
+            
+            successor.parent = current_node
+            successor.cost = current_node.cost + 1  # Assuming uniform cost for simplicity
+            successor.h_cost = heuristic(successor, goal_node)
+            
+            # Check if the successor is already in open list with a better cost
+            in_open_list = any(
+                node for node in open_list if node.position == successor.position
+                and (node.cost + node.h_cost) <= (successor.cost + successor.h_cost)
+            )
+            if in_open_list:
+                continue
+            
+            heapq.heappush(open_list, successor)
+    
+    return "No path found"
+=========
+
+
+`stdout` output when running the tests:
+=========
+============================= test session starts ==============================
+platform linux -- Python 3.10.12, pytest-8.3.3, pluggy-1.5.0
+rootdir: /home/thiuquan/code/maude/cover-agent/astar
+plugins: anyio-4.6.2.post1, cov-6.0.0
+collected 3 items
+
+test_app.py ..F                                                          [100%]
+
+=================================== FAILURES ===================================
+_____________________ test_start_and_goal_opposite_corners _____________________
+
+    def test_start_and_goal_opposite_corners():
+        # 0: Free cell, 1: Obstacle
+        grid = [
+            [0, 0, 0, 0],
+            [1, 1, 0, 1],
+            [0, 0, 0, 0],
+            [0, 1, 1, 0],
+        ]
+        start = (0, 0)
+        goal = (3, 3)
+    
+        expected_path = [(0, 0), (0, 1), (0, 2), (0, 3), (1, 3), (2, 3), (3, 3)]
+        actual_path = main(grid, start, goal)
+    
+>       assert actual_path == expected_path, f"Expected {expected_path}, but got {actual_path}"
+E       AssertionError: Expected [(0, 0), (0, 1), (0, 2), (0, 3), (1, 3), (2, 3), (3, 3)], but got [(0, 0), (0, 1), (0, 2), (1, 2), (2, 2), (2, 3), (3, 3)]
+E       assert [(0, 0), (0, ..., (2, 3), ...] == [(0, 0), (0, ..., (2, 3), ...]
+E         
+E         At index 3 diff: (1, 2) != (0, 3)
+E         Use -v to get more diff
+
+test_app.py:50: AssertionError
+
+---------- coverage: platform linux, python 3.10.12-final-0 ----------
+Name          Stmts   Miss  Cover
+---------------------------------
+app.py           49      1    98%
+test_app.py      22      0   100%
+---------------------------------
+TOTAL            71      1    99%
+Coverage XML written to file coverage.xml
+
+=========================== short test summary info ============================
+FAILED test_app.py::test_start_and_goal_opposite_corners - AssertionError: Ex...
+========================= 1 failed, 2 passed in 0.04s ==========================
+=========
+
+
+`stderr` output when running the tests:
+========= 
+
+=========
+
+
+Short and concise analysis of why the test run failed, and and recommended Fixes (dont add any other information):

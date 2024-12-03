@@ -1,3 +1,9 @@
 {
-    "CodeGPT.apiKey": "CodeGPT Plus Beta"
+  "CodeGPT.apiKey": "CodeGPT Plus Beta",
+  "liveServer.settings.https": {
+    "passphrase": "true",
+    "key": "true",
+    "cert": "true",
+    "enable": 1
+  }
 }
