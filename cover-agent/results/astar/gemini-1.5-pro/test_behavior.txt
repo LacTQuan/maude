@@ -1,0 +1,9 @@
+Test Behavior: Test the case where the goal is outside the grid boundaries.
+The expected result is that no path is found.
+
+Test Behavior: Tests the printing functions and main execution flow.
+
+Test Behavior: Test the case where an error occurs during path reconstruction (parent not found).
+This covers the lines inside the convert_closed_list_to_path function
+that handle the error case.
+

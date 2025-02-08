@@ -1,0 +1,570 @@
+```yaml
+language: python
+testing_framework: pytest
+number_of_tests: 4
+test_headers_indentation: 0
+```
+```yaml
+language: python
+testing_framework: pytest
+number_of_tests: 3
+relevant_line_number_to_insert_tests_after: 69
+relevant_line_number_to_insert_imports_after: 8
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_no_path():
+new_tests:
+- test_behavior: |
+    Test the case where the goal is outside the grid boundaries.
+    The expected result is that no path should be found.
+  lines_to_cover: |
+    [26, 124, 125, 139, 140]
+  test_name: |
+    test_goal_outside_grid
+  test_code: |
+    def test_goal_outside_grid():
+        grid = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(1, 1)
+        goal = Node(3, 3)  # Outside the grid
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "Path should not be found when the goal is outside the grid"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the case where the grid is empty.
+    The expected result is that no path should be found.
+  lines_to_cover: |
+    [151, 155, 156]
+  test_name: |
+    test_empty_grid
+  test_code: |
+    def test_empty_grid():
+        grid = []
+        start = Node(0, 0)
+        goal = Node(0, 0)
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found in an empty grid"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the case where the grid has obstacles surrounding the start node.
+    The expected result is that no path should be found.
+  lines_to_cover: |
+    [171, 172, 173]
+  test_name: |
+    test_obstacles_around_start
+  test_code: |
+    def test_obstacles_around_start():
+        grid = [
+            [1, 1, 1],
+            [1, 0, 1],
+            [1, 1, 1]
+        ]
+        start = Node(1, 1)
+        goal = Node(2, 2)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found when obstacles surround the start"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_no_path():
+new_tests:
+- test_behavior: |
+    Test the case where the grid is empty.
+    The expected result is that no path should be found.
+  lines_to_cover: |
+    [151, 155, 156]
+  test_name: |
+    test_empty_grid
+  test_code: |
+    def test_empty_grid():
+        grid = []
+        start = Node(0, 0)
+        goal = Node(0, 0)
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found in an empty grid"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test the case where the grid has obstacles surrounding the start node.
+    The expected result is that no path should be found.
+  lines_to_cover: |
+    [171, 172, 173]
+  test_name: |
+    test_obstacles_around_start
+  test_code: |
+    def test_obstacles_around_start():
+        grid = [
+            [1, 1, 1],
+            [1, 0, 1],
+            [1, 1, 1]
+        ]
+        start = Node(1, 1)
+        goal = Node(2, 2)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found when obstacles surround the start"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test the case where the goal is unreachable due to obstacles.
+    The expected result is that no path should be found.
+  lines_to_cover: |
+    [171, 172, 173]
+  test_name: |
+    test_goal_unreachable
+  test_code: |
+    def test_goal_unreachable():
+        grid = [
+            [0, 1, 0],
+            [0, 1, 0],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(1, 1)  # Blocked by obstacles
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found when the goal is unreachable"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test the case where the grid is empty.
+    The expected result is that no path should be found.
+  lines_to_cover: |
+    [151, 155, 156]
+  test_name: |
+    test_empty_grid
+  test_code: |
+    def test_empty_grid():
+        grid = []
+        start = Node(0, 0)
+        goal = Node(0, 0)
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found in an empty grid"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the case where the grid has obstacles surrounding the goal node.
+    The expected result is that no path should be found.
+  lines_to_cover: |
+    [171, 172, 173]
+  test_name: |
+    test_obstacles_around_goal
+  test_code: |
+    def test_obstacles_around_goal():
+        grid = [
+            [0, 0, 0],
+            [0, 1, 0],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(1, 1)  # Blocked by obstacles
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found when the goal is surrounded by obstacles"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the case where the grid has obstacles surrounding the start node.
+    The expected result is that no path should be found.
+  lines_to_cover: |
+    [171, 172, 173]
+  test_name: |
+    test_obstacles_around_start
+  test_code: |
+    def test_obstacles_around_start():
+        grid = [
+            [1, 1, 1],
+            [1, 0, 1],
+            [1, 1, 1]
+        ]
+        start = Node(1, 1)
+        goal = Node(2, 2)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found when obstacles surround the start"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test the case where the grid is empty.
+    The expected result is that no path should be found.
+  lines_to_cover: |
+    [151, 155, 156]
+  test_name: |
+    test_empty_grid
+  test_code: |
+    def test_empty_grid():
+        grid = []
+        start = Node(0, 0)
+        goal = Node(0, 0)
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found in an empty grid"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test the case where the grid has obstacles surrounding the goal node.
+    The expected result is that no path should be found.
+  lines_to_cover: |
+    [171, 172, 173]
+  test_name: |
+    test_obstacles_around_goal
+  test_code: |
+    def test_obstacles_around_goal():
+        grid = [
+            [0, 0, 0],
+            [1, 1, 1],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(1, 1)  # Blocked by obstacles
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found when the goal is surrounded by obstacles"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test the case where the grid has obstacles surrounding the start node.
+    The expected result is that no path should be found.
+  lines_to_cover: |
+    [171, 172, 173]
+  test_name: |
+    test_obstacles_around_start
+  test_code: |
+    def test_obstacles_around_start():
+        grid = [
+            [1, 1, 1],
+            [1, 0, 1],
+            [1, 1, 1]
+        ]
+        start = Node(1, 1)
+        goal = Node(2, 2)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found when obstacles surround the start"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test the case where the goal is unreachable due to obstacles.
+    The expected result is that no path should be found.
+  lines_to_cover: |
+    [171, 172, 173]
+  test_name: |
+    test_goal_unreachable
+  test_code: |
+    def test_goal_unreachable():
+        grid = [
+            [0, 1, 0],
+            [0, 1, 0],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(1, 1)  # Blocked by obstacles
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found when the goal is unreachable"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test the case where the grid is empty.
+    The expected result is that no path should be found.
+  lines_to_cover: |
+    [151, 155, 156]
+  test_name: |
+    test_empty_grid
+  test_code: |
+    def test_empty_grid():
+        grid = []
+        start = Node(0, 0)
+        goal = Node(0, 0)
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found in an empty grid"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the case where the goal is unreachable due to obstacles.
+    The expected result is that no path should be found.
+  lines_to_cover: |
+    [171, 172, 173]
+  test_name: |
+    test_goal_unreachable
+  test_code: |
+    def test_goal_unreachable():
+        grid = [
+            [0, 1, 0],
+            [0, 1, 0],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(1, 1)  # Blocked by obstacles
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found when the goal is unreachable"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the case where the grid has obstacles surrounding the goal node.
+    The expected result is that no path should be found.
+  lines_to_cover: |
+    [171, 172, 173]
+  test_name: |
+    test_obstacles_around_goal
+  test_code: |
+    def test_obstacles_around_goal():
+        grid = [
+            [0, 0, 0],
+            [1, 1, 1],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(1, 1)  # Blocked by obstacles
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found when the goal is surrounded by obstacles"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test the case where the grid is empty.
+    The expected result is that no path should be found.
+  lines_to_cover: |
+    [151, 155, 156]
+  test_name: |
+    test_empty_grid
+  test_code: |
+    def test_empty_grid():
+        grid = []
+        start = Node(0, 0)
+        goal = Node(0, 0)
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test the case where the goal is unreachable due to obstacles.
+    The expected result is that no path should be found.
+  lines_to_cover: |
+    [171, 172, 173]
+  test_name: |
+    test_goal_unreachable
+  test_code: |
+    def test_goal_unreachable():
+        grid = [
+            [0, 1, 0],
+            [0, 1, 0],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(1, 1)  # Blocked by obstacles
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test the case where the grid has obstacles surrounding the goal node.
+    The expected result is that no path should be found.
+  lines_to_cover: |
+    [171, 172, 173]
+  test_name: |
+    test_obstacles_around_goal
+  test_code: |
+    def test_obstacles_around_goal():
+        grid = [
+            [0, 0, 0],
+            [1, 1, 1],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(1, 1)  # Blocked by obstacles
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test the case where the grid is empty.
+    The expected result is that no path should be found.
+  lines_to_cover: |
+    [151, 155, 156]
+  test_name: |
+    test_empty_grid
+  test_code: |
+    def test_empty_grid():
+        grid = []
+        start = Node(0, 0)
+        goal = Node(0, 0)
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the case where the goal is unreachable due to obstacles.
+    The expected result is that no path should be found.
+  lines_to_cover: |
+    [171, 172, 173]
+  test_name: |
+    test_goal_unreachable
+  test_code: |
+    def test_goal_unreachable():
+        grid = [
+            [0, 1, 0],
+            [0, 1, 0],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(1, 1)  # Blocked by obstacles
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the case where the grid has obstacles surrounding the goal node.
+    The expected result is that no path should be found.
+  lines_to_cover: |
+    [171, 172, 173]
+  test_name: |
+    test_obstacles_around_goal
+  test_code: |
+    def test_obstacles_around_goal():
+        grid = [
+            [0, 0, 0],
+            [1, 1, 1],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(1, 1)  # Blocked by obstacles
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+```

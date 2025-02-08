@@ -1,0 +1,622 @@
+```yaml
+language: python
+testing_framework: pytest
+number_of_tests: 3
+test_headers_indentation: 0
+```
+
+```yaml
+language: python
+testing_framework: pytest
+number_of_tests: 3
+relevant_line_number_to_insert_tests_after: 69
+relevant_line_number_to_insert_imports_after: 2
+```
+
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test the case where the start and goal are the same.
+  lines_to_cover: |
+    [161, 162, 166, 167, 170, 171, 172, 175, 176, 178, 179, 181, 182, 183, 184]
+  test_name: |
+    test_start_equals_goal
+  test_code: |
+    def test_start_equals_goal():
+        n = 3
+        grid = [[0 for _ in range(n)] for _ in range(n)]
+        start = Node(0, 0, 0)
+        goal = Node(0, 0, 0)
+
+        start.id = start.x * n + start.y
+        start.pid = start.id
+        goal.id = goal.x * n + goal.y
+
+        grid[start.x][start.y] = 0
+        grid[goal.x][goal.y] = 0
+
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is True
+        assert len(path) == 1
+        assert path[0] == start
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Tests the path reconstruction when a parent node cannot be found, triggering the error handling within convert_closed_list_to_path.
+  lines_to_cover: |
+    [137, 138, 152, 153, 49]
+  test_name: |
+    test_invalid_parent
+  test_code: |
+    def test_invalid_parent():
+        grid = [[0, 0], [0, 0]]
+        start = Node(0, 0)
+        goal = Node(1, 1)
+        planner = Dijkstra(grid)
+
+        # Manually create a closed list with an invalid parent id
+        closed_list = {start, goal}
+        goal.pid = -1  # Invalid parent ID
+
+        # Call convert_closed_list_to_path directly with the manipulated closed list
+        path = planner.convert_closed_list_to_path(closed_list, start, goal)
+        assert path == []
+
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+```
+
+```yaml
+language: python
+existing_test_function_signature: def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test the case where the start and goal are the same.
+  lines_to_cover: |
+    [89, 90, 91, 92, 124, 129, 131, 132, 133, 134, 136, 140, 156, 157]
+  test_name: |
+    test_start_equals_goal
+  test_code: |
+    def test_start_equals_goal():
+        grid = [[0, 0], [0, 0]]
+        start = Node(0, 0)
+        goal = Node(0, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is True
+        assert len(path) == 1
+        assert path[0] == start
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the __repr__ method of the Node class.
+  lines_to_cover: |
+    [49]
+  test_name: |
+    test_node_repr
+  test_code: |
+    def test_node_repr():
+        node = Node(1, 2, 3, 4, 5)
+        assert repr(node) == "Node(x=1, y=2, cost=3, id=4, pid=5)"
+  new_imports_code: |
+    ""
+  test_tags: other
+- test_behavior: |
+    Test the scenario where an error occurs during path calculation due to a missing parent node.
+  lines_to_cover: |
+    [137, 138, 151, 152, 153]
+  test_name: |
+    test_missing_parent_node
+  test_code: |
+    def test_missing_parent_node():
+        grid = [[0, 0], [0, 0]]
+        start = Node(0, 0)
+        goal = Node(1, 1)
+        planner = Dijkstra(grid)
+
+        # Manually create a closed list with a valid start and goal, but modify the goal's parent ID to an invalid value
+        closed_list = {start, goal}
+        goal.pid = 2  # Invalid parent ID
+
+        path = planner.convert_closed_list_to_path(closed_list, start, goal)
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the main execution block. This test primarily targets the lines in the if __name__ == '__main__' block.
+  lines_to_cover: |
+    [161, 162, 166, 167, 170, 171, 172, 175, 176, 178, 179, 181, 182, 183, 184]
+  test_name: |
+    test_main_block
+  test_code: |
+    def test_main_block():
+        # Mocking random to control start and goal points for predictable testing
+        import random
+        random.randint = lambda a, b: 0  # Force start and goal to be (0, 0)
+
+        n = 2
+        grid = [[0 for _ in range(n)] for _ in range(n)]
+
+        start = Node(0, 0, 0)
+        goal = Node(0, 0, 0)
+
+        start.id = start.x * n + start.y
+        start.pid = start.id
+        goal.id = goal.x * n + goal.y
+
+        grid[start.x][start.y] = 0
+        grid[goal.x][goal.y] = 0
+
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found == True
+        assert len(path) == 1
+
+        # Restore original randint
+        import random
+        random.randint = __import__('random').randint
+
+  new_imports_code: |
+    ""
+  test_tags: other
+
+```
+```yaml
+language: python
+existing_test_function_signature: def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test the case where the start and goal are the same.
+  lines_to_cover: |
+    [89, 92, 124, 131, 132, 133, 134, 156, 157]
+  test_name: |
+    test_start_equals_goal
+  test_code: |
+    def test_start_equals_goal():
+        n = 3
+        grid = [[0 for _ in range(n)] for _ in range(n)]
+        start = Node(0, 0, 0)
+        goal = Node(0, 0, 0)
+
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is True
+        assert len(path) == 1
+        assert path[0] == start
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the __repr__ method of the Node class.
+  lines_to_cover: |
+    [48, 49]
+  test_name: |
+    test_node_repr
+  test_code: |
+    def test_node_repr():
+        node = Node(1, 2, 3, 4, 5)
+        expected_repr = "Node(x=1, y=2, cost=3, id=4, pid=5)"
+        assert repr(node) == expected_repr
+  new_imports_code: |
+    ""
+  test_tags: other
+- test_behavior: |
+    Test convert_closed_list_to_path when the goal is not in closed_list.
+  lines_to_cover: |
+    [136, 137, 138]
+  test_name: |
+    test_goal_not_in_closed_list
+  test_code: |
+    def test_goal_not_in_closed_list():
+        grid = [[0, 0], [0, 0]]
+        start = Node(0, 0)
+        goal = Node(1, 1)
+        planner = Dijkstra(grid)
+        closed_list = {start}  # Goal is intentionally excluded
+
+        path = planner.convert_closed_list_to_path(closed_list, start, goal)
+        assert path == []
+
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test main execution with random start and goal.
+  lines_to_cover: |
+    [161, 162, 166, 167, 170, 171, 172, 175, 176, 178, 179, 181, 182, 183, 184]
+  test_name: |
+    test_main_random
+  test_code: |
+    def test_main_random():
+        n = 3  # Reduced size for faster testing
+        grid = [[0 for _ in range(n)] for _ in range(n)]
+
+        start = Node(0, 0, 0)
+        goal = Node(2, 2, 0)
+
+        start.id = start.x * n + start.y
+        start.pid = start.id
+        goal.id = goal.x * n + goal.y
+
+        grid[start.x][start.y] = 0
+        grid[goal.x][goal.y] = 0
+
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        # Just check if the planner returns without error
+        assert True  # Placeholder assertion, replace with more meaningful checks if needed
+  new_imports_code: |
+    ""
+  test_tags: happy path
+```
+```yaml
+language: python
+existing_test_function_signature: def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test the case where the start and goal are the same.
+  lines_to_cover: |
+    [89, 90, 91, 92, 122, 129, 131, 132, 133, 134, 136, 140, 156, 157]
+  test_name: |
+    test_start_equals_goal
+  test_code: |
+    def test_start_equals_goal():
+        grid = [[0, 0], [0, 0]]
+        start = Node(0, 0)
+        goal = Node(0, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is True
+        assert len(path) == 1
+        assert path[0] == start
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the __repr__ method of the Node class.
+  lines_to_cover: |
+    [49]
+  test_name: |
+    test_node_repr
+  test_code: |
+    def test_node_repr():
+        node = Node(1, 2, 3, 4, 5)
+        assert repr(node) == "Node(x=1, y=2, cost=3, id=4, pid=5)"
+  new_imports_code: |
+    ""
+  test_tags: other
+- test_behavior: |
+    Test the scenario where an error occurs during path calculation due to a missing parent node.
+  lines_to_cover: |
+    [137, 138, 152, 153]
+  test_name: |
+    test_missing_parent_node
+  test_code: |
+    def test_missing_parent_node():
+        grid = [[0, 0], [0, 0]]
+        start = Node(0, 0)
+        goal = Node(1, 1)
+        planner = Dijkstra(grid)
+
+        # Manually create a closed list with a goal but no parent
+        closed_list = {goal}
+        goal.pid = 0
+
+        path = planner.convert_closed_list_to_path(closed_list, start, goal)
+        assert path == []
+
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Covers the main execution block, including random start/goal generation and obstacle avoidance.
+  lines_to_cover: |
+    [161, 162, 166, 167, 170, 171, 172, 175, 176, 178, 179, 181, 182, 183, 184]
+  test_name: |
+    test_main_block_execution
+  test_code: |
+    def test_main_block_execution():
+        n = 3
+        grid = [[0 for _ in range(n)] for _ in range(n)]
+        grid[1][1] = 1  # Add an obstacle
+
+        start = Node(0, 0, 0)
+        goal = Node(2, 2, 0)
+
+        start.id = start.x * n + start.y
+        start.pid = start.id
+        goal.id = goal.x * n + goal.y
+
+        grid[start.x][start.y] = 0
+        grid[goal.x][goal.y] = 0
+
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        # Assertions based on the obstacle placement
+        assert found is True
+        assert len(path) > 0
+
+
+  new_imports_code: |
+    ""
+  test_tags: happy path
+```
+```yaml
+language: python
+existing_test_function_signature: def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test the case where the start and goal are the same.
+  lines_to_cover: |
+    [89, 92, 124, 131, 132, 133, 134, 156, 157]
+  test_name: |
+    test_start_equals_goal
+  test_code: |
+    def test_start_equals_goal():
+        grid = [[0, 0], [0, 0]]
+        start = Node(0, 0)
+        goal = Node(0, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is True
+        assert len(path) == 1
+        assert path[0] == start
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the __repr__ method of the Node class.
+  lines_to_cover: |
+    [49]
+  test_name: |
+    test_node_repr
+  test_code: |
+    def test_node_repr():
+        node = Node(1, 2, 3, 4, 5)
+        assert repr(node) == "Node(x=1, y=2, cost=3, id=4, pid=5)"
+  new_imports_code: |
+    ""
+  test_tags: other
+- test_behavior: |
+    Test the scenario where an error occurs during path calculation due to a missing parent node.
+  lines_to_cover: |
+    [137, 138, 152, 153]
+  test_name: |
+    test_missing_parent_node
+  test_code: |
+    def test_missing_parent_node():
+        grid = [[0, 0], [0, 0]]
+        start = Node(0, 0)
+        goal = Node(1, 1)
+        planner = Dijkstra(grid)
+
+        # Manually create a closed list with an invalid parent id
+        closed_list = {start, goal}
+        goal.pid = 2 # Parent ID exists in terms of value, but not as a node
+
+        # Call convert_closed_list_to_path directly with the manipulated closed list
+        path = planner.convert_closed_list_to_path(closed_list, start, goal)
+        assert path == []
+
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Covers the main execution block, including random start/goal generation and obstacle avoidance.
+  lines_to_cover: |
+    [161, 162, 166, 167, 170, 171, 172, 175, 176, 178, 179, 181, 182, 183, 184]
+  test_name: |
+    test_main_block_execution
+  test_code: |
+    def test_main_block_execution():
+        n = 3
+        grid = [[0 for _ in range(n)] for _ in range(n)]
+        grid[1][1] = 1  # Add an obstacle
+
+        start = Node(0, 0, 0)
+        goal = Node(2, 2, 0)
+
+        start.id = start.x * n + start.y
+        start.pid = start.id
+        goal.id = goal.x * n + goal.y
+
+        grid[start.x][start.y] = 0
+        grid[goal.x][goal.y] = 0
+
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is True
+        assert len(path) > 0
+
+  new_imports_code: |
+    ""
+  test_tags: happy path
+```
+```yaml
+language: python
+existing_test_function_signature: def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test the case where the start and goal are the same.
+  lines_to_cover: |
+    [89, 90, 91, 92, 159, 161, 162, 166, 167, 170, 171, 172, 175, 176, 178, 179, 181, 182, 183, 184]
+  test_name: |
+    test_start_equals_goal
+  test_code: |
+    def test_start_equals_goal():
+        n = 3
+        grid = [[0 for _ in range(n)] for _ in range(n)]
+        start = Node(0, 0, 0)
+        goal = Node(0, 0, 0)
+
+        start.id = start.x * n + start.y
+        start.pid = start.id
+        goal.id = goal.x * n + goal.y
+
+        grid[start.x][start.y] = 0
+        grid[goal.x][goal.y] = 0
+
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is True
+        assert len(path) == 1
+        assert path[0] == start
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Tests the scenario where the goal is unreachable due to obstacles surrounding it.
+  lines_to_cover: |
+    [79, 80, 82, 85, 98, 99, 100, 101, 103, 104, 111, 112, 114, 115, 117, 119, 122, 159, 161, 162, 166, 167, 170, 171, 172, 175, 176, 178, 179, 181, 182, 183, 184]
+  test_name: |
+    test_goal_unreachable
+  test_code: |
+    def test_goal_unreachable():
+        grid = [
+            [0, 0, 0],
+            [0, 1, 0],
+            [0, 1, 0]
+        ]
+        start = Node(0, 0, 0)
+        goal = Node(2, 1, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    This test aims to cover the error handling within the convert_closed_list_to_path function. \
+    It creates a scenario where no node in the closed list matches the goal's coordinates, \
+    forcing the function to return an empty path and print an error message (though we don't assert on the message itself).
+  lines_to_cover: |
+    [49, 131, 132, 133, 134, 136, 137, 138]
+  test_name: |
+    test_convert_closed_list_to_path_no_goal
+  test_code: |
+    def test_convert_closed_list_to_path_no_goal():
+        grid = [[0, 0], [0, 0]]
+        start = Node(0, 0)
+        goal = Node(1, 1)
+        planner = Dijkstra(grid)
+
+        # Manually create a closed list without the goal node
+        closed_list = {start, Node(0,1)}
+
+        # Call convert_closed_list_to_path directly with the manipulated closed list
+        path = planner.convert_closed_list_to_path(closed_list, start, goal)
+        assert path == []
+
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+```
+```yaml
+language: python
+existing_test_function_signature: def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test the case where the start and goal are the same.
+    This covers the case where the path is found immediately.
+  lines_to_cover: |
+    [89, 90, 91, 92, 131, 132, 133, 134, 156, 157]
+  test_name: |
+    test_start_equals_goal
+  test_code: |
+    def test_start_equals_goal():
+        grid = [[0, 0], [0, 0]]
+        start = Node(0, 0)
+        goal = Node(0, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is True
+        assert len(path) == 1
+        assert path[0] == start
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the __repr__ method of the Node class.
+  lines_to_cover: |
+    [49]
+  test_name: |
+    test_node_repr
+  test_code: |
+    def test_node_repr():
+        node = Node(1, 2, 3, 4, 5)
+        assert repr(node) == "Node(x=1, y=2, cost=3, id=4, pid=5)"
+  new_imports_code: |
+    ""
+  test_tags: other
+- test_behavior: |
+    Test the case where convert_closed_list_to_path fails to find the goal in the closed list.
+  lines_to_cover: |
+    [136, 137, 138]
+  test_name: |
+    test_goal_not_in_closed_list
+  test_code: |
+    def test_goal_not_in_closed_list():
+        grid = [[0, 0], [0, 0]]
+        start = Node(0, 0)
+        goal = Node(1, 1)
+        planner = Dijkstra(grid)
+        closed_list = {start}  # Goal is not in closed list
+
+        path = planner.convert_closed_list_to_path(closed_list, start, goal)
+        assert path == []
+
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    This test aims to cover the lines in the main execution block, specifically focusing on the scenario where a path is not found.
+  lines_to_cover: |
+    [161, 162, 166, 167, 170, 171, 172, 175, 176, 178, 179, 181, 182, 183, 184]
+  test_name: |
+    test_no_path_main_block
+  test_code: |
+    def test_no_path_main_block():
+        n = 2
+        grid = [[0, 1], [1, 0]]
+        start = Node(0, 0, 0)
+        goal = Node(1, 1, 0)
+
+        start.id = start.x * n + start.y
+        start.pid = start.id
+        goal.id = goal.x * n + goal.y
+
+        grid[start.x][start.y] = 0
+        grid[goal.x][goal.y] = 0
+
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+        assert not found
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: other
+
+```

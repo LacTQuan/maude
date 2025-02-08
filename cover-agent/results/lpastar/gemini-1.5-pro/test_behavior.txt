@@ -1,0 +1,16 @@
+Test Behavior: Tests the scenario where random obstacles are created and detected.
+
+Test Behavior: Tests the main routine's execution and path printing.
+
+Test Behavior: Tests the scenario where no path exists due to obstacles. This also covers the 'else' branch in compute_shortest_path.
+
+Test Behavior: Tests the case where the LazyPQ raises a KeyError when popping from an empty queue.
+
+Test Behavior: Tests the LPA* planner with dynamic obstacles added at specific times.
+
+Test Behavior: Tests the scenario where remove is called on LazyPQ.
+
+Test Behavior: Tests the case where no valid predecessor is found when reconstructing the path.
+
+Test Behavior: Tests the main routine's execution with controlled start and goal.
+

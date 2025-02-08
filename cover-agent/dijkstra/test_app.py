@@ -1,32 +1,83 @@
-from app import main
-def test_main():
-    # Helper functions
-    def is_obstacle(node):
-        obstacles = {(1, 1), (1, 2), (2, 3), (3, 1)}  # Obstacles based on the grid layout
-        return node in obstacles
+import pytest
+from app import Node, Dijkstra
 
-    def successors(node):
-        x, y = node
-        directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]  # Right, Down, Left, Up
-        neighbors = [(x + dx, y + dy) for dx, dy in directions]
-        return [(nx, ny) for nx, ny in neighbors if 0 <= nx < 5 and 0 <= ny < 5]  # Stay within bounds
+def test_simple_path():
+    """
+    Test case 1:
+    A simple 3x3 grid with no obstacles. The start is at (0,0) and the goal is at (2,2).
+    We expect the planner to find a path.
+    Note: The returned path is in reverse order (goal to start).
+    """
+    grid = [
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0]
+    ]
+    start = Node(0, 0, 0)
+    goal = Node(2, 2, 0)
+    planner = Dijkstra(grid)
+    found, path = planner.plan(start, goal)
+    
+    assert found is True, "Path should be found in a clear grid."
+    # Check that the path starts at the goal and ends at the start.
+    assert path[0] == goal, "Path should start with the goal node."
+    assert path[-1] == start, "Path should end with the start node."
+    # Optionally, check that the length of the path is reasonable (at least Manhattan distance + 1)
+    manhattan_distance = abs(goal.x - start.x) + abs(goal.y - start.y)
+    assert len(path) >= manhattan_distance + 1
 
-    def distance(node1, node2):
-        x1, y1 = node1
-        x2, y2 = node2
-        return abs(x1 - x2) + abs(y1 - y2)  # Manhattan distance
+def test_no_path():
+    """
+    Test case 2:
+    A 3x3 grid where the start is completely blocked off.
+    Start is at (0,0) and obstacles are placed so that there is no valid move.
+    The planner should return that no path is found.
+    """
+    grid = [
+        [0, 1, 0],
+        [1, 1, 0],
+        [0, 0, 0]
+    ]
+    start = Node(0, 0, 0)
+    goal = Node(2, 2, 0)
+    planner = Dijkstra(grid)
+    found, path = planner.plan(start, goal)
 
-    # Test parameters
-    start = (0, 0)
-    goal = (4, 4)
+    assert found is False, "No path should be found if the start is blocked."
+    assert path == [], "Path should be empty when no path is found."
 
-    # Run the function
-    result = main(start, goal, is_obstacle, successors, distance)
+def test_obstacle_detour():
+    """
+    Test case 3:
+    A 3x3 grid with a vertical obstacle in the middle.
+    The start is at (0,0) and the goal is at (2,2). A detour is required.
+    We expect the planner to find a valid path.
+    """
+    grid = [
+        [0, 1, 0],
+        [0, 1, 0],
+        [0, 0, 0]
+    ]
+    start = Node(0, 0, 0)
+    goal = Node(2, 2, 0)
+    planner = Dijkstra(grid)
+    found, path = planner.plan(start, goal)
 
-    # Expected path: [(0, 0), (0, 1), (0, 2), (0, 3), (1, 3), (2, 3), (3, 3), (4, 4)]
-    print("Resulting Path:", result)
-    expected_path = [(0, 0), (0, 1), (0, 2), (0, 3), (1, 3), (2, 3), (3, 3), (4, 4)]
-    assert result == expected_path, f"Expected {expected_path}, but got {result}"
+    assert found is True, "A path should be found around the obstacle."
+    assert path[0] == goal, "Path should start with the goal node."
+    assert path[-1] == start, "Path should end with the start node."
 
-# Execute the test
-test_main()
+
+def test_invalid_parent():
+    grid = [[0, 0], [0, 0]]
+    start = Node(0, 0)
+    goal = Node(1, 1)
+    planner = Dijkstra(grid)
+
+    # Manually create a closed list with an invalid parent id
+    closed_list = {start, goal}
+    goal.pid = -1  # Invalid parent ID
+
+    # Call convert_closed_list_to_path directly with the manipulated closed list
+    path = planner.convert_closed_list_to_path(closed_list, start, goal)
+    assert path == []

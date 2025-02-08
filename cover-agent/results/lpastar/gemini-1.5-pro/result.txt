@@ -1,0 +1,700 @@
+```yaml
+language: python
+testing_framework: pytest
+number_of_tests: 3
+test_headers_indentation: 0
+```
+
+```yaml
+language: python
+testing_framework: pytest
+number_of_tests: 3
+relevant_line_number_to_insert_tests_after: 53
+relevant_line_number_to_insert_imports_after: 12
+```
+
+```yaml
+language: python
+existing_test_function_signature: def test_path_found():
+new_tests:
+- test_behavior: |
+    Tests the scenario where random obstacles are created during planning.
+  lines_to_cover: |
+    [177, 178, 265, 266, 267, 268, 269, 336, 337]
+  test_name: test_random_obstacles
+  test_code: |
+    def test_random_obstacles():
+        n = 5
+        grid = [[0 for _ in range(n)] for _ in range(n)]
+        start = Node(0, 0)
+        goal = Node(n - 1, n - 1)
+        planner = LPAStar(grid)
+        planner.max_time_step = 5  # Allow some time for obstacles to appear
+        planner.set_dynamic_obstacles(True) # Enable random obstacles
+        found, path = planner.plan(start, goal)
+        # Assert that the plan function completes. The path may or may not be found depending on the random obstacles.
+        assert True
+  new_imports_code: ""
+  test_tags: other
+- test_behavior: |
+    Tests the scenario where obstacles are discovered at specific timesteps.
+  lines_to_cover: |
+    [259, 260, 261, 262, 263]
+  test_name: test_time_discovered_obstacles
+  test_code: |
+    def test_time_discovered_obstacles():
+        n = 5
+        grid = [[0 for _ in range(n)] for _ in range(n)]
+        start = Node(0, 0)
+        goal = Node(n - 1, n - 1)
+
+        time_discovered_obstacles = {
+            1: [Node(1, 1)],
+            2: [Node(2, 2)],
+        }
+
+        planner = LPAStar(grid)
+        planner.max_time_step = 3
+        planner.set_dynamic_obstacles(False, time_discovered_obstacles)
+        found, path = planner.plan(start, goal)
+        # Assert that the plan function completes. The path may or may not be found depending on the obstacles.
+        assert True
+
+  new_imports_code: ""
+  test_tags: edge case
+- test_behavior: |
+    Tests the case where no valid predecessor is found when constructing the path.
+  lines_to_cover: |
+    [275, 296]
+  test_name: test_no_predecessor
+  test_code: |
+    def test_no_predecessor():
+        n = 5
+        grid = [[0 for _ in range(n)] for _ in range(n)]
+        # Completely surround the goal with obstacles
+        for i in range(n):
+            grid[n-2][i] = 1
+            grid[n-1][i] = 1
+        grid[n-1][n-1] = 0 # Goal is reachable, but no path back to start
+        start = Node(0, 0)
+        goal = Node(n - 1, n - 1)
+        planner = LPAStar(grid)
+        planner.max_time_step = 1
+        found, path = planner.plan(start, goal)
+        assert True # Test that the function completes without error
+  new_imports_code: ""
+  test_tags: edge case
+- test_behavior: |
+    Tests the main routine execution and path printing.
+  lines_to_cover: |
+    [85, 90, 91, 92, 93, 348, 349, 350, 353, 354, 355, 356, 357, 358, 361, 362, 364, 365, 366, 369, 376, 377, 378, 379]
+  test_name: test_main_routine
+  test_code: |
+    def test_main_routine():
+        # Mock the random functions to ensure deterministic behavior
+        import random
+        random_values = [0, 0, 4, 4]  # Predefined values for start and goal
+        def mock_randint(a, b):
+            return random_values.pop(0)
+
+        random.randint = mock_randint
+
+        # Redirect stdout to capture print output
+        import io
+        from contextlib import redirect_stdout
+
+        f = io.StringIO()
+        with redirect_stdout(f):
+            # Execute the main part of the script
+            import app # Import app to run __main__ block
+        
+        # Basic checks to ensure the main routine ran without errors
+        assert True
+
+  new_imports_code: ""
+  test_tags: other
+
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_path_found():
+new_tests:
+- test_behavior: |
+    Tests the scenario where random obstacles are created and detected.
+  lines_to_cover: |
+    [177, 178, 259, 260, 261, 262, 263, 265, 266, 267, 268, 269, 336, 337]
+  test_name: |
+    test_random_obstacles
+  test_code: |
+    def test_random_obstacles():
+        n = 5
+        grid = [[0 for _ in range(n)] for _ in range(n)]
+        start = Node(0, 0)
+        goal = Node(n-1, n-1)
+        planner = LPAStar(grid)
+        planner.max_time_step = 5  # Allow multiple time steps for obstacle generation
+        planner.set_dynamic_obstacles(True) # Enable random obstacle creation
+        found, path = planner.plan(start, goal)
+        # Assertions should focus on the behavior, not specific path details which can vary randomly.
+        # For example, check if the planner handles the random obstacles gracefully without errors.
+        assert isinstance(found, bool)  # Check if the function returns a boolean value
+        assert isinstance(path, list) # Check if the function returns a list
+
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Tests the main routine's execution and path printing.
+  lines_to_cover: |
+    [348, 349, 350, 353, 354, 355, 356, 357, 358, 361, 362, 364, 365, 366, 369, 376, 377, 378, 379]
+  test_name: |
+    test_main_routine
+  test_code: |
+    def test_main_routine():
+        # Mock the random functions to control start and goal positions.
+        import random
+        random.randint = lambda a, b: 0  # Force start and goal to (0, 0)
+
+        # Capture printed output to verify path printing.
+        import io
+        from contextlib import redirect_stdout
+        f = io.StringIO()
+        with redirect_stdout(f):
+            import app # Import the module to run the main routine.
+        out = f.getvalue()
+        assert "Path from start to goal:" in out
+
+  new_imports_code: |
+    ""
+  test_tags: happy path
+- test_behavior: |
+    Tests the scenario where no path exists due to obstacles. This also covers the 'else' branch in compute_shortest_path.
+  lines_to_cover: |
+    [251, 252, 253, 254, 296]
+  test_name: |
+    test_no_path_complex
+  test_code: |
+    def test_no_path_complex():
+        # Create a 5x5 grid.
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        # Completely surround the start node with obstacles.
+        grid[0][1] = 1
+        grid[1][0] = 1
+        grid[1][1] = 1
+        start = Node(0, 0)
+        goal = Node(4, 4)
+        planner = LPAStar(grid)
+        planner.max_time_step = 1  # limit iterations for testing
+        found, path = planner.plan(start, goal)
+        # With the start node boxed in, no path should be found.
+        assert found is False
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Tests the case where the LazyPQ raises a KeyError when popping from an empty queue.
+  lines_to_cover: |
+    [122, 142]
+  test_name: |
+    test_lazy_pq_remove_and_top
+  test_code: |
+    def test_lazy_pq_remove_and_top():
+        pq = LazyPQ()
+        node = Node(0, 0)
+        pq.insert(node, 1)
+        pq.remove(node)
+        with pytest.raises(KeyError):
+            pq.top()
+  new_imports_code: |
+    import pytest
+  test_tags: edge case
+
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_path_found():
+new_tests:
+- test_behavior: |
+    Tests the LPA* planner with dynamic obstacles added at specific times.
+  lines_to_cover: |
+    [259, 260, 261, 262, 263]
+  test_name: |
+    test_dynamic_obstacles
+  test_code: |
+    def test_dynamic_obstacles():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        start = Node(0, 0)
+        goal = Node(4, 4)
+        planner = LPAStar(grid)
+        planner.max_time_step = 5
+        time_discovered_obstacles = {
+            1: [Node(1, 1)],
+            2: [Node(2, 2)],
+            3: [Node(3, 3)]
+        }
+        planner.set_dynamic_obstacles(False, time_discovered_obstacles)
+        found, path = planner.plan(start, goal)
+        assert isinstance(found, bool)
+        assert isinstance(path, list)
+
+- test_behavior: |
+    Tests the scenario where remove is called on LazyPQ.
+  lines_to_cover: |
+    [122]
+  test_name: |
+    test_lazy_pq_remove_existing
+  test_code: |
+    def test_lazy_pq_remove_existing():
+        pq = LazyPQ()
+        node1 = Node(0, 0)
+        node2 = Node(1, 1)
+        pq.insert(node1, 1)
+        pq.insert(node2, 2)
+        pq.remove(node1)
+        assert not pq.is_element_in_struct(node1)
+        assert pq.is_element_in_struct(node2)
+        popped_entry = pq.pop()
+        assert popped_entry.node == node2
+
+
+- test_behavior: |
+    Tests the case where no valid predecessor is found when reconstructing the path.
+  lines_to_cover: |
+    [296]
+  test_name: |
+    test_no_valid_predecessor
+  test_code: |
+    def test_no_valid_predecessor():
+        grid = [[0 for _ in range(3)] for _ in range(3)]
+        grid[0][1] = 1
+        grid[1][0] = 1
+        grid[1][1] = 1
+        start = Node(0, 0)
+        goal = Node(2, 2)
+        planner = LPAStar(grid)
+        planner.max_time_step = 1
+        found, path = planner.plan(start, goal)
+        assert found is False
+
+
+- test_behavior: |
+    Tests the main routine's execution with controlled start and goal.
+  lines_to_cover: |
+    [348, 349, 350, 353, 354, 355, 356, 357, 358, 361, 362, 364, 365, 366, 369, 376, 377, 378, 379]
+  test_name: |
+    test_main_routine_execution
+  test_code: |
+    def test_main_routine_execution():
+        import random
+        random.randint = lambda a, b: 0  # Force start and goal to (0, 0)
+        import app
+        assert isinstance(app.grid, list) # Check if grid is created
+        assert isinstance(app.start, app.Node) # Check if start node is created
+        assert isinstance(app.goal, app.Node) # Check if goal node is created
+
+  new_imports_code: |
+    ""
+  test_tags: happy path
+```
+```yaml
+language: python
+existing_test_function_signature: def test_path_found():
+new_tests:
+- test_behavior: |
+    Tests the scenario where no valid predecessor is found when reconstructing the path (line 296).
+    This test creates a grid where the start node is completely surrounded by obstacles,
+    making it impossible to find a valid predecessor during path reconstruction.
+  lines_to_cover: |
+    [296]
+  test_name: |
+    test_no_valid_predecessor_in_path_reconstruction
+  test_code: |
+    def test_no_valid_predecessor_in_path_reconstruction():
+        grid = [[0 for _ in range(3)] for _ in range(3)]
+        grid[0][1] = 1
+        grid[1][0] = 1
+        grid[1][1] = 1
+        start = Node(0, 0)
+        goal = Node(2, 2)
+        planner = LPAStar(grid)
+        planner.max_time_step = 1
+        found, path = planner.plan(start, goal)
+        assert found is False
+        assert path == []
+  new_imports_code: |
+    from app import LPAStar, Node
+  test_tags: edge case
+- test_behavior: |
+    Tests the C function when s1 and s2 are obstacles (line 209).
+    This test ensures that the C function returns infinity when either s1 or s2 is an obstacle.
+  lines_to_cover: |
+    [209]
+  test_name: |
+    test_c_function_with_obstacles
+  test_code: |
+    def test_c_function_with_obstacles():
+        grid = [[0 for _ in range(3)] for _ in range(3)]
+        start = Node(0, 0)
+        goal = Node(2, 2)
+        planner = LPAStar(grid)
+        planner.motions = planner.get_motion() # Initialize motions
+        grid[0][0] = 1 # Make start an obstacle
+        assert planner.C(start, goal) == math.inf
+        grid[0][0] = 0 # Restore start
+        grid[2][2] = 1 # Make goal an obstacle
+        assert planner.C(start, goal) == math.inf
+  new_imports_code: |
+    from app import LPAStar, Node
+    import math
+  test_tags: edge case
+- test_behavior: |
+    Tests the remove function of LazyPQ when removing an existing element.
+  lines_to_cover: |
+    [122]
+  test_name: |
+    test_lazy_pq_remove_existing
+  test_code: |
+    def test_lazy_pq_remove_existing():
+        pq = LazyPQ()
+        node1 = Node(0, 0)
+        node2 = Node(1, 1)
+        pq.insert(node1, 1)
+        pq.insert(node2, 2)
+        pq.remove(node1)
+        assert not pq.is_element_in_struct(node1)
+        assert pq.is_element_in_struct(node2)
+        popped_entry = pq.pop()
+        assert popped_entry.node == node2
+  new_imports_code: |
+    from app import LazyPQ, Node
+  test_tags: edge case
+- test_behavior: |
+    Tests the main routine's execution with controlled start and goal positions.
+    This test mocks the random functions to ensure specific start and goal positions,
+    allowing for deterministic testing of the main routine.
+  lines_to_cover: |
+    [348, 349, 350, 353, 354, 355, 356, 357, 358, 361, 362, 364, 365, 366, 369, 376, 377, 378, 379]
+  test_name: |
+    test_main_routine_execution
+  test_code: |
+    def test_main_routine_execution():
+        import random
+        random.randint = lambda a, b: 0  # Force start and goal to (0, 0)
+
+        # Initialize global variables as they would be in the main block
+        n = 11
+        grid = [[0 for _ in range(n)] for _ in range(n)]
+        start = Node(0, 0)
+        goal = Node(0, 0)
+
+        # Execute the main routine's logic
+        from app import make_grid, LPAStar, print_path, time_discovered_obstacles
+        make_grid(grid)
+        start.id = start.x * n + start.y
+        start.pid = start.id
+        goal.id = goal.x * n + goal.y
+        start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)
+        grid[start.x][start.y] = 0
+        grid[goal.x][goal.y] = 0
+        lpa_star = LPAStar(grid)
+        lpa_star.set_dynamic_obstacles(False, time_discovered_obstacles)
+        found, path_vector = lpa_star.plan(start, goal)
+        print_path(path_vector, start, goal, grid)
+
+        assert isinstance(grid, list)
+        assert isinstance(start, Node)
+        assert isinstance(goal, Node)
+        assert isinstance(found, bool)
+        assert isinstance(path_vector, list)
+  new_imports_code: |
+    from app import Node, make_grid, LPAStar, print_path, time_discovered_obstacles
+  test_tags: happy path
+
+```
+```yaml
+language: python
+existing_test_function_signature: def test_path_found():
+new_tests:
+- test_behavior: |
+    Tests the scenario where an obstacle is discovered on the current path.
+  lines_to_cover: |
+    [275]
+  test_name: |
+    test_obstacle_on_path
+  test_code: |
+    def test_obstacle_on_path():
+        grid = [[0 for _ in range(3)] for _ in range(3)]
+        start = Node(0, 0)
+        goal = Node(2, 2)
+        planner = LPAStar(grid)
+        planner.max_time_step = 2
+        time_discovered_obstacles = {
+            1: [Node(1, 1)]  # Obstacle discovered on the initial likely path
+        }
+        planner.set_dynamic_obstacles(False, time_discovered_obstacles)
+        found, path = planner.plan(start, goal)
+        assert isinstance(found, bool)
+        assert isinstance(path, list)
+  new_imports_code: |
+    from app import Node
+  test_tags: edge case
+- test_behavior: |
+    Tests the case where no valid predecessor is found when reconstructing the path.
+  lines_to_cover: |
+    [296]
+  test_name: |
+    test_no_valid_predecessor
+  test_code: |
+    def test_no_valid_predecessor():
+        grid = [[0 for _ in range(3)] for _ in range(3)]
+        # Completely block the start node.
+        grid[0][1] = 1
+        grid[1][0] = 1
+        grid[1][1] = 1
+        start = Node(0, 0)
+        goal = Node(2, 2)
+        planner = LPAStar(grid)
+        planner.max_time_step = 1
+        found, path = planner.plan(start, goal)
+        assert found is False
+        assert path == []
+  new_imports_code: |
+    from app import Node
+  test_tags: edge case
+- test_behavior: |
+    Tests the C function when s1 or s2 is an obstacle and when they are adjacent with cost 1.
+  lines_to_cover: |
+    [209]
+  test_name: |
+    test_c_function
+  test_code: |
+    def test_c_function():
+        grid = [[0 for _ in range(2)] for _ in range(2)]
+        planner = LPAStar(grid)
+        planner.initialize() # Initialize motions
+        s1 = Node(0, 0)
+        s2 = Node(0, 1)  # Adjacent node
+        s3 = Node(0, 0)
+        s4 = Node(1, 1) # Diagonal node
+        grid[0][1] = 1 # Make s2 an obstacle
+        assert planner.C(s1, s2) == math.inf
+        grid[0][1] = 0
+        assert planner.C(s1, s2) == 1.0
+        assert planner.C(s3, s4) == math.inf
+
+  new_imports_code: |
+    import math
+    from app import LPAStar, Node
+  test_tags: happy path
+- test_behavior: |
+    Tests the main routine's execution with predefined start and goal.
+  lines_to_cover: |
+    [348, 349, 350, 353, 354, 355, 356, 357, 358, 361, 362, 364, 365, 366, 369, 376, 377, 378, 379]
+  test_name: |
+    test_main_routine_execution
+  test_code: |
+    def test_main_routine_execution():
+        import random
+        random.randint = lambda a, b: 0  # Force start and goal to (0, 0)
+        import app
+        assert isinstance(app.grid, list) # Check if grid is created
+        assert isinstance(app.start, app.Node) # Check if start node is created
+        assert isinstance(app.goal, app.Node) # Check if goal node is created
+        assert app.lpa_star.plan(app.start, app.goal) # Check if plan function is called
+  new_imports_code: |
+    ""
+  test_tags: happy path
+
+```
+```yaml
+language: python
+existing_test_function_signature: def test_path_found():
+new_tests:
+- test_behavior: |
+    Tests the scenario where no valid predecessor is found when reconstructing the path (line 296).
+    This test creates a grid where the start node is completely surrounded by obstacles,
+    making it impossible to find a valid predecessor during path reconstruction.
+  lines_to_cover: |
+    [296]
+  test_name: |
+    test_no_valid_predecessor
+  test_code: |
+    def test_no_valid_predecessor():
+        grid = [[0 for _ in range(3)] for _ in range(3)]
+        grid[0][1] = 1
+        grid[1][0] = 1
+        grid[1][1] = 1
+        start = Node(0, 0)
+        goal = Node(2, 2)
+        planner = LPAStar(grid)
+        planner.max_time_step = 1
+        found, path = planner.plan(start, goal)
+        assert found is False
+        assert path == []
+  new_imports_code: |
+    from app import LPAStar, Node
+  test_tags: edge case
+- test_behavior: |
+    Tests the C function when s1 and s2 are obstacles (line 209).
+    This test checks that the C function returns infinity when either s1 or s2 is an obstacle.
+  lines_to_cover: |
+    [209]
+  test_name: |
+    test_c_function_obstacles
+  test_code: |
+    def test_c_function_obstacles():
+        grid = [[0 for _ in range(3)] for _ in range(3)]
+        start = Node(0, 0)
+        goal = Node(2, 2)
+        planner = LPAStar(grid)
+        planner.initialize() # Initialize motions
+        grid[0][0] = 1 # s1 is obstacle
+        assert planner.C(start, goal) == math.inf
+        grid[0][0] = 0
+        grid[2][2] = 1 # s2 is obstacle
+        assert planner.C(start, goal) == math.inf
+        grid[0][0] = 1 # both are obstacles
+        assert planner.C(start, goal) == math.inf
+
+  new_imports_code: |
+    from app import LPAStar, Node
+    import math
+  test_tags: edge case
+- test_behavior: |
+    Tests the remove function of the LazyPQ when removing an existing element (line 122).
+  lines_to_cover: |
+    [122]
+  test_name: |
+    test_lazy_pq_remove_existing
+  test_code: |
+    def test_lazy_pq_remove_existing():
+        pq = LazyPQ()
+        node1 = Node(0, 0)
+        node2 = Node(1, 1)
+        pq.insert(node1, 1)
+        pq.insert(node2, 2)
+        pq.remove(node1)
+        assert not pq.is_element_in_struct(node1)
+        assert pq.is_element_in_struct(node2)
+        popped_entry = pq.pop()
+        assert popped_entry.node == node2
+  new_imports_code: |
+    from app import LazyPQ, Node
+  test_tags: edge case
+- test_behavior: |
+    Tests the main routine's execution with controlled start and goal.
+  lines_to_cover: |
+    [348, 349, 350, 353, 354, 355, 356, 357, 358, 361, 362, 364, 365, 366, 369, 376, 377, 378, 379]
+  test_name: |
+    test_main_routine_execution
+  test_code: |
+    def test_main_routine_execution():
+        import random
+        random.randint = lambda a, b: 0  # Force start and goal to (0, 0)
+
+        import app
+        assert isinstance(app.grid, list)  # Check if grid is created
+        assert isinstance(app.start, app.Node)  # Check if start node is created
+        assert isinstance(app.goal, app.Node)  # Check if goal node is created
+        assert app.lpa_star.plan(app.start, app.goal)
+  new_imports_code: |
+    import app
+  test_tags: happy path
+```
+```yaml
+language: python
+existing_test_function_signature: def test_path_found():
+new_tests:
+- test_behavior: |
+    Tests the scenario where an obstacle is discovered on the current path.
+  lines_to_cover: |
+    [275]
+  test_name: |
+    test_obstacle_on_path
+  test_code: |
+    def test_obstacle_on_path():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        start = Node(0, 0)
+        goal = Node(4, 4)
+        planner = LPAStar(grid)
+        planner.max_time_step = 2
+        time_discovered_obstacles = {
+            1: [Node(2, 2)]  # Obstacle appears on the initial path
+        }
+        planner.set_dynamic_obstacles(False, time_discovered_obstacles)
+        found, path = planner.plan(start, goal)
+        assert isinstance(found, bool)
+        assert isinstance(path, list)
+  new_imports_code: |
+    from app import Node
+  test_tags: edge case
+- test_behavior: |
+    Tests the case where remove is called on LazyPQ with an existing node.
+  lines_to_cover: |
+    [122]
+  test_name: |
+    test_lazy_pq_remove_existing
+  test_code: |
+    def test_lazy_pq_remove_existing():
+        pq = LazyPQ()
+        node1 = Node(0, 0)
+        node2 = Node(1, 1)
+        pq.insert(node1, 1)
+        pq.insert(node2, 2)
+        pq.remove(node1)
+        assert not pq.is_element_in_struct(node1)
+        assert pq.is_element_in_struct(node2)
+        popped_entry = pq.pop()
+        assert popped_entry.node == node2
+  new_imports_code: |
+    from app import Node, LazyPQ
+  test_tags: edge case
+- test_behavior: |
+    Tests the case where no valid predecessor is found during path reconstruction.
+  lines_to_cover: |
+    [296]
+  test_name: |
+    test_no_valid_predecessor
+  test_code: |
+    def test_no_valid_predecessor():
+        grid = [[0 for _ in range(3)] for _ in range(3)]
+        grid[0][1] = 1
+        grid[1][0] = 1
+        grid[1][1] = 1  # Blocks all paths from (0, 0)
+        start = Node(0, 0)
+        goal = Node(2, 2)
+        planner = LPAStar(grid)
+        planner.max_time_step = 1
+        found, path = planner.plan(start, goal)
+        assert found is False
+        assert path == []
+  new_imports_code: |
+    from app import LPAStar, Node
+  test_tags: edge case
+- test_behavior: |
+    Tests the main routine's execution with specific start and goal.
+  lines_to_cover: |
+    [348, 349, 350, 353, 354, 355, 356, 357, 358, 361, 362, 364, 365, 366, 369, 376, 377, 378, 379]
+  test_name: |
+    test_main_routine_execution
+  test_code: |
+    def test_main_routine_execution():
+        import random
+        random.randint = lambda a, b: 0  # Force start and goal to (0, 0)
+        import app
+        assert isinstance(app.grid, list)
+        assert isinstance(app.start, app.Node)
+        assert isinstance(app.goal, app.Node)
+        app.lpa_star = LPAStar(app.grid) # Initialize LPAStar object
+        app.lpa_star.set_dynamic_obstacles(False, app.time_discovered_obstacles)
+        app.found, app.path_vector = app.lpa_star.plan(app.start, app.goal)
+        assert isinstance(app.found, bool)
+        assert isinstance(app.path_vector, list)
+
+  new_imports_code: |
+    from app import LPAStar, Node
+  test_tags: happy path
+```

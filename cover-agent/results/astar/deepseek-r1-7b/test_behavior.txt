@@ -1,0 +1,89 @@
+Test Behavior: Test that the function correctly handles non-divisible by 4 numbers
+
+Test Behavior: Test that the function correctly handles zero input
+
+Test Behavior: Test that the function correctly handles negative even numbers
+
+Test Behavior: Test that the function correctly handles non-integer inputs
+
+Test Behavior: Test that empty lists are handled correctly by the function
+lines_to_cover: |
+    [26]
+test_name: |
+    test_empty_list
+test_code: |
+    def test_empty_list():
+        args = []
+        try:
+            test_func(*args)
+        except Exception as e:
+            assert str(e) == "Handling empty list failed"
+    new_imports_code: ""
+
+Test Behavior: Test that single-element lists are handled correctly by the function
+lines_to_cover: |
+    [124]
+test_name: |
+    test_single_element
+test_code: |
+    def test_single_element():
+        args = ([5,])
+        try:
+            test_func(*args)
+        except Exception as e:
+            assert str(e) == "Handling single-element list failed"
+
+Test Behavior: Test that None values are handled correctly by the function
+lines_to_cover: |
+    [126]
+test_name: |
+    test_none_values
+test_code: |
+    def test_none_values():
+        args = ([None,])
+        try:
+            test_func(*args)
+        except Exception as e:
+            assert str(e) == "Handling None values failed"
+
+Test Behavior: Test that multiple elements are handled correctly by the function
+lines_to_cover: |
+    [127]
+test_name: |
+    test_multiple_elements
+test_code: |
+    def test_multiple_elements():
+        args = ([1, 2, 3])
+        try:
+            test_func(*args)
+        except Exception as e:
+            assert str(e) == "Handling multiple elements failed"
+
+Test Behavior: Test that the navigate method includes all required parameters in its docstring
+
+Test Behavior: Test that the navigate method handles required parameters correctly
+
+Test Behavior: Test that the navigate method handles optional parameters correctly
+
+Test Behavior: Test that the navigate method handles invalid page ranges gracefully
+
+Test Behavior: Test that the navigate method handles cases where pages don't exist
+
+Test Behavior: Test that get_all_players_from_response handles cases where response.players is None
+
+Test Behavior: Test that get_all_players_from_response handles empty list
+
+Test Behavior: Test that get_all_players_from_response handles missing data.players
+
+Test Behavior: Test that the function handles empty lists correctly
+
+Test Behavior: Test that the function correctly handles non-empty lists with even number of elements
+
+Test Behavior: Test that the function correctly handles lists with mixed data types
+
+Test Behavior: Test that the function correctly handles nested lists
+
+Test Behavior: Test that empty lists are handled correctly
+
+Test Behavior: Install PyTorch Geometric and its dependencies to run the codebase.
+

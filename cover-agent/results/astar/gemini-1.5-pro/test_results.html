@@ -1,0 +1,528 @@
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Test Results</title>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/themes/prism-okaidia.min.css" rel="stylesheet" />
+        <style>
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                margin: 20px;
+            }
+            table {
+                border-collapse: collapse;
+                width: 100%;
+                box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+            }
+            th, td {
+                border: 1px solid #ddd;
+                text-align: left;
+                padding: 8px;
+            }
+            th {
+                background-color: #f2f2f2;
+            }
+            tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
+            .status-pass {
+                color: green;
+            }
+            .status-fail {
+                color: red;
+            }
+            pre {
+                background-color: #282c34 !important;
+                color: #ffffff !important;
+                padding: 10px;
+                border-radius: 5px;
+                overflow-x: auto;
+                white-space: pre-wrap;
+                font-family: 'Courier New', Courier, monospace;
+                font-size: 1.1em;  /* Slightly larger font size */
+            }
+        </style>
+    </head>
+    <body>
+        <table>
+            <tr>
+                <th>Status</th>
+                <th>Reason</th>
+                <th>Exit Code</th>
+                <th>Language</th>
+                <th>Modified Test File</th>
+                <th>Details</th>
+            </tr>
+            
+            <tr>
+                <td class="status-FAIL">FAIL</td>
+                <td>Coverage did not increase</td>
+                <td>0</td>
+                <td>python</td>
+                <td>
+                    <details>
+                        <summary>View Full Code</summary>
+                        <pre><code><span class="diff-unchanged">  #!/usr/bin/env python3</span>
+<span class="diff-unchanged">  """</span>
+<span class="diff-unchanged">  Unit tests for the AStar algorithm using pytest.</span>
+<span class="diff-unchanged">  To run these tests, execute:</span>
+<span class="diff-unchanged">      pytest test_astar.py</span>
+<span class="diff-unchanged">  """</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  import pytest</span>
+<span class="diff-unchanged">  from app import Node, AStar, compare_coordinates</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_start_equals_goal():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test the trivial case where the start and goal are the same.</span>
+<span class="diff-unchanged">      The expected result is an immediate success with a path containing only the start.</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 0],</span>
+<span class="diff-unchanged">          [0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0)</span>
+<span class="diff-unchanged">      goal = Node(0, 0)</span>
+<span class="diff-unchanged">      # Set the start node's id and parent id.</span>
+<span class="diff-unchanged">      start.id = 0</span>
+<span class="diff-unchanged">      start.pid = 0</span>
+<span class="diff-unchanged">      astar = AStar(grid)</span>
+<span class="diff-unchanged">      found, path = astar.plan(start, goal)</span>
+<span class="diff-unchanged">      assert found is True, "Path should be found when start equals goal"</span>
+<span class="diff-unchanged">      # The path should consist of only one node (start).</span>
+<span class="diff-unchanged">      assert len(path) == 1</span>
+<span class="diff-unchanged">      assert compare_coordinates(path[0], start), "The only node in the path should be the start"</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_simple_path():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test a simple 5x5 grid with no obstacles.</span>
+<span class="diff-unchanged">      The start is at the top‐left and the goal at the bottom‐right.</span>
+<span class="diff-unchanged">      The algorithm should find a path.</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      n = 5</span>
+<span class="diff-unchanged">      grid = [[0 for _ in range(n)] for _ in range(n)]</span>
+<span class="diff-unchanged">      start = Node(0, 0)</span>
+<span class="diff-unchanged">      goal = Node(4, 4)</span>
+<span class="diff-unchanged">      start.id = 0</span>
+<span class="diff-unchanged">      start.pid = 0</span>
+<span class="diff-unchanged">      astar = AStar(grid)</span>
+<span class="diff-unchanged">      found, path = astar.plan(start, goal)</span>
+<span class="diff-unchanged">      assert found is True, "A path should be found in an open grid"</span>
+<span class="diff-unchanged">      # According to our conversion, the returned path is from goal to start.</span>
+<span class="diff-unchanged">      assert compare_coordinates(path[0], goal), "The first node in the path should be the goal"</span>
+<span class="diff-unchanged">      assert compare_coordinates(path[-1], start), "The last node in the path should be the start"</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_no_path():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test a grid where obstacles block any possible path from start to goal.</span>
+<span class="diff-unchanged">      Obstacles are represented by any non-zero cell.</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 1, 1],</span>
+<span class="diff-unchanged">          [1, 1, 1],</span>
+<span class="diff-unchanged">          [1, 1, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2)</span>
+<span class="diff-unchanged">      start.id = 0</span>
+<span class="diff-unchanged">      start.pid = 0</span>
+<span class="diff-unchanged">      astar = AStar(grid)</span>
+<span class="diff-unchanged">      found, path = astar.plan(start, goal)</span>
+<span class="diff-unchanged">      assert found is False, "No path should be found when obstacles block the way"</span>
+<span class="diff-unchanged">      assert path == [], "The path should be empty when no path exists"</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  grid = [</span>
+<span class="diff-unchanged">      [0, 0],</span>
+<span class="diff-unchanged">      [0, 0]</span>
+<span class="diff-unchanged">  ]</span>
+<span class="diff-unchanged">  start = Node(0, 0)</span>
+<span class="diff-unchanged">  goal = Node(2, 2)</span>
+<span class="diff-unchanged">  # Set the start node's id and parent id.</span>
+<span class="diff-unchanged">  start.id = 0</span>
+<span class="diff-unchanged">  start.pid = 0</span>
+<span class="diff-unchanged">  astar = AStar(grid)</span>
+<span class="diff-unchanged">  found, path = astar.plan(start, goal)</span>
+<span class="diff-unchanged">  assert found is False, "Path should not be found when the goal is outside the grid"</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+ def test_goal_outside_grid():</span>
+<span class="diff-added">+     grid = [</span>
+<span class="diff-added">+         [0, 0],</span>
+<span class="diff-added">+         [0, 0]</span>
+<span class="diff-added">+     ]</span>
+<span class="diff-added">+     start = Node(0, 0)</span>
+<span class="diff-added">+     goal = Node(2, 2)</span>
+<span class="diff-added">+     # Set the start node's id and parent id.</span>
+<span class="diff-added">+     start.id = 0</span>
+<span class="diff-added">+     start.pid = 0</span>
+<span class="diff-added">+     astar = AStar(grid)</span>
+<span class="diff-added">+     found, path = astar.plan(start, goal)</span>
+<span class="diff-added">+     assert found is False</span>
+<span class="diff-added">+     assert path == []</span>
+<span class="diff-added">+ </span></code></pre>
+                    </details>
+                </td>
+                <td>
+                    <details>
+                        <summary>View More</summary>
+                        <div><strong>STDERR:</strong> <pre><code class="language-python"></code></pre></div>
+                        <div><strong>STDOUT:</strong> <pre><code class="language-python">============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0
+rootdir: /home/quanlac/code/maude/cover-agent/astar
+plugins: anyio-4.6.2.post1, cov-6.0.0
+collected 4 items
+
+test_app.py ....                                                         [100%]
+
+---------- coverage: platform linux, python 3.12.3-final-0 -----------
+Name          Stmts   Miss  Cover
+---------------------------------
+app.py          128     37    71%
+test_app.py      53      0   100%
+---------------------------------
+TOTAL           181     37    80%
+Coverage XML written to file coverage.xml
+
+
+============================== 4 passed in 0.05s ===============================
+</code></pre></div>
+                        <div><strong>Test Code:</strong> <pre><code class="language-python">def test_goal_outside_grid():
+    grid = [
+        [0, 0],
+        [0, 0]
+    ]
+    start = Node(0, 0)
+    goal = Node(2, 2)
+    # Set the start node's id and parent id.
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is False
+    assert path == []
+</code></pre></div>
+                        <div><strong>Imports:</strong> <pre><code class="language-python">""
+</code></pre></div>
+                    </details>
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="status-FAIL">FAIL</td>
+                <td>Coverage did not increase</td>
+                <td>0</td>
+                <td>python</td>
+                <td>
+                    <details>
+                        <summary>View Full Code</summary>
+                        <pre><code><span class="diff-unchanged">  #!/usr/bin/env python3</span>
+<span class="diff-unchanged">  """</span>
+<span class="diff-unchanged">  Unit tests for the AStar algorithm using pytest.</span>
+<span class="diff-unchanged">  To run these tests, execute:</span>
+<span class="diff-unchanged">      pytest test_astar.py</span>
+<span class="diff-unchanged">  """</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  import pytest</span>
+<span class="diff-unchanged">  from app import Node, AStar, compare_coordinates</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_start_equals_goal():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test the trivial case where the start and goal are the same.</span>
+<span class="diff-unchanged">      The expected result is an immediate success with a path containing only the start.</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 0],</span>
+<span class="diff-unchanged">          [0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0)</span>
+<span class="diff-unchanged">      goal = Node(0, 0)</span>
+<span class="diff-unchanged">      # Set the start node's id and parent id.</span>
+<span class="diff-unchanged">      start.id = 0</span>
+<span class="diff-unchanged">      start.pid = 0</span>
+<span class="diff-unchanged">      astar = AStar(grid)</span>
+<span class="diff-unchanged">      found, path = astar.plan(start, goal)</span>
+<span class="diff-unchanged">      assert found is True, "Path should be found when start equals goal"</span>
+<span class="diff-unchanged">      # The path should consist of only one node (start).</span>
+<span class="diff-unchanged">      assert len(path) == 1</span>
+<span class="diff-unchanged">      assert compare_coordinates(path[0], start), "The only node in the path should be the start"</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_simple_path():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test a simple 5x5 grid with no obstacles.</span>
+<span class="diff-unchanged">      The start is at the top‐left and the goal at the bottom‐right.</span>
+<span class="diff-unchanged">      The algorithm should find a path.</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      n = 5</span>
+<span class="diff-unchanged">      grid = [[0 for _ in range(n)] for _ in range(n)]</span>
+<span class="diff-unchanged">      start = Node(0, 0)</span>
+<span class="diff-unchanged">      goal = Node(4, 4)</span>
+<span class="diff-unchanged">      start.id = 0</span>
+<span class="diff-unchanged">      start.pid = 0</span>
+<span class="diff-unchanged">      astar = AStar(grid)</span>
+<span class="diff-unchanged">      found, path = astar.plan(start, goal)</span>
+<span class="diff-unchanged">      assert found is True, "A path should be found in an open grid"</span>
+<span class="diff-unchanged">      # According to our conversion, the returned path is from goal to start.</span>
+<span class="diff-unchanged">      assert compare_coordinates(path[0], goal), "The first node in the path should be the goal"</span>
+<span class="diff-unchanged">      assert compare_coordinates(path[-1], start), "The last node in the path should be the start"</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_no_path():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test a grid where obstacles block any possible path from start to goal.</span>
+<span class="diff-unchanged">      Obstacles are represented by any non-zero cell.</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 1, 1],</span>
+<span class="diff-unchanged">          [1, 1, 1],</span>
+<span class="diff-unchanged">          [1, 1, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2)</span>
+<span class="diff-unchanged">      start.id = 0</span>
+<span class="diff-unchanged">      start.pid = 0</span>
+<span class="diff-unchanged">      astar = AStar(grid)</span>
+<span class="diff-unchanged">      found, path = astar.plan(start, goal)</span>
+<span class="diff-unchanged">      assert found is False, "No path should be found when obstacles block the way"</span>
+<span class="diff-unchanged">      assert path == [], "The path should be empty when no path exists"</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  grid = [</span>
+<span class="diff-unchanged">      [0, 0],</span>
+<span class="diff-unchanged">      [0, 0]</span>
+<span class="diff-unchanged">  ]</span>
+<span class="diff-unchanged">  start = Node(0, 0)</span>
+<span class="diff-unchanged">  goal = Node(2, 2)</span>
+<span class="diff-unchanged">  # Set the start node's id and parent id.</span>
+<span class="diff-unchanged">  start.id = 0</span>
+<span class="diff-unchanged">  start.pid = 0</span>
+<span class="diff-unchanged">  astar = AStar(grid)</span>
+<span class="diff-unchanged">  found, path = astar.plan(start, goal)</span>
+<span class="diff-unchanged">  assert found is False, "Path should not be found when the goal is outside the grid"</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+ def test_main_flow():</span>
+<span class="diff-added">+     n = 3  # Smaller grid for simpler testing</span>
+<span class="diff-added">+     grid = [[0 for _ in range(n)] for _ in range(n)]</span>
+<span class="diff-added">+     start = Node(0, 0)</span>
+<span class="diff-added">+     goal = Node(n - 1, n - 1)</span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+     # Initialize start and goal ids and h_cost</span>
+<span class="diff-added">+     start.id = start.x * n + start.y</span>
+<span class="diff-added">+     start.pid = start.id</span>
+<span class="diff-added">+     goal.id = goal.x * n + goal.y</span>
+<span class="diff-added">+     start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)</span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+     astar = AStar(grid)</span>
+<span class="diff-added">+     path_found, path = astar.plan(start, goal)</span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+     assert path_found</span>
+<span class="diff-added">+ </span></code></pre>
+                    </details>
+                </td>
+                <td>
+                    <details>
+                        <summary>View More</summary>
+                        <div><strong>STDERR:</strong> <pre><code class="language-python"></code></pre></div>
+                        <div><strong>STDOUT:</strong> <pre><code class="language-python">============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0
+rootdir: /home/quanlac/code/maude/cover-agent/astar
+plugins: anyio-4.6.2.post1, cov-6.0.0
+collected 4 items
+
+test_app.py ....                                                         [100%]
+
+---------- coverage: platform linux, python 3.12.3-final-0 -----------
+Name          Stmts   Miss  Cover
+---------------------------------
+app.py          128     37    71%
+test_app.py      55      0   100%
+---------------------------------
+TOTAL           183     37    80%
+Coverage XML written to file coverage.xml
+
+
+============================== 4 passed in 0.06s ===============================
+</code></pre></div>
+                        <div><strong>Test Code:</strong> <pre><code class="language-python">def test_main_flow():
+    n = 3  # Smaller grid for simpler testing
+    grid = [[0 for _ in range(n)] for _ in range(n)]
+    start = Node(0, 0)
+    goal = Node(n - 1, n - 1)
+
+    # Initialize start and goal ids and h_cost
+    start.id = start.x * n + start.y
+    start.pid = start.id
+    goal.id = goal.x * n + goal.y
+    start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)
+
+    astar = AStar(grid)
+    path_found, path = astar.plan(start, goal)
+
+    assert path_found
+</code></pre></div>
+                        <div><strong>Imports:</strong> <pre><code class="language-python">""
+</code></pre></div>
+                    </details>
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="status-PASS">PASS</td>
+                <td></td>
+                <td>0</td>
+                <td>python</td>
+                <td>
+                    <details>
+                        <summary>View Full Code</summary>
+                        <pre><code><span class="diff-unchanged">  #!/usr/bin/env python3</span>
+<span class="diff-unchanged">  """</span>
+<span class="diff-unchanged">  Unit tests for the AStar algorithm using pytest.</span>
+<span class="diff-unchanged">  To run these tests, execute:</span>
+<span class="diff-unchanged">      pytest test_astar.py</span>
+<span class="diff-unchanged">  """</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  import pytest</span>
+<span class="diff-unchanged">  from app import Node, AStar, compare_coordinates</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_start_equals_goal():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test the trivial case where the start and goal are the same.</span>
+<span class="diff-unchanged">      The expected result is an immediate success with a path containing only the start.</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 0],</span>
+<span class="diff-unchanged">          [0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0)</span>
+<span class="diff-unchanged">      goal = Node(0, 0)</span>
+<span class="diff-unchanged">      # Set the start node's id and parent id.</span>
+<span class="diff-unchanged">      start.id = 0</span>
+<span class="diff-unchanged">      start.pid = 0</span>
+<span class="diff-unchanged">      astar = AStar(grid)</span>
+<span class="diff-unchanged">      found, path = astar.plan(start, goal)</span>
+<span class="diff-unchanged">      assert found is True, "Path should be found when start equals goal"</span>
+<span class="diff-unchanged">      # The path should consist of only one node (start).</span>
+<span class="diff-unchanged">      assert len(path) == 1</span>
+<span class="diff-unchanged">      assert compare_coordinates(path[0], start), "The only node in the path should be the start"</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_simple_path():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test a simple 5x5 grid with no obstacles.</span>
+<span class="diff-unchanged">      The start is at the top‐left and the goal at the bottom‐right.</span>
+<span class="diff-unchanged">      The algorithm should find a path.</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      n = 5</span>
+<span class="diff-unchanged">      grid = [[0 for _ in range(n)] for _ in range(n)]</span>
+<span class="diff-unchanged">      start = Node(0, 0)</span>
+<span class="diff-unchanged">      goal = Node(4, 4)</span>
+<span class="diff-unchanged">      start.id = 0</span>
+<span class="diff-unchanged">      start.pid = 0</span>
+<span class="diff-unchanged">      astar = AStar(grid)</span>
+<span class="diff-unchanged">      found, path = astar.plan(start, goal)</span>
+<span class="diff-unchanged">      assert found is True, "A path should be found in an open grid"</span>
+<span class="diff-unchanged">      # According to our conversion, the returned path is from goal to start.</span>
+<span class="diff-unchanged">      assert compare_coordinates(path[0], goal), "The first node in the path should be the goal"</span>
+<span class="diff-unchanged">      assert compare_coordinates(path[-1], start), "The last node in the path should be the start"</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_no_path():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test a grid where obstacles block any possible path from start to goal.</span>
+<span class="diff-unchanged">      Obstacles are represented by any non-zero cell.</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 1, 1],</span>
+<span class="diff-unchanged">          [1, 1, 1],</span>
+<span class="diff-unchanged">          [1, 1, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2)</span>
+<span class="diff-unchanged">      start.id = 0</span>
+<span class="diff-unchanged">      start.pid = 0</span>
+<span class="diff-unchanged">      astar = AStar(grid)</span>
+<span class="diff-unchanged">      found, path = astar.plan(start, goal)</span>
+<span class="diff-unchanged">      assert found is False, "No path should be found when obstacles block the way"</span>
+<span class="diff-unchanged">      assert path == [], "The path should be empty when no path exists"</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  grid = [</span>
+<span class="diff-unchanged">      [0, 0],</span>
+<span class="diff-unchanged">      [0, 0]</span>
+<span class="diff-unchanged">  ]</span>
+<span class="diff-unchanged">  start = Node(0, 0)</span>
+<span class="diff-unchanged">  goal = Node(2, 2)</span>
+<span class="diff-unchanged">  # Set the start node's id and parent id.</span>
+<span class="diff-unchanged">  start.id = 0</span>
+<span class="diff-unchanged">  start.pid = 0</span>
+<span class="diff-unchanged">  astar = AStar(grid)</span>
+<span class="diff-unchanged">  found, path = astar.plan(start, goal)</span>
+<span class="diff-unchanged">  assert found is False, "Path should not be found when the goal is outside the grid"</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+ def test_path_reconstruction_error():</span>
+<span class="diff-added">+     grid = [[0, 0], [0, 0]]</span>
+<span class="diff-added">+     start = Node(0, 0)</span>
+<span class="diff-added">+     goal = Node(1, 1)</span>
+<span class="diff-added">+     start.id = 0</span>
+<span class="diff-added">+     start.pid = 0</span>
+<span class="diff-added">+     astar = AStar(grid)</span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+     # Manually create a closed list with an invalid parent id</span>
+<span class="diff-added">+     closed_list = {start, goal}</span>
+<span class="diff-added">+     goal.pid = -1  # Invalid parent ID</span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+     # Call the path conversion function directly</span>
+<span class="diff-added">+     path = astar.convert_closed_list_to_path(closed_list, start, goal)</span>
+<span class="diff-added">+     assert path == []</span>
+<span class="diff-added">+ </span></code></pre>
+                    </details>
+                </td>
+                <td>
+                    <details>
+                        <summary>View More</summary>
+                        <div><strong>STDERR:</strong> <pre><code class="language-python"></code></pre></div>
+                        <div><strong>STDOUT:</strong> <pre><code class="language-python">============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0
+rootdir: /home/quanlac/code/maude/cover-agent/astar
+plugins: anyio-4.6.2.post1, cov-6.0.0
+collected 4 items
+
+test_app.py ....                                                         [100%]
+
+---------- coverage: platform linux, python 3.12.3-final-0 -----------
+Name          Stmts   Miss  Cover
+---------------------------------
+app.py          128     35    73%
+test_app.py      54      0   100%
+---------------------------------
+TOTAL           182     35    81%
+Coverage XML written to file coverage.xml
+
+
+============================== 4 passed in 0.05s ===============================
+</code></pre></div>
+                        <div><strong>Test Code:</strong> <pre><code class="language-python">def test_path_reconstruction_error():
+    grid = [[0, 0], [0, 0]]
+    start = Node(0, 0)
+    goal = Node(1, 1)
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+
+    # Manually create a closed list with an invalid parent id
+    closed_list = {start, goal}
+    goal.pid = -1  # Invalid parent ID
+
+    # Call the path conversion function directly
+    path = astar.convert_closed_list_to_path(closed_list, start, goal)
+    assert path == []
+</code></pre></div>
+                        <div><strong>Imports:</strong> <pre><code class="language-python">""
+</code></pre></div>
+                    </details>
+                </td>
+            </tr>
+            
+        </table>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/prism.min.js"></script>
+    </body>
+    </html>
+    

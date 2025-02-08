@@ -1,0 +1,46 @@
+Test Behavior: Test that the LPAStar planner can handle dynamic obstacles being added during the planning process.
+
+Test Behavior: Test that the LazyPQ can handle popping from an empty priority queue.
+
+Test Behavior: Test that the LazyPQ can handle inserting and removing elements correctly.
+
+Test Behavior: Test that the LPAStar planner can handle a case where the start and goal are the same.
+
+Test Behavior: Test that the LazyPQ can handle popping from an empty priority queue.
+
+Test Behavior: Test that the LazyPQ can handle inserting and removing elements correctly.
+
+Test Behavior: Test that the LPAStar planner can handle a case where the start and goal are the same.
+
+Test Behavior: Test that the LazyPQ can handle inserting and removing elements correctly.
+
+Test Behavior: Test that the LPAStar planner can handle a case where the start and goal are the same.
+
+Test Behavior: Test that the LPAStar planner can handle a case where the grid is completely blocked.
+
+Test Behavior: Test that the LPAStar planner can handle a case where the goal is unreachable due to obstacles.
+
+Test Behavior: Test that the LazyPQ can handle inserting and removing elements correctly.
+
+Test Behavior: Test that the LPAStar planner can handle a case where the grid is completely blocked.
+
+Test Behavior: Test that the LPAStar planner can handle a case where the goal is unreachable due to obstacles.
+
+Test Behavior: Test that the LazyPQ can handle inserting and removing elements correctly.
+
+Test Behavior: Test that the LPAStar planner can handle a case where the grid is completely blocked.
+
+Test Behavior: Test that the LPAStar planner can handle a case where the goal is unreachable due to obstacles.
+
+Test Behavior: Test that the LazyPQ can handle inserting and removing elements correctly.
+
+Test Behavior: Test that the LPAStar planner can handle a case where the grid is completely blocked.
+
+Test Behavior: Test that the LPAStar planner can handle a case where the goal is unreachable due to obstacles.
+
+Test Behavior: Test that the LazyPQ can handle inserting and removing elements correctly.
+
+Test Behavior: Test that the LPAStar planner can handle a case where the grid is completely blocked.
+
+Test Behavior: Test that the LPAStar planner can handle a case where the goal is unreachable due to obstacles.
+

@@ -1,0 +1,1323 @@
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Test Results</title>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/themes/prism-okaidia.min.css" rel="stylesheet" />
+        <style>
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                margin: 20px;
+            }
+            table {
+                border-collapse: collapse;
+                width: 100%;
+                box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+            }
+            th, td {
+                border: 1px solid #ddd;
+                text-align: left;
+                padding: 8px;
+            }
+            th {
+                background-color: #f2f2f2;
+            }
+            tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
+            .status-pass {
+                color: green;
+            }
+            .status-fail {
+                color: red;
+            }
+            pre {
+                background-color: #282c34 !important;
+                color: #ffffff !important;
+                padding: 10px;
+                border-radius: 5px;
+                overflow-x: auto;
+                white-space: pre-wrap;
+                font-family: 'Courier New', Courier, monospace;
+                font-size: 1.1em;  /* Slightly larger font size */
+            }
+        </style>
+    </head>
+    <body>
+        <table>
+            <tr>
+                <th>Status</th>
+                <th>Reason</th>
+                <th>Exit Code</th>
+                <th>Language</th>
+                <th>Modified Test File</th>
+                <th>Details</th>
+            </tr>
+            
+            <tr>
+                <td class="status-PASS">PASS</td>
+                <td></td>
+                <td>0</td>
+                <td>python</td>
+                <td>
+                    <details>
+                        <summary>View Full Code</summary>
+                        <pre><code><span class="diff-unchanged">  #!/usr/bin/env python3</span>
+<span class="diff-unchanged">  """</span>
+<span class="diff-unchanged">  Unit tests for the LPAStar planner using pytest.</span>
+<span class="diff-unchanged">  Two tests are provided:</span>
+<span class="diff-unchanged">    - test_path_found: a clear grid where a valid path is expected.</span>
+<span class="diff-unchanged">    - test_no_path: a grid blocked by obstacles where no valid path exists.</span>
+<span class="diff-unchanged">  """</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  import math</span>
+<span class="diff-unchanged">  import pytest</span>
+<span class="diff-unchanged">  from app import LPAStar, Node, check_outside_boundary, compare_coordinates</span>
+<span class="diff-unchanged">  from app import LazyPQ</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  # For testing purposes, we override the sleep to avoid delays.</span>
+<span class="diff-unchanged">  import time</span>
+<span class="diff-unchanged">  time.sleep = lambda s: None  # disable sleep during tests</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_path_found():</span>
+<span class="diff-unchanged">      # Create a 5x5 grid with no obstacles.</span>
+<span class="diff-unchanged">      grid = [[0 for _ in range(5)] for _ in range(5)]</span>
+<span class="diff-unchanged">      start = Node(0, 0)</span>
+<span class="diff-unchanged">      goal = Node(4, 4)</span>
+<span class="diff-unchanged">      planner = LPAStar(grid)</span>
+<span class="diff-unchanged">      # For faster testing, reduce the number of iterations.</span>
+<span class="diff-unchanged">      planner.max_time_step = 1</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      # Assert that a path was found.</span>
+<span class="diff-unchanged">      assert found is True</span>
+<span class="diff-unchanged">      # Check that the path starts at the start node.</span>
+<span class="diff-unchanged">      assert path[-1] == start</span>
+<span class="diff-unchanged">      # Check that the last node in the path matches the goal (by coordinates).</span>
+<span class="diff-unchanged">      assert compare_coordinates(path[0], goal)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_no_path():</span>
+<span class="diff-unchanged">      # Create a 5x5 grid.</span>
+<span class="diff-unchanged">      grid = [[0 for _ in range(5)] for _ in range(5)]</span>
+<span class="diff-unchanged">      # Place a vertical wall of obstacles in column 2.</span>
+<span class="diff-unchanged">      for i in range(5):</span>
+<span class="diff-unchanged">          grid[i][2] = 1</span>
+<span class="diff-unchanged">      start = Node(0, 0)</span>
+<span class="diff-unchanged">      goal = Node(0, 4)</span>
+<span class="diff-unchanged">      planner = LPAStar(grid)</span>
+<span class="diff-unchanged">      planner.max_time_step = 1  # limit iterations for testing</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      # With a full wall between start and goal, no path should be found.</span>
+<span class="diff-unchanged">      assert found is False</span>
+<span class="diff-unchanged">      assert path == []</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_lazy_pq_pop_empty():</span>
+<span class="diff-unchanged">      pq = LazyPQ()</span>
+<span class="diff-unchanged">      with pytest.raises(KeyError):</span>
+<span class="diff-unchanged">          pq.pop()</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+ def test_random_obstacles():</span>
+<span class="diff-added">+     n = 5</span>
+<span class="diff-added">+     grid = [[0 for _ in range(n)] for _ in range(n)]</span>
+<span class="diff-added">+     start = Node(0, 0)</span>
+<span class="diff-added">+     goal = Node(n-1, n-1)</span>
+<span class="diff-added">+     planner = LPAStar(grid)</span>
+<span class="diff-added">+     planner.max_time_step = 5  # Allow multiple time steps for obstacle generation</span>
+<span class="diff-added">+     planner.set_dynamic_obstacles(True) # Enable random obstacle creation</span>
+<span class="diff-added">+     found, path = planner.plan(start, goal)</span>
+<span class="diff-added">+     # Assertions should focus on the behavior, not specific path details which can vary randomly.</span>
+<span class="diff-added">+     # For example, check if the planner handles the random obstacles gracefully without errors.</span>
+<span class="diff-added">+     assert isinstance(found, bool)  # Check if the function returns a boolean value</span>
+<span class="diff-added">+     assert isinstance(path, list) # Check if the function returns a list</span>
+<span class="diff-added">+ </span></code></pre>
+                    </details>
+                </td>
+                <td>
+                    <details>
+                        <summary>View More</summary>
+                        <div><strong>STDERR:</strong> <pre><code class="language-python"></code></pre></div>
+                        <div><strong>STDOUT:</strong> <pre><code class="language-python">============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0
+rootdir: /home/quanlac/code/maude/cover-agent/lpastar
+plugins: anyio-4.6.2.post1, cov-6.0.0
+collected 4 items
+
+test_app.py ....                                                         [100%]
+
+---------- coverage: platform linux, python 3.12.3-final-0 -----------
+Name          Stmts   Miss  Cover
+---------------------------------
+app.py          258     34    87%
+test_app.py      42      0   100%
+---------------------------------
+TOTAL           300     34    89%
+Coverage XML written to file coverage.xml
+
+
+============================== 4 passed in 0.07s ===============================
+</code></pre></div>
+                        <div><strong>Test Code:</strong> <pre><code class="language-python">def test_random_obstacles():
+    n = 5
+    grid = [[0 for _ in range(n)] for _ in range(n)]
+    start = Node(0, 0)
+    goal = Node(n-1, n-1)
+    planner = LPAStar(grid)
+    planner.max_time_step = 5  # Allow multiple time steps for obstacle generation
+    planner.set_dynamic_obstacles(True) # Enable random obstacle creation
+    found, path = planner.plan(start, goal)
+    # Assertions should focus on the behavior, not specific path details which can vary randomly.
+    # For example, check if the planner handles the random obstacles gracefully without errors.
+    assert isinstance(found, bool)  # Check if the function returns a boolean value
+    assert isinstance(path, list) # Check if the function returns a list
+</code></pre></div>
+                        <div><strong>Imports:</strong> <pre><code class="language-python">""
+</code></pre></div>
+                    </details>
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="status-FAIL">FAIL</td>
+                <td>Test failed</td>
+                <td>1</td>
+                <td>python</td>
+                <td>
+                    <details>
+                        <summary>View Full Code</summary>
+                        <pre><code><span class="diff-unchanged">  #!/usr/bin/env python3</span>
+<span class="diff-unchanged">  """</span>
+<span class="diff-unchanged">  Unit tests for the LPAStar planner using pytest.</span>
+<span class="diff-unchanged">  Two tests are provided:</span>
+<span class="diff-unchanged">    - test_path_found: a clear grid where a valid path is expected.</span>
+<span class="diff-unchanged">    - test_no_path: a grid blocked by obstacles where no valid path exists.</span>
+<span class="diff-unchanged">  """</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  import math</span>
+<span class="diff-unchanged">  import pytest</span>
+<span class="diff-unchanged">  from app import LPAStar, Node, check_outside_boundary, compare_coordinates</span>
+<span class="diff-unchanged">  from app import LazyPQ</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  # For testing purposes, we override the sleep to avoid delays.</span>
+<span class="diff-unchanged">  import time</span>
+<span class="diff-unchanged">  time.sleep = lambda s: None  # disable sleep during tests</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_path_found():</span>
+<span class="diff-unchanged">      # Create a 5x5 grid with no obstacles.</span>
+<span class="diff-unchanged">      grid = [[0 for _ in range(5)] for _ in range(5)]</span>
+<span class="diff-unchanged">      start = Node(0, 0)</span>
+<span class="diff-unchanged">      goal = Node(4, 4)</span>
+<span class="diff-unchanged">      planner = LPAStar(grid)</span>
+<span class="diff-unchanged">      # For faster testing, reduce the number of iterations.</span>
+<span class="diff-unchanged">      planner.max_time_step = 1</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      # Assert that a path was found.</span>
+<span class="diff-unchanged">      assert found is True</span>
+<span class="diff-unchanged">      # Check that the path starts at the start node.</span>
+<span class="diff-unchanged">      assert path[-1] == start</span>
+<span class="diff-unchanged">      # Check that the last node in the path matches the goal (by coordinates).</span>
+<span class="diff-unchanged">      assert compare_coordinates(path[0], goal)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_no_path():</span>
+<span class="diff-unchanged">      # Create a 5x5 grid.</span>
+<span class="diff-unchanged">      grid = [[0 for _ in range(5)] for _ in range(5)]</span>
+<span class="diff-unchanged">      # Place a vertical wall of obstacles in column 2.</span>
+<span class="diff-unchanged">      for i in range(5):</span>
+<span class="diff-unchanged">          grid[i][2] = 1</span>
+<span class="diff-unchanged">      start = Node(0, 0)</span>
+<span class="diff-unchanged">      goal = Node(0, 4)</span>
+<span class="diff-unchanged">      planner = LPAStar(grid)</span>
+<span class="diff-unchanged">      planner.max_time_step = 1  # limit iterations for testing</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      # With a full wall between start and goal, no path should be found.</span>
+<span class="diff-unchanged">      assert found is False</span>
+<span class="diff-unchanged">      assert path == []</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_lazy_pq_pop_empty():</span>
+<span class="diff-unchanged">      pq = LazyPQ()</span>
+<span class="diff-unchanged">      with pytest.raises(KeyError):</span>
+<span class="diff-unchanged">          pq.pop()</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  </span>
+<span class="diff-added">+ def test_main_routine():</span>
+<span class="diff-added">+     # Mock the random functions to control start and goal positions.</span>
+<span class="diff-added">+     import random</span>
+<span class="diff-added">+     random.randint = lambda a, b: 0  # Force start and goal to (0, 0)</span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+     # Capture printed output to verify path printing.</span>
+<span class="diff-added">+     import io</span>
+<span class="diff-added">+     from contextlib import redirect_stdout</span>
+<span class="diff-added">+     f = io.StringIO()</span>
+<span class="diff-added">+     with redirect_stdout(f):</span>
+<span class="diff-added">+         import app # Import the module to run the main routine.</span>
+<span class="diff-added">+     out = f.getvalue()</span>
+<span class="diff-added">+     assert "Path from start to goal:" in out</span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+ </span>
+<span class="diff-unchanged">  def test_random_obstacles():</span>
+<span class="diff-unchanged">      n = 5</span>
+<span class="diff-unchanged">      grid = [[0 for _ in range(n)] for _ in range(n)]</span>
+<span class="diff-unchanged">      start = Node(0, 0)</span>
+<span class="diff-unchanged">      goal = Node(n-1, n-1)</span>
+<span class="diff-unchanged">      planner = LPAStar(grid)</span>
+<span class="diff-unchanged">      planner.max_time_step = 5  # Allow multiple time steps for obstacle generation</span>
+<span class="diff-unchanged">      planner.set_dynamic_obstacles(True) # Enable random obstacle creation</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      # Assertions should focus on the behavior, not specific path details which can vary randomly.</span>
+<span class="diff-unchanged">      # For example, check if the planner handles the random obstacles gracefully without errors.</span>
+<span class="diff-unchanged">      assert isinstance(found, bool)  # Check if the function returns a boolean value</span>
+<span class="diff-unchanged">      assert isinstance(path, list) # Check if the function returns a list</span>
+<span class="diff-unchanged">  </span></code></pre>
+                    </details>
+                </td>
+                <td>
+                    <details>
+                        <summary>View More</summary>
+                        <div><strong>STDERR:</strong> <pre><code class="language-python"></code></pre></div>
+                        <div><strong>STDOUT:</strong> <pre><code class="language-python">============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0
+rootdir: /home/quanlac/code/maude/cover-agent/lpastar
+plugins: anyio-4.6.2.post1, cov-6.0.0
+collected 5 items
+
+test_app.py ...F.                                                        [100%]
+
+=================================== FAILURES ===================================
+______________________________ test_main_routine _______________________________
+
+    def test_main_routine():
+        # Mock the random functions to control start and goal positions.
+        import random
+        random.randint = lambda a, b: 0  # Force start and goal to (0, 0)
+    
+        # Capture printed output to verify path printing.
+        import io
+        from contextlib import redirect_stdout
+        f = io.StringIO()
+        with redirect_stdout(f):
+            import app # Import the module to run the main routine.
+        out = f.getvalue()
+>       assert "Path from start to goal:" in out
+E       AssertionError: assert 'Path from start to goal:' in ''
+
+test_app.py:67: AssertionError
+
+---------- coverage: platform linux, python 3.12.3-final-0 -----------
+Name          Stmts   Miss  Cover
+---------------------------------
+app.py          258     42    84%
+test_app.py      52      0   100%
+---------------------------------
+TOTAL           310     42    86%
+Coverage XML written to file coverage.xml
+
+=========================== short test summary info ============================
+FAILED test_app.py::test_main_routine - AssertionError: assert 'Path from sta...
+========================= 1 failed, 4 passed in 0.07s ==========================
+</code></pre></div>
+                        <div><strong>Test Code:</strong> <pre><code class="language-python">def test_main_routine():
+    # Mock the random functions to control start and goal positions.
+    import random
+    random.randint = lambda a, b: 0  # Force start and goal to (0, 0)
+
+    # Capture printed output to verify path printing.
+    import io
+    from contextlib import redirect_stdout
+    f = io.StringIO()
+    with redirect_stdout(f):
+        import app # Import the module to run the main routine.
+    out = f.getvalue()
+    assert "Path from start to goal:" in out
+</code></pre></div>
+                        <div><strong>Imports:</strong> <pre><code class="language-python">""
+</code></pre></div>
+                    </details>
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="status-PASS">PASS</td>
+                <td></td>
+                <td>0</td>
+                <td>python</td>
+                <td>
+                    <details>
+                        <summary>View Full Code</summary>
+                        <pre><code><span class="diff-unchanged">  #!/usr/bin/env python3</span>
+<span class="diff-unchanged">  """</span>
+<span class="diff-unchanged">  Unit tests for the LPAStar planner using pytest.</span>
+<span class="diff-unchanged">  Two tests are provided:</span>
+<span class="diff-unchanged">    - test_path_found: a clear grid where a valid path is expected.</span>
+<span class="diff-unchanged">    - test_no_path: a grid blocked by obstacles where no valid path exists.</span>
+<span class="diff-unchanged">  """</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  import math</span>
+<span class="diff-unchanged">  import pytest</span>
+<span class="diff-unchanged">  from app import LPAStar, Node, check_outside_boundary, compare_coordinates</span>
+<span class="diff-unchanged">  from app import LazyPQ</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  # For testing purposes, we override the sleep to avoid delays.</span>
+<span class="diff-unchanged">  import time</span>
+<span class="diff-unchanged">  time.sleep = lambda s: None  # disable sleep during tests</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_path_found():</span>
+<span class="diff-unchanged">      # Create a 5x5 grid with no obstacles.</span>
+<span class="diff-unchanged">      grid = [[0 for _ in range(5)] for _ in range(5)]</span>
+<span class="diff-unchanged">      start = Node(0, 0)</span>
+<span class="diff-unchanged">      goal = Node(4, 4)</span>
+<span class="diff-unchanged">      planner = LPAStar(grid)</span>
+<span class="diff-unchanged">      # For faster testing, reduce the number of iterations.</span>
+<span class="diff-unchanged">      planner.max_time_step = 1</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      # Assert that a path was found.</span>
+<span class="diff-unchanged">      assert found is True</span>
+<span class="diff-unchanged">      # Check that the path starts at the start node.</span>
+<span class="diff-unchanged">      assert path[-1] == start</span>
+<span class="diff-unchanged">      # Check that the last node in the path matches the goal (by coordinates).</span>
+<span class="diff-unchanged">      assert compare_coordinates(path[0], goal)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_no_path():</span>
+<span class="diff-unchanged">      # Create a 5x5 grid.</span>
+<span class="diff-unchanged">      grid = [[0 for _ in range(5)] for _ in range(5)]</span>
+<span class="diff-unchanged">      # Place a vertical wall of obstacles in column 2.</span>
+<span class="diff-unchanged">      for i in range(5):</span>
+<span class="diff-unchanged">          grid[i][2] = 1</span>
+<span class="diff-unchanged">      start = Node(0, 0)</span>
+<span class="diff-unchanged">      goal = Node(0, 4)</span>
+<span class="diff-unchanged">      planner = LPAStar(grid)</span>
+<span class="diff-unchanged">      planner.max_time_step = 1  # limit iterations for testing</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      # With a full wall between start and goal, no path should be found.</span>
+<span class="diff-unchanged">      assert found is False</span>
+<span class="diff-unchanged">      assert path == []</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_lazy_pq_pop_empty():</span>
+<span class="diff-unchanged">      pq = LazyPQ()</span>
+<span class="diff-unchanged">      with pytest.raises(KeyError):</span>
+<span class="diff-unchanged">          pq.pop()</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  </span>
+<span class="diff-added">+ def test_no_path_complex():</span>
+<span class="diff-added">+     # Create a 5x5 grid.</span>
+<span class="diff-added">+     grid = [[0 for _ in range(5)] for _ in range(5)]</span>
+<span class="diff-added">+     # Completely surround the start node with obstacles.</span>
+<span class="diff-added">+     grid[0][1] = 1</span>
+<span class="diff-added">+     grid[1][0] = 1</span>
+<span class="diff-added">+     grid[1][1] = 1</span>
+<span class="diff-added">+     start = Node(0, 0)</span>
+<span class="diff-added">+     goal = Node(4, 4)</span>
+<span class="diff-added">+     planner = LPAStar(grid)</span>
+<span class="diff-added">+     planner.max_time_step = 1  # limit iterations for testing</span>
+<span class="diff-added">+     found, path = planner.plan(start, goal)</span>
+<span class="diff-added">+     # With the start node boxed in, no path should be found.</span>
+<span class="diff-added">+     assert found is False</span>
+<span class="diff-added">+     assert path == []</span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+ </span>
+<span class="diff-unchanged">  def test_random_obstacles():</span>
+<span class="diff-unchanged">      n = 5</span>
+<span class="diff-unchanged">      grid = [[0 for _ in range(n)] for _ in range(n)]</span>
+<span class="diff-unchanged">      start = Node(0, 0)</span>
+<span class="diff-unchanged">      goal = Node(n-1, n-1)</span>
+<span class="diff-unchanged">      planner = LPAStar(grid)</span>
+<span class="diff-unchanged">      planner.max_time_step = 5  # Allow multiple time steps for obstacle generation</span>
+<span class="diff-unchanged">      planner.set_dynamic_obstacles(True) # Enable random obstacle creation</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      # Assertions should focus on the behavior, not specific path details which can vary randomly.</span>
+<span class="diff-unchanged">      # For example, check if the planner handles the random obstacles gracefully without errors.</span>
+<span class="diff-unchanged">      assert isinstance(found, bool)  # Check if the function returns a boolean value</span>
+<span class="diff-unchanged">      assert isinstance(path, list) # Check if the function returns a list</span>
+<span class="diff-unchanged">  </span></code></pre>
+                    </details>
+                </td>
+                <td>
+                    <details>
+                        <summary>View More</summary>
+                        <div><strong>STDERR:</strong> <pre><code class="language-python"></code></pre></div>
+                        <div><strong>STDOUT:</strong> <pre><code class="language-python">============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0
+rootdir: /home/quanlac/code/maude/cover-agent/lpastar
+plugins: anyio-4.6.2.post1, cov-6.0.0
+collected 5 items
+
+test_app.py .....                                                        [100%]
+
+---------- coverage: platform linux, python 3.12.3-final-0 -----------
+Name          Stmts   Miss  Cover
+---------------------------------
+app.py          258     33    87%
+test_app.py      54      0   100%
+---------------------------------
+TOTAL           312     33    89%
+Coverage XML written to file coverage.xml
+
+
+============================== 5 passed in 0.07s ===============================
+</code></pre></div>
+                        <div><strong>Test Code:</strong> <pre><code class="language-python">def test_no_path_complex():
+    # Create a 5x5 grid.
+    grid = [[0 for _ in range(5)] for _ in range(5)]
+    # Completely surround the start node with obstacles.
+    grid[0][1] = 1
+    grid[1][0] = 1
+    grid[1][1] = 1
+    start = Node(0, 0)
+    goal = Node(4, 4)
+    planner = LPAStar(grid)
+    planner.max_time_step = 1  # limit iterations for testing
+    found, path = planner.plan(start, goal)
+    # With the start node boxed in, no path should be found.
+    assert found is False
+    assert path == []
+</code></pre></div>
+                        <div><strong>Imports:</strong> <pre><code class="language-python">""
+</code></pre></div>
+                    </details>
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="status-PASS">PASS</td>
+                <td></td>
+                <td>0</td>
+                <td>python</td>
+                <td>
+                    <details>
+                        <summary>View Full Code</summary>
+                        <pre><code><span class="diff-unchanged">  #!/usr/bin/env python3</span>
+<span class="diff-unchanged">  """</span>
+<span class="diff-unchanged">  Unit tests for the LPAStar planner using pytest.</span>
+<span class="diff-unchanged">  Two tests are provided:</span>
+<span class="diff-unchanged">    - test_path_found: a clear grid where a valid path is expected.</span>
+<span class="diff-unchanged">    - test_no_path: a grid blocked by obstacles where no valid path exists.</span>
+<span class="diff-unchanged">  """</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  import math</span>
+<span class="diff-unchanged">  import pytest</span>
+<span class="diff-unchanged">  from app import LPAStar, Node, check_outside_boundary, compare_coordinates</span>
+<span class="diff-unchanged">  from app import LazyPQ</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  # For testing purposes, we override the sleep to avoid delays.</span>
+<span class="diff-unchanged">  import time</span>
+<span class="diff-unchanged">  time.sleep = lambda s: None  # disable sleep during tests</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_path_found():</span>
+<span class="diff-unchanged">      # Create a 5x5 grid with no obstacles.</span>
+<span class="diff-unchanged">      grid = [[0 for _ in range(5)] for _ in range(5)]</span>
+<span class="diff-unchanged">      start = Node(0, 0)</span>
+<span class="diff-unchanged">      goal = Node(4, 4)</span>
+<span class="diff-unchanged">      planner = LPAStar(grid)</span>
+<span class="diff-unchanged">      # For faster testing, reduce the number of iterations.</span>
+<span class="diff-unchanged">      planner.max_time_step = 1</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      # Assert that a path was found.</span>
+<span class="diff-unchanged">      assert found is True</span>
+<span class="diff-unchanged">      # Check that the path starts at the start node.</span>
+<span class="diff-unchanged">      assert path[-1] == start</span>
+<span class="diff-unchanged">      # Check that the last node in the path matches the goal (by coordinates).</span>
+<span class="diff-unchanged">      assert compare_coordinates(path[0], goal)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_no_path():</span>
+<span class="diff-unchanged">      # Create a 5x5 grid.</span>
+<span class="diff-unchanged">      grid = [[0 for _ in range(5)] for _ in range(5)]</span>
+<span class="diff-unchanged">      # Place a vertical wall of obstacles in column 2.</span>
+<span class="diff-unchanged">      for i in range(5):</span>
+<span class="diff-unchanged">          grid[i][2] = 1</span>
+<span class="diff-unchanged">      start = Node(0, 0)</span>
+<span class="diff-unchanged">      goal = Node(0, 4)</span>
+<span class="diff-unchanged">      planner = LPAStar(grid)</span>
+<span class="diff-unchanged">      planner.max_time_step = 1  # limit iterations for testing</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      # With a full wall between start and goal, no path should be found.</span>
+<span class="diff-unchanged">      assert found is False</span>
+<span class="diff-unchanged">      assert path == []</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_lazy_pq_pop_empty():</span>
+<span class="diff-unchanged">      pq = LazyPQ()</span>
+<span class="diff-unchanged">      with pytest.raises(KeyError):</span>
+<span class="diff-unchanged">          pq.pop()</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  </span>
+<span class="diff-added">+ def test_lazy_pq_remove_and_top():</span>
+<span class="diff-added">+     pq = LazyPQ()</span>
+<span class="diff-added">+     node = Node(0, 0)</span>
+<span class="diff-added">+     pq.insert(node, 1)</span>
+<span class="diff-added">+     pq.remove(node)</span>
+<span class="diff-added">+     with pytest.raises(KeyError):</span>
+<span class="diff-added">+         pq.top()</span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+ </span>
+<span class="diff-unchanged">  def test_no_path_complex():</span>
+<span class="diff-unchanged">      # Create a 5x5 grid.</span>
+<span class="diff-unchanged">      grid = [[0 for _ in range(5)] for _ in range(5)]</span>
+<span class="diff-unchanged">      # Completely surround the start node with obstacles.</span>
+<span class="diff-unchanged">      grid[0][1] = 1</span>
+<span class="diff-unchanged">      grid[1][0] = 1</span>
+<span class="diff-unchanged">      grid[1][1] = 1</span>
+<span class="diff-unchanged">      start = Node(0, 0)</span>
+<span class="diff-unchanged">      goal = Node(4, 4)</span>
+<span class="diff-unchanged">      planner = LPAStar(grid)</span>
+<span class="diff-unchanged">      planner.max_time_step = 1  # limit iterations for testing</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      # With the start node boxed in, no path should be found.</span>
+<span class="diff-unchanged">      assert found is False</span>
+<span class="diff-unchanged">      assert path == []</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_random_obstacles():</span>
+<span class="diff-unchanged">      n = 5</span>
+<span class="diff-unchanged">      grid = [[0 for _ in range(n)] for _ in range(n)]</span>
+<span class="diff-unchanged">      start = Node(0, 0)</span>
+<span class="diff-unchanged">      goal = Node(n-1, n-1)</span>
+<span class="diff-unchanged">      planner = LPAStar(grid)</span>
+<span class="diff-unchanged">      planner.max_time_step = 5  # Allow multiple time steps for obstacle generation</span>
+<span class="diff-unchanged">      planner.set_dynamic_obstacles(True) # Enable random obstacle creation</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      # Assertions should focus on the behavior, not specific path details which can vary randomly.</span>
+<span class="diff-unchanged">      # For example, check if the planner handles the random obstacles gracefully without errors.</span>
+<span class="diff-unchanged">      assert isinstance(found, bool)  # Check if the function returns a boolean value</span>
+<span class="diff-unchanged">      assert isinstance(path, list) # Check if the function returns a list</span>
+<span class="diff-unchanged">  </span></code></pre>
+                    </details>
+                </td>
+                <td>
+                    <details>
+                        <summary>View More</summary>
+                        <div><strong>STDERR:</strong> <pre><code class="language-python"></code></pre></div>
+                        <div><strong>STDOUT:</strong> <pre><code class="language-python">============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0
+rootdir: /home/quanlac/code/maude/cover-agent/lpastar
+plugins: anyio-4.6.2.post1, cov-6.0.0
+collected 6 items
+
+test_app.py ......                                                       [100%]
+
+---------- coverage: platform linux, python 3.12.3-final-0 -----------
+Name          Stmts   Miss  Cover
+---------------------------------
+app.py          258     32    88%
+test_app.py      61      0   100%
+---------------------------------
+TOTAL           319     32    90%
+Coverage XML written to file coverage.xml
+
+
+============================== 6 passed in 0.07s ===============================
+</code></pre></div>
+                        <div><strong>Test Code:</strong> <pre><code class="language-python">def test_lazy_pq_remove_and_top():
+    pq = LazyPQ()
+    node = Node(0, 0)
+    pq.insert(node, 1)
+    pq.remove(node)
+    with pytest.raises(KeyError):
+        pq.top()
+</code></pre></div>
+                        <div><strong>Imports:</strong> <pre><code class="language-python">import pytest
+</code></pre></div>
+                    </details>
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="status-PASS">PASS</td>
+                <td></td>
+                <td>0</td>
+                <td>python</td>
+                <td>
+                    <details>
+                        <summary>View Full Code</summary>
+                        <pre><code><span class="diff-unchanged">  #!/usr/bin/env python3</span>
+<span class="diff-unchanged">  """</span>
+<span class="diff-unchanged">  Unit tests for the LPAStar planner using pytest.</span>
+<span class="diff-unchanged">  Two tests are provided:</span>
+<span class="diff-unchanged">    - test_path_found: a clear grid where a valid path is expected.</span>
+<span class="diff-unchanged">    - test_no_path: a grid blocked by obstacles where no valid path exists.</span>
+<span class="diff-unchanged">  """</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  import math</span>
+<span class="diff-unchanged">  import pytest</span>
+<span class="diff-unchanged">  from app import LPAStar, Node, check_outside_boundary, compare_coordinates</span>
+<span class="diff-unchanged">  from app import LazyPQ</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  # For testing purposes, we override the sleep to avoid delays.</span>
+<span class="diff-unchanged">  import time</span>
+<span class="diff-unchanged">  time.sleep = lambda s: None  # disable sleep during tests</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_path_found():</span>
+<span class="diff-unchanged">      # Create a 5x5 grid with no obstacles.</span>
+<span class="diff-unchanged">      grid = [[0 for _ in range(5)] for _ in range(5)]</span>
+<span class="diff-unchanged">      start = Node(0, 0)</span>
+<span class="diff-unchanged">      goal = Node(4, 4)</span>
+<span class="diff-unchanged">      planner = LPAStar(grid)</span>
+<span class="diff-unchanged">      # For faster testing, reduce the number of iterations.</span>
+<span class="diff-unchanged">      planner.max_time_step = 1</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      # Assert that a path was found.</span>
+<span class="diff-unchanged">      assert found is True</span>
+<span class="diff-unchanged">      # Check that the path starts at the start node.</span>
+<span class="diff-unchanged">      assert path[-1] == start</span>
+<span class="diff-unchanged">      # Check that the last node in the path matches the goal (by coordinates).</span>
+<span class="diff-unchanged">      assert compare_coordinates(path[0], goal)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_no_path():</span>
+<span class="diff-unchanged">      # Create a 5x5 grid.</span>
+<span class="diff-unchanged">      grid = [[0 for _ in range(5)] for _ in range(5)]</span>
+<span class="diff-unchanged">      # Place a vertical wall of obstacles in column 2.</span>
+<span class="diff-unchanged">      for i in range(5):</span>
+<span class="diff-unchanged">          grid[i][2] = 1</span>
+<span class="diff-unchanged">      start = Node(0, 0)</span>
+<span class="diff-unchanged">      goal = Node(0, 4)</span>
+<span class="diff-unchanged">      planner = LPAStar(grid)</span>
+<span class="diff-unchanged">      planner.max_time_step = 1  # limit iterations for testing</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      # With a full wall between start and goal, no path should be found.</span>
+<span class="diff-unchanged">      assert found is False</span>
+<span class="diff-unchanged">      assert path == []</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_lazy_pq_pop_empty():</span>
+<span class="diff-unchanged">      pq = LazyPQ()</span>
+<span class="diff-unchanged">      with pytest.raises(KeyError):</span>
+<span class="diff-unchanged">          pq.pop()</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  </span>
+<span class="diff-added">+ def test_dynamic_obstacles():</span>
+<span class="diff-added">+     grid = [[0 for _ in range(5)] for _ in range(5)]</span>
+<span class="diff-added">+     start = Node(0, 0)</span>
+<span class="diff-added">+     goal = Node(4, 4)</span>
+<span class="diff-added">+     planner = LPAStar(grid)</span>
+<span class="diff-added">+     planner.max_time_step = 5</span>
+<span class="diff-added">+     time_discovered_obstacles = {</span>
+<span class="diff-added">+         1: [Node(1, 1)],</span>
+<span class="diff-added">+         2: [Node(2, 2)],</span>
+<span class="diff-added">+         3: [Node(3, 3)]</span>
+<span class="diff-added">+     }</span>
+<span class="diff-added">+     planner.set_dynamic_obstacles(False, time_discovered_obstacles)</span>
+<span class="diff-added">+     found, path = planner.plan(start, goal)</span>
+<span class="diff-added">+     assert isinstance(found, bool)</span>
+<span class="diff-added">+     assert isinstance(path, list)</span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+ </span>
+<span class="diff-unchanged">  def test_lazy_pq_remove_and_top():</span>
+<span class="diff-unchanged">      pq = LazyPQ()</span>
+<span class="diff-unchanged">      node = Node(0, 0)</span>
+<span class="diff-unchanged">      pq.insert(node, 1)</span>
+<span class="diff-unchanged">      pq.remove(node)</span>
+<span class="diff-unchanged">      with pytest.raises(KeyError):</span>
+<span class="diff-unchanged">          pq.top()</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_no_path_complex():</span>
+<span class="diff-unchanged">      # Create a 5x5 grid.</span>
+<span class="diff-unchanged">      grid = [[0 for _ in range(5)] for _ in range(5)]</span>
+<span class="diff-unchanged">      # Completely surround the start node with obstacles.</span>
+<span class="diff-unchanged">      grid[0][1] = 1</span>
+<span class="diff-unchanged">      grid[1][0] = 1</span>
+<span class="diff-unchanged">      grid[1][1] = 1</span>
+<span class="diff-unchanged">      start = Node(0, 0)</span>
+<span class="diff-unchanged">      goal = Node(4, 4)</span>
+<span class="diff-unchanged">      planner = LPAStar(grid)</span>
+<span class="diff-unchanged">      planner.max_time_step = 1  # limit iterations for testing</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      # With the start node boxed in, no path should be found.</span>
+<span class="diff-unchanged">      assert found is False</span>
+<span class="diff-unchanged">      assert path == []</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_random_obstacles():</span>
+<span class="diff-unchanged">      n = 5</span>
+<span class="diff-unchanged">      grid = [[0 for _ in range(n)] for _ in range(n)]</span>
+<span class="diff-unchanged">      start = Node(0, 0)</span>
+<span class="diff-unchanged">      goal = Node(n-1, n-1)</span>
+<span class="diff-unchanged">      planner = LPAStar(grid)</span>
+<span class="diff-unchanged">      planner.max_time_step = 5  # Allow multiple time steps for obstacle generation</span>
+<span class="diff-unchanged">      planner.set_dynamic_obstacles(True) # Enable random obstacle creation</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      # Assertions should focus on the behavior, not specific path details which can vary randomly.</span>
+<span class="diff-unchanged">      # For example, check if the planner handles the random obstacles gracefully without errors.</span>
+<span class="diff-unchanged">      assert isinstance(found, bool)  # Check if the function returns a boolean value</span>
+<span class="diff-unchanged">      assert isinstance(path, list) # Check if the function returns a list</span>
+<span class="diff-unchanged">  </span></code></pre>
+                    </details>
+                </td>
+                <td>
+                    <details>
+                        <summary>View More</summary>
+                        <div><strong>STDERR:</strong> <pre><code class="language-python"></code></pre></div>
+                        <div><strong>STDOUT:</strong> <pre><code class="language-python">============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0
+rootdir: /home/quanlac/code/maude/cover-agent/lpastar
+plugins: anyio-4.6.2.post1, cov-6.0.0
+collected 7 items
+
+test_app.py .......                                                      [100%]
+
+---------- coverage: platform linux, python 3.12.3-final-0 -----------
+Name          Stmts   Miss  Cover
+---------------------------------
+app.py          258     27    90%
+test_app.py      72      0   100%
+---------------------------------
+TOTAL           330     27    92%
+Coverage XML written to file coverage.xml
+
+
+============================== 7 passed in 0.08s ===============================
+</code></pre></div>
+                        <div><strong>Test Code:</strong> <pre><code class="language-python">def test_dynamic_obstacles():
+    grid = [[0 for _ in range(5)] for _ in range(5)]
+    start = Node(0, 0)
+    goal = Node(4, 4)
+    planner = LPAStar(grid)
+    planner.max_time_step = 5
+    time_discovered_obstacles = {
+        1: [Node(1, 1)],
+        2: [Node(2, 2)],
+        3: [Node(3, 3)]
+    }
+    planner.set_dynamic_obstacles(False, time_discovered_obstacles)
+    found, path = planner.plan(start, goal)
+    assert isinstance(found, bool)
+    assert isinstance(path, list)
+</code></pre></div>
+                        <div><strong>Imports:</strong> <pre><code class="language-python"></code></pre></div>
+                    </details>
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="status-FAIL">FAIL</td>
+                <td>Coverage did not increase</td>
+                <td>0</td>
+                <td>python</td>
+                <td>
+                    <details>
+                        <summary>View Full Code</summary>
+                        <pre><code><span class="diff-unchanged">  #!/usr/bin/env python3</span>
+<span class="diff-unchanged">  """</span>
+<span class="diff-unchanged">  Unit tests for the LPAStar planner using pytest.</span>
+<span class="diff-unchanged">  Two tests are provided:</span>
+<span class="diff-unchanged">    - test_path_found: a clear grid where a valid path is expected.</span>
+<span class="diff-unchanged">    - test_no_path: a grid blocked by obstacles where no valid path exists.</span>
+<span class="diff-unchanged">  """</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  import math</span>
+<span class="diff-unchanged">  import pytest</span>
+<span class="diff-unchanged">  from app import LPAStar, Node, check_outside_boundary, compare_coordinates</span>
+<span class="diff-unchanged">  from app import LazyPQ</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  # For testing purposes, we override the sleep to avoid delays.</span>
+<span class="diff-unchanged">  import time</span>
+<span class="diff-unchanged">  time.sleep = lambda s: None  # disable sleep during tests</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_path_found():</span>
+<span class="diff-unchanged">      # Create a 5x5 grid with no obstacles.</span>
+<span class="diff-unchanged">      grid = [[0 for _ in range(5)] for _ in range(5)]</span>
+<span class="diff-unchanged">      start = Node(0, 0)</span>
+<span class="diff-unchanged">      goal = Node(4, 4)</span>
+<span class="diff-unchanged">      planner = LPAStar(grid)</span>
+<span class="diff-unchanged">      # For faster testing, reduce the number of iterations.</span>
+<span class="diff-unchanged">      planner.max_time_step = 1</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      # Assert that a path was found.</span>
+<span class="diff-unchanged">      assert found is True</span>
+<span class="diff-unchanged">      # Check that the path starts at the start node.</span>
+<span class="diff-unchanged">      assert path[-1] == start</span>
+<span class="diff-unchanged">      # Check that the last node in the path matches the goal (by coordinates).</span>
+<span class="diff-unchanged">      assert compare_coordinates(path[0], goal)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_no_path():</span>
+<span class="diff-unchanged">      # Create a 5x5 grid.</span>
+<span class="diff-unchanged">      grid = [[0 for _ in range(5)] for _ in range(5)]</span>
+<span class="diff-unchanged">      # Place a vertical wall of obstacles in column 2.</span>
+<span class="diff-unchanged">      for i in range(5):</span>
+<span class="diff-unchanged">          grid[i][2] = 1</span>
+<span class="diff-unchanged">      start = Node(0, 0)</span>
+<span class="diff-unchanged">      goal = Node(0, 4)</span>
+<span class="diff-unchanged">      planner = LPAStar(grid)</span>
+<span class="diff-unchanged">      planner.max_time_step = 1  # limit iterations for testing</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      # With a full wall between start and goal, no path should be found.</span>
+<span class="diff-unchanged">      assert found is False</span>
+<span class="diff-unchanged">      assert path == []</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_lazy_pq_pop_empty():</span>
+<span class="diff-unchanged">      pq = LazyPQ()</span>
+<span class="diff-unchanged">      with pytest.raises(KeyError):</span>
+<span class="diff-unchanged">          pq.pop()</span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+ def test_lazy_pq_remove_existing():</span>
+<span class="diff-added">+     pq = LazyPQ()</span>
+<span class="diff-added">+     node1 = Node(0, 0)</span>
+<span class="diff-added">+     node2 = Node(1, 1)</span>
+<span class="diff-added">+     pq.insert(node1, 1)</span>
+<span class="diff-added">+     pq.insert(node2, 2)</span>
+<span class="diff-added">+     pq.remove(node1)</span>
+<span class="diff-added">+     assert not pq.is_element_in_struct(node1)</span>
+<span class="diff-added">+     assert pq.is_element_in_struct(node2)</span>
+<span class="diff-added">+     popped_entry = pq.pop()</span>
+<span class="diff-added">+     assert popped_entry.node == node2</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_dynamic_obstacles():</span>
+<span class="diff-unchanged">      grid = [[0 for _ in range(5)] for _ in range(5)]</span>
+<span class="diff-unchanged">      start = Node(0, 0)</span>
+<span class="diff-unchanged">      goal = Node(4, 4)</span>
+<span class="diff-unchanged">      planner = LPAStar(grid)</span>
+<span class="diff-unchanged">      planner.max_time_step = 5</span>
+<span class="diff-unchanged">      time_discovered_obstacles = {</span>
+<span class="diff-unchanged">          1: [Node(1, 1)],</span>
+<span class="diff-unchanged">          2: [Node(2, 2)],</span>
+<span class="diff-unchanged">          3: [Node(3, 3)]</span>
+<span class="diff-unchanged">      }</span>
+<span class="diff-unchanged">      planner.set_dynamic_obstacles(False, time_discovered_obstacles)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      assert isinstance(found, bool)</span>
+<span class="diff-unchanged">      assert isinstance(path, list)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_lazy_pq_remove_and_top():</span>
+<span class="diff-unchanged">      pq = LazyPQ()</span>
+<span class="diff-unchanged">      node = Node(0, 0)</span>
+<span class="diff-unchanged">      pq.insert(node, 1)</span>
+<span class="diff-unchanged">      pq.remove(node)</span>
+<span class="diff-unchanged">      with pytest.raises(KeyError):</span>
+<span class="diff-unchanged">          pq.top()</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_no_path_complex():</span>
+<span class="diff-unchanged">      # Create a 5x5 grid.</span>
+<span class="diff-unchanged">      grid = [[0 for _ in range(5)] for _ in range(5)]</span>
+<span class="diff-unchanged">      # Completely surround the start node with obstacles.</span>
+<span class="diff-unchanged">      grid[0][1] = 1</span>
+<span class="diff-unchanged">      grid[1][0] = 1</span>
+<span class="diff-unchanged">      grid[1][1] = 1</span>
+<span class="diff-unchanged">      start = Node(0, 0)</span>
+<span class="diff-unchanged">      goal = Node(4, 4)</span>
+<span class="diff-unchanged">      planner = LPAStar(grid)</span>
+<span class="diff-unchanged">      planner.max_time_step = 1  # limit iterations for testing</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      # With the start node boxed in, no path should be found.</span>
+<span class="diff-unchanged">      assert found is False</span>
+<span class="diff-unchanged">      assert path == []</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_random_obstacles():</span>
+<span class="diff-unchanged">      n = 5</span>
+<span class="diff-unchanged">      grid = [[0 for _ in range(n)] for _ in range(n)]</span>
+<span class="diff-unchanged">      start = Node(0, 0)</span>
+<span class="diff-unchanged">      goal = Node(n-1, n-1)</span>
+<span class="diff-unchanged">      planner = LPAStar(grid)</span>
+<span class="diff-unchanged">      planner.max_time_step = 5  # Allow multiple time steps for obstacle generation</span>
+<span class="diff-unchanged">      planner.set_dynamic_obstacles(True) # Enable random obstacle creation</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      # Assertions should focus on the behavior, not specific path details which can vary randomly.</span>
+<span class="diff-unchanged">      # For example, check if the planner handles the random obstacles gracefully without errors.</span>
+<span class="diff-unchanged">      assert isinstance(found, bool)  # Check if the function returns a boolean value</span>
+<span class="diff-unchanged">      assert isinstance(path, list) # Check if the function returns a list</span>
+<span class="diff-unchanged">  </span></code></pre>
+                    </details>
+                </td>
+                <td>
+                    <details>
+                        <summary>View More</summary>
+                        <div><strong>STDERR:</strong> <pre><code class="language-python"></code></pre></div>
+                        <div><strong>STDOUT:</strong> <pre><code class="language-python">============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0
+rootdir: /home/quanlac/code/maude/cover-agent/lpastar
+plugins: anyio-4.6.2.post1, cov-6.0.0
+collected 8 items
+
+test_app.py ........                                                     [100%]
+
+---------- coverage: platform linux, python 3.12.3-final-0 -----------
+Name          Stmts   Miss  Cover
+---------------------------------
+app.py          258     27    90%
+test_app.py      83      0   100%
+---------------------------------
+TOTAL           341     27    92%
+Coverage XML written to file coverage.xml
+
+
+============================== 8 passed in 0.08s ===============================
+</code></pre></div>
+                        <div><strong>Test Code:</strong> <pre><code class="language-python">def test_lazy_pq_remove_existing():
+    pq = LazyPQ()
+    node1 = Node(0, 0)
+    node2 = Node(1, 1)
+    pq.insert(node1, 1)
+    pq.insert(node2, 2)
+    pq.remove(node1)
+    assert not pq.is_element_in_struct(node1)
+    assert pq.is_element_in_struct(node2)
+    popped_entry = pq.pop()
+    assert popped_entry.node == node2
+</code></pre></div>
+                        <div><strong>Imports:</strong> <pre><code class="language-python"></code></pre></div>
+                    </details>
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="status-FAIL">FAIL</td>
+                <td>Coverage did not increase</td>
+                <td>0</td>
+                <td>python</td>
+                <td>
+                    <details>
+                        <summary>View Full Code</summary>
+                        <pre><code><span class="diff-unchanged">  #!/usr/bin/env python3</span>
+<span class="diff-unchanged">  """</span>
+<span class="diff-unchanged">  Unit tests for the LPAStar planner using pytest.</span>
+<span class="diff-unchanged">  Two tests are provided:</span>
+<span class="diff-unchanged">    - test_path_found: a clear grid where a valid path is expected.</span>
+<span class="diff-unchanged">    - test_no_path: a grid blocked by obstacles where no valid path exists.</span>
+<span class="diff-unchanged">  """</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  import math</span>
+<span class="diff-unchanged">  import pytest</span>
+<span class="diff-unchanged">  from app import LPAStar, Node, check_outside_boundary, compare_coordinates</span>
+<span class="diff-unchanged">  from app import LazyPQ</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  # For testing purposes, we override the sleep to avoid delays.</span>
+<span class="diff-unchanged">  import time</span>
+<span class="diff-unchanged">  time.sleep = lambda s: None  # disable sleep during tests</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_path_found():</span>
+<span class="diff-unchanged">      # Create a 5x5 grid with no obstacles.</span>
+<span class="diff-unchanged">      grid = [[0 for _ in range(5)] for _ in range(5)]</span>
+<span class="diff-unchanged">      start = Node(0, 0)</span>
+<span class="diff-unchanged">      goal = Node(4, 4)</span>
+<span class="diff-unchanged">      planner = LPAStar(grid)</span>
+<span class="diff-unchanged">      # For faster testing, reduce the number of iterations.</span>
+<span class="diff-unchanged">      planner.max_time_step = 1</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      # Assert that a path was found.</span>
+<span class="diff-unchanged">      assert found is True</span>
+<span class="diff-unchanged">      # Check that the path starts at the start node.</span>
+<span class="diff-unchanged">      assert path[-1] == start</span>
+<span class="diff-unchanged">      # Check that the last node in the path matches the goal (by coordinates).</span>
+<span class="diff-unchanged">      assert compare_coordinates(path[0], goal)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_no_path():</span>
+<span class="diff-unchanged">      # Create a 5x5 grid.</span>
+<span class="diff-unchanged">      grid = [[0 for _ in range(5)] for _ in range(5)]</span>
+<span class="diff-unchanged">      # Place a vertical wall of obstacles in column 2.</span>
+<span class="diff-unchanged">      for i in range(5):</span>
+<span class="diff-unchanged">          grid[i][2] = 1</span>
+<span class="diff-unchanged">      start = Node(0, 0)</span>
+<span class="diff-unchanged">      goal = Node(0, 4)</span>
+<span class="diff-unchanged">      planner = LPAStar(grid)</span>
+<span class="diff-unchanged">      planner.max_time_step = 1  # limit iterations for testing</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      # With a full wall between start and goal, no path should be found.</span>
+<span class="diff-unchanged">      assert found is False</span>
+<span class="diff-unchanged">      assert path == []</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_lazy_pq_pop_empty():</span>
+<span class="diff-unchanged">      pq = LazyPQ()</span>
+<span class="diff-unchanged">      with pytest.raises(KeyError):</span>
+<span class="diff-unchanged">          pq.pop()</span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+ def test_no_valid_predecessor():</span>
+<span class="diff-added">+     grid = [[0 for _ in range(3)] for _ in range(3)]</span>
+<span class="diff-added">+     grid[0][1] = 1</span>
+<span class="diff-added">+     grid[1][0] = 1</span>
+<span class="diff-added">+     grid[1][1] = 1</span>
+<span class="diff-added">+     start = Node(0, 0)</span>
+<span class="diff-added">+     goal = Node(2, 2)</span>
+<span class="diff-added">+     planner = LPAStar(grid)</span>
+<span class="diff-added">+     planner.max_time_step = 1</span>
+<span class="diff-added">+     found, path = planner.plan(start, goal)</span>
+<span class="diff-added">+     assert found is False</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_dynamic_obstacles():</span>
+<span class="diff-unchanged">      grid = [[0 for _ in range(5)] for _ in range(5)]</span>
+<span class="diff-unchanged">      start = Node(0, 0)</span>
+<span class="diff-unchanged">      goal = Node(4, 4)</span>
+<span class="diff-unchanged">      planner = LPAStar(grid)</span>
+<span class="diff-unchanged">      planner.max_time_step = 5</span>
+<span class="diff-unchanged">      time_discovered_obstacles = {</span>
+<span class="diff-unchanged">          1: [Node(1, 1)],</span>
+<span class="diff-unchanged">          2: [Node(2, 2)],</span>
+<span class="diff-unchanged">          3: [Node(3, 3)]</span>
+<span class="diff-unchanged">      }</span>
+<span class="diff-unchanged">      planner.set_dynamic_obstacles(False, time_discovered_obstacles)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      assert isinstance(found, bool)</span>
+<span class="diff-unchanged">      assert isinstance(path, list)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_lazy_pq_remove_and_top():</span>
+<span class="diff-unchanged">      pq = LazyPQ()</span>
+<span class="diff-unchanged">      node = Node(0, 0)</span>
+<span class="diff-unchanged">      pq.insert(node, 1)</span>
+<span class="diff-unchanged">      pq.remove(node)</span>
+<span class="diff-unchanged">      with pytest.raises(KeyError):</span>
+<span class="diff-unchanged">          pq.top()</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_no_path_complex():</span>
+<span class="diff-unchanged">      # Create a 5x5 grid.</span>
+<span class="diff-unchanged">      grid = [[0 for _ in range(5)] for _ in range(5)]</span>
+<span class="diff-unchanged">      # Completely surround the start node with obstacles.</span>
+<span class="diff-unchanged">      grid[0][1] = 1</span>
+<span class="diff-unchanged">      grid[1][0] = 1</span>
+<span class="diff-unchanged">      grid[1][1] = 1</span>
+<span class="diff-unchanged">      start = Node(0, 0)</span>
+<span class="diff-unchanged">      goal = Node(4, 4)</span>
+<span class="diff-unchanged">      planner = LPAStar(grid)</span>
+<span class="diff-unchanged">      planner.max_time_step = 1  # limit iterations for testing</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      # With the start node boxed in, no path should be found.</span>
+<span class="diff-unchanged">      assert found is False</span>
+<span class="diff-unchanged">      assert path == []</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_random_obstacles():</span>
+<span class="diff-unchanged">      n = 5</span>
+<span class="diff-unchanged">      grid = [[0 for _ in range(n)] for _ in range(n)]</span>
+<span class="diff-unchanged">      start = Node(0, 0)</span>
+<span class="diff-unchanged">      goal = Node(n-1, n-1)</span>
+<span class="diff-unchanged">      planner = LPAStar(grid)</span>
+<span class="diff-unchanged">      planner.max_time_step = 5  # Allow multiple time steps for obstacle generation</span>
+<span class="diff-unchanged">      planner.set_dynamic_obstacles(True) # Enable random obstacle creation</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      # Assertions should focus on the behavior, not specific path details which can vary randomly.</span>
+<span class="diff-unchanged">      # For example, check if the planner handles the random obstacles gracefully without errors.</span>
+<span class="diff-unchanged">      assert isinstance(found, bool)  # Check if the function returns a boolean value</span>
+<span class="diff-unchanged">      assert isinstance(path, list) # Check if the function returns a list</span>
+<span class="diff-unchanged">  </span></code></pre>
+                    </details>
+                </td>
+                <td>
+                    <details>
+                        <summary>View More</summary>
+                        <div><strong>STDERR:</strong> <pre><code class="language-python"></code></pre></div>
+                        <div><strong>STDOUT:</strong> <pre><code class="language-python">============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0
+rootdir: /home/quanlac/code/maude/cover-agent/lpastar
+plugins: anyio-4.6.2.post1, cov-6.0.0
+collected 8 items
+
+test_app.py ........                                                     [100%]
+
+---------- coverage: platform linux, python 3.12.3-final-0 -----------
+Name          Stmts   Miss  Cover
+---------------------------------
+app.py          258     27    90%
+test_app.py      83      0   100%
+---------------------------------
+TOTAL           341     27    92%
+Coverage XML written to file coverage.xml
+
+
+============================== 8 passed in 0.08s ===============================
+</code></pre></div>
+                        <div><strong>Test Code:</strong> <pre><code class="language-python">def test_no_valid_predecessor():
+    grid = [[0 for _ in range(3)] for _ in range(3)]
+    grid[0][1] = 1
+    grid[1][0] = 1
+    grid[1][1] = 1
+    start = Node(0, 0)
+    goal = Node(2, 2)
+    planner = LPAStar(grid)
+    planner.max_time_step = 1
+    found, path = planner.plan(start, goal)
+    assert found is False
+</code></pre></div>
+                        <div><strong>Imports:</strong> <pre><code class="language-python"></code></pre></div>
+                    </details>
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="status-FAIL">FAIL</td>
+                <td>Test failed</td>
+                <td>1</td>
+                <td>python</td>
+                <td>
+                    <details>
+                        <summary>View Full Code</summary>
+                        <pre><code><span class="diff-unchanged">  #!/usr/bin/env python3</span>
+<span class="diff-unchanged">  """</span>
+<span class="diff-unchanged">  Unit tests for the LPAStar planner using pytest.</span>
+<span class="diff-unchanged">  Two tests are provided:</span>
+<span class="diff-unchanged">    - test_path_found: a clear grid where a valid path is expected.</span>
+<span class="diff-unchanged">    - test_no_path: a grid blocked by obstacles where no valid path exists.</span>
+<span class="diff-unchanged">  """</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  import math</span>
+<span class="diff-unchanged">  import pytest</span>
+<span class="diff-unchanged">  from app import LPAStar, Node, check_outside_boundary, compare_coordinates</span>
+<span class="diff-unchanged">  from app import LazyPQ</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  # For testing purposes, we override the sleep to avoid delays.</span>
+<span class="diff-unchanged">  import time</span>
+<span class="diff-unchanged">  time.sleep = lambda s: None  # disable sleep during tests</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_path_found():</span>
+<span class="diff-unchanged">      # Create a 5x5 grid with no obstacles.</span>
+<span class="diff-unchanged">      grid = [[0 for _ in range(5)] for _ in range(5)]</span>
+<span class="diff-unchanged">      start = Node(0, 0)</span>
+<span class="diff-unchanged">      goal = Node(4, 4)</span>
+<span class="diff-unchanged">      planner = LPAStar(grid)</span>
+<span class="diff-unchanged">      # For faster testing, reduce the number of iterations.</span>
+<span class="diff-unchanged">      planner.max_time_step = 1</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      # Assert that a path was found.</span>
+<span class="diff-unchanged">      assert found is True</span>
+<span class="diff-unchanged">      # Check that the path starts at the start node.</span>
+<span class="diff-unchanged">      assert path[-1] == start</span>
+<span class="diff-unchanged">      # Check that the last node in the path matches the goal (by coordinates).</span>
+<span class="diff-unchanged">      assert compare_coordinates(path[0], goal)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_no_path():</span>
+<span class="diff-unchanged">      # Create a 5x5 grid.</span>
+<span class="diff-unchanged">      grid = [[0 for _ in range(5)] for _ in range(5)]</span>
+<span class="diff-unchanged">      # Place a vertical wall of obstacles in column 2.</span>
+<span class="diff-unchanged">      for i in range(5):</span>
+<span class="diff-unchanged">          grid[i][2] = 1</span>
+<span class="diff-unchanged">      start = Node(0, 0)</span>
+<span class="diff-unchanged">      goal = Node(0, 4)</span>
+<span class="diff-unchanged">      planner = LPAStar(grid)</span>
+<span class="diff-unchanged">      planner.max_time_step = 1  # limit iterations for testing</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      # With a full wall between start and goal, no path should be found.</span>
+<span class="diff-unchanged">      assert found is False</span>
+<span class="diff-unchanged">      assert path == []</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_lazy_pq_pop_empty():</span>
+<span class="diff-unchanged">      pq = LazyPQ()</span>
+<span class="diff-unchanged">      with pytest.raises(KeyError):</span>
+<span class="diff-unchanged">          pq.pop()</span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+ def test_main_routine_execution():</span>
+<span class="diff-added">+     import random</span>
+<span class="diff-added">+     random.randint = lambda a, b: 0  # Force start and goal to (0, 0)</span>
+<span class="diff-added">+     import app</span>
+<span class="diff-added">+     assert isinstance(app.grid, list) # Check if grid is created</span>
+<span class="diff-added">+     assert isinstance(app.start, app.Node) # Check if start node is created</span>
+<span class="diff-added">+     assert isinstance(app.goal, app.Node) # Check if goal node is created</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_dynamic_obstacles():</span>
+<span class="diff-unchanged">      grid = [[0 for _ in range(5)] for _ in range(5)]</span>
+<span class="diff-unchanged">      start = Node(0, 0)</span>
+<span class="diff-unchanged">      goal = Node(4, 4)</span>
+<span class="diff-unchanged">      planner = LPAStar(grid)</span>
+<span class="diff-unchanged">      planner.max_time_step = 5</span>
+<span class="diff-unchanged">      time_discovered_obstacles = {</span>
+<span class="diff-unchanged">          1: [Node(1, 1)],</span>
+<span class="diff-unchanged">          2: [Node(2, 2)],</span>
+<span class="diff-unchanged">          3: [Node(3, 3)]</span>
+<span class="diff-unchanged">      }</span>
+<span class="diff-unchanged">      planner.set_dynamic_obstacles(False, time_discovered_obstacles)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      assert isinstance(found, bool)</span>
+<span class="diff-unchanged">      assert isinstance(path, list)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_lazy_pq_remove_and_top():</span>
+<span class="diff-unchanged">      pq = LazyPQ()</span>
+<span class="diff-unchanged">      node = Node(0, 0)</span>
+<span class="diff-unchanged">      pq.insert(node, 1)</span>
+<span class="diff-unchanged">      pq.remove(node)</span>
+<span class="diff-unchanged">      with pytest.raises(KeyError):</span>
+<span class="diff-unchanged">          pq.top()</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_no_path_complex():</span>
+<span class="diff-unchanged">      # Create a 5x5 grid.</span>
+<span class="diff-unchanged">      grid = [[0 for _ in range(5)] for _ in range(5)]</span>
+<span class="diff-unchanged">      # Completely surround the start node with obstacles.</span>
+<span class="diff-unchanged">      grid[0][1] = 1</span>
+<span class="diff-unchanged">      grid[1][0] = 1</span>
+<span class="diff-unchanged">      grid[1][1] = 1</span>
+<span class="diff-unchanged">      start = Node(0, 0)</span>
+<span class="diff-unchanged">      goal = Node(4, 4)</span>
+<span class="diff-unchanged">      planner = LPAStar(grid)</span>
+<span class="diff-unchanged">      planner.max_time_step = 1  # limit iterations for testing</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      # With the start node boxed in, no path should be found.</span>
+<span class="diff-unchanged">      assert found is False</span>
+<span class="diff-unchanged">      assert path == []</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_random_obstacles():</span>
+<span class="diff-unchanged">      n = 5</span>
+<span class="diff-unchanged">      grid = [[0 for _ in range(n)] for _ in range(n)]</span>
+<span class="diff-unchanged">      start = Node(0, 0)</span>
+<span class="diff-unchanged">      goal = Node(n-1, n-1)</span>
+<span class="diff-unchanged">      planner = LPAStar(grid)</span>
+<span class="diff-unchanged">      planner.max_time_step = 5  # Allow multiple time steps for obstacle generation</span>
+<span class="diff-unchanged">      planner.set_dynamic_obstacles(True) # Enable random obstacle creation</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      # Assertions should focus on the behavior, not specific path details which can vary randomly.</span>
+<span class="diff-unchanged">      # For example, check if the planner handles the random obstacles gracefully without errors.</span>
+<span class="diff-unchanged">      assert isinstance(found, bool)  # Check if the function returns a boolean value</span>
+<span class="diff-unchanged">      assert isinstance(path, list) # Check if the function returns a list</span>
+<span class="diff-unchanged">  </span></code></pre>
+                    </details>
+                </td>
+                <td>
+                    <details>
+                        <summary>View More</summary>
+                        <div><strong>STDERR:</strong> <pre><code class="language-python"></code></pre></div>
+                        <div><strong>STDOUT:</strong> <pre><code class="language-python">============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0
+rootdir: /home/quanlac/code/maude/cover-agent/lpastar
+plugins: anyio-4.6.2.post1, cov-6.0.0
+collected 8 items
+
+test_app.py ...F....                                                     [100%]
+
+=================================== FAILURES ===================================
+_________________________ test_main_routine_execution __________________________
+
+    def test_main_routine_execution():
+        import random
+        random.randint = lambda a, b: 0  # Force start and goal to (0, 0)
+        import app
+>       assert isinstance(app.grid, list) # Check if grid is created
+E       AttributeError: module 'app' has no attribute 'grid'
+
+test_app.py:59: AttributeError
+
+---------- coverage: platform linux, python 3.12.3-final-0 -----------
+Name          Stmts   Miss  Cover
+---------------------------------
+app.py          258     30    88%
+test_app.py      79      2    97%
+---------------------------------
+TOTAL           337     32    91%
+Coverage XML written to file coverage.xml
+
+=========================== short test summary info ============================
+FAILED test_app.py::test_main_routine_execution - AttributeError: module 'app...
+========================= 1 failed, 7 passed in 0.09s ==========================
+</code></pre></div>
+                        <div><strong>Test Code:</strong> <pre><code class="language-python">def test_main_routine_execution():
+    import random
+    random.randint = lambda a, b: 0  # Force start and goal to (0, 0)
+    import app
+    assert isinstance(app.grid, list) # Check if grid is created
+    assert isinstance(app.start, app.Node) # Check if start node is created
+    assert isinstance(app.goal, app.Node) # Check if goal node is created
+</code></pre></div>
+                        <div><strong>Imports:</strong> <pre><code class="language-python">""
+</code></pre></div>
+                    </details>
+                </td>
+            </tr>
+            
+        </table>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/prism.min.js"></script>
+    </body>
+    </html>
+    

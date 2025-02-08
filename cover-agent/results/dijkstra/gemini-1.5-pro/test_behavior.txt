@@ -1,0 +1,4 @@
+Test Behavior: Test the case where the start and goal are the same.
+
+Test Behavior: Tests the path reconstruction when a parent node cannot be found, triggering the error handling within convert_closed_list_to_path.
+

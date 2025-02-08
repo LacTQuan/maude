@@ -1,34 +1,99 @@
-from app import main
+#!/usr/bin/env python3
+"""
+Unit tests for the AStar algorithm using pytest.
+To run these tests, execute:
+    pytest test_astar.py
+"""
 
-def test_main():
-    # 0: Free cell, 1: Obstacle
+import pytest
+from app import Node, AStar, compare_coordinates
+
+def test_start_equals_goal():
+    """
+    Test the trivial case where the start and goal are the same.
+    The expected result is an immediate success with a path containing only the start.
+    """
     grid = [
-        [0, 0, 0, 0],
-        [1, 1, 0, 1],
-        [0, 0, 0, 0],
-        [0, 1, 1, 0],
+        [0, 0],
+        [0, 0]
     ]
-    start = (0, 0)
-    goal = (3, 3)
-    
-    expected_path = [(0, 0), (0, 1), (0, 2), (1, 2), (2, 2), (2, 3), (3, 3)]
-    actual_path = main(grid, start, goal)
-    
-    assert actual_path == expected_path, f"Expected {expected_path}, but got {actual_path}"
+    start = Node(0, 0)
+    goal = Node(0, 0)
+    # Set the start node's id and parent id.
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is True, "Path should be found when start equals goal"
+    # The path should consist of only one node (start).
+    assert len(path) == 1
+    assert compare_coordinates(path[0], start), "The only node in the path should be the start"
 
-def test_no_path_found():
-    # 0: Free cell, 1: Obstacle
+def test_simple_path():
+    """
+    Test a simple 5x5 grid with no obstacles.
+    The start is at the top‐left and the goal at the bottom‐right.
+    The algorithm should find a path.
+    """
+    n = 5
+    grid = [[0 for _ in range(n)] for _ in range(n)]
+    start = Node(0, 0)
+    goal = Node(4, 4)
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is True, "A path should be found in an open grid"
+    # According to our conversion, the returned path is from goal to start.
+    assert compare_coordinates(path[0], goal), "The first node in the path should be the goal"
+    assert compare_coordinates(path[-1], start), "The last node in the path should be the start"
+
+def test_no_path():
+    """
+    Test a grid where obstacles block any possible path from start to goal.
+    Obstacles are represented by any non-zero cell.
+    """
     grid = [
-        [0, 0, 0, 0],
-        [1, 1, 1, 1],
-        [0, 0, 0, 0],
-        [0, 1, 1, 0],
+        [0, 1, 1],
+        [1, 1, 1],
+        [1, 1, 0]
     ]
-    start = (0, 0)
-    goal = (3, 3)
+    start = Node(0, 0)
+    goal = Node(2, 2)
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is False, "No path should be found when obstacles block the way"
+    assert path == [], "The path should be empty when no path exists"
 
-    expected_path = "No path found"
-    actual_path = main(grid, start, goal)
+grid = [
+    [0, 0],
+    [0, 0]
+]
+start = Node(0, 0)
+goal = Node(2, 2)
+# Set the start node's id and parent id.
+start.id = 0
+start.pid = 0
+astar = AStar(grid)
+found, path = astar.plan(start, goal)
+assert found is False, "Path should not be found when the goal is outside the grid"
 
-    assert actual_path == expected_path, f"Expected {expected_path}, but got {actual_path}"
+
+def test_path_reconstruction_error():
+    grid = [[0, 0], [0, 0]]
+    start = Node(0, 0)
+    goal = Node(1, 1)
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+
+    # Manually create a closed list with an invalid parent id
+    closed_list = {start, goal}
+    goal.pid = -1  # Invalid parent ID
+
+    # Call the path conversion function directly
+    path = astar.convert_closed_list_to_path(closed_list, start, goal)
+    assert path == []
 

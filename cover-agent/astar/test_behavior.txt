@@ -1,3 +1,0 @@
-
-Test Behavior: Test that the function returns "No path found" when there is no path between start and goal.
-

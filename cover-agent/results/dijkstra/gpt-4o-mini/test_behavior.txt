@@ -1,0 +1,80 @@
+Test Behavior: Test that the path is found when the start and goal are the same.
+
+Test Behavior: Test that the path is not found when the start is outside the grid.
+
+Test Behavior: Test that the path is not found when the goal is outside the grid.
+
+Test Behavior: Test that the path is not found when both start and goal are outside the grid.
+
+Test Behavior: Test that the path is found when there are multiple valid paths.
+A 4x4 grid with obstacles that allows for multiple routes from start to goal.
+
+Test Behavior: Test that the path is not found when the grid is completely blocked.
+A 3x3 grid where all cells are obstacles.
+
+Test Behavior: Test that the path is found when the grid has a single obstacle.
+A 3x3 grid where only one cell is blocked.
+
+Test Behavior: Test that the path is not found when the start is on an obstacle.
+A 3x3 grid where the start position is blocked.
+
+Test Behavior: Test that the path is not found when the grid is completely blocked.
+A 3x3 grid where all cells are obstacles.
+
+Test Behavior: Test that the path is not found when the start is on an obstacle.
+A 3x3 grid where the start position is blocked.
+
+Test Behavior: Test that the path is not found when the goal is on an obstacle.
+A 3x3 grid where the goal position is blocked.
+
+Test Behavior: Test that the path is found when the grid has a single obstacle.
+A 3x3 grid where only one cell is blocked.
+
+Test Behavior: Test that the path is not found when the start is on an obstacle.
+A 3x3 grid where the start position is blocked.
+
+Test Behavior: Test that the path is not found when the goal is on an obstacle.
+A 3x3 grid where the goal position is blocked.
+
+Test Behavior: Test that the path is not found when the grid is completely blocked.
+A 3x3 grid where all cells are obstacles.
+
+Test Behavior: Test that the path is found when the grid has a single obstacle.
+A 3x3 grid where only one cell is blocked.
+
+Test Behavior: Test that the path is not found when the start node is on an obstacle.
+A 3x3 grid where the start position is blocked.
+
+Test Behavior: Test that the path is not found when the goal node is on an obstacle.
+A 3x3 grid where the goal position is blocked.
+
+Test Behavior: Test that the path is not found when the grid is completely blocked.
+A 3x3 grid where all cells are obstacles.
+
+Test Behavior: Test that the path is found when the grid has a single obstacle.
+A 3x3 grid where only one cell is blocked.
+
+Test Behavior: Test that the path is not found when the start node is on an obstacle.
+A 3x3 grid where the start position is blocked.
+
+Test Behavior: Test that the path is not found when the goal node is on an obstacle.
+A 3x3 grid where the goal position is blocked.
+
+Test Behavior: Test that the path is not found when the grid is completely blocked.
+A 3x3 grid where all cells are obstacles.
+
+Test Behavior: Test that the path is found when the grid has a single obstacle.
+A 3x3 grid where only one cell is blocked.
+
+Test Behavior: Test that the path is not found when the start node is on an obstacle.
+A 3x3 grid where the start position is blocked.
+
+Test Behavior: Test that the path is not found when the goal node is on an obstacle.
+A 3x3 grid where the goal position is blocked.
+
+Test Behavior: Test that the path is not found in a completely blocked grid.
+A 3x3 grid where all cells are obstacles.
+
+Test Behavior: Test that the path is found when the grid has a single obstacle.
+A 3x3 grid where only one cell is blocked.
+

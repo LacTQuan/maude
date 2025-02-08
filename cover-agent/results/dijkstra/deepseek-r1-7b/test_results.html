@@ -1,0 +1,2400 @@
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Test Results</title>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/themes/prism-okaidia.min.css" rel="stylesheet" />
+        <style>
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                margin: 20px;
+            }
+            table {
+                border-collapse: collapse;
+                width: 100%;
+                box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+            }
+            th, td {
+                border: 1px solid #ddd;
+                text-align: left;
+                padding: 8px;
+            }
+            th {
+                background-color: #f2f2f2;
+            }
+            tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
+            .status-pass {
+                color: green;
+            }
+            .status-fail {
+                color: red;
+            }
+            pre {
+                background-color: #282c34 !important;
+                color: #ffffff !important;
+                padding: 10px;
+                border-radius: 5px;
+                overflow-x: auto;
+                white-space: pre-wrap;
+                font-family: 'Courier New', Courier, monospace;
+                font-size: 1.1em;  /* Slightly larger font size */
+            }
+        </style>
+    </head>
+    <body>
+        <table>
+            <tr>
+                <th>Status</th>
+                <th>Reason</th>
+                <th>Exit Code</th>
+                <th>Language</th>
+                <th>Modified Test File</th>
+                <th>Details</th>
+            </tr>
+            
+            <tr>
+                <td class="status-FAIL">FAIL</td>
+                <td>Coverage did not increase</td>
+                <td>0</td>
+                <td>python</td>
+                <td>
+                    <details>
+                        <summary>View Full Code</summary>
+                        <pre><code><span class="diff-unchanged">  import pytest</span>
+<span class="diff-unchanged">  from app import Node, Dijkstra</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_simple_path():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 1:</span>
+<span class="diff-unchanged">      A simple 3x3 grid with no obstacles. The start is at (0,0) and the goal is at (2,2).</span>
+<span class="diff-unchanged">      We expect the planner to find a path.</span>
+<span class="diff-unchanged">      Note: The returned path is in reverse order (goal to start).</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 0, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      </span>
+<span class="diff-unchanged">      assert found is True, "Path should be found in a clear grid."</span>
+<span class="diff-unchanged">      # Check that the path starts at the goal and ends at the start.</span>
+<span class="diff-unchanged">      assert path[0] == goal, "Path should start with the goal node."</span>
+<span class="diff-unchanged">      assert path[-1] == start, "Path should end with the start node."</span>
+<span class="diff-unchanged">      # Optionally, check that the length of the path is reasonable (at least Manhattan distance + 1)</span>
+<span class="diff-unchanged">      manhattan_distance = abs(goal.x - start.x) + abs(goal.y - start.y)</span>
+<span class="diff-unchanged">      assert len(path) >= manhattan_distance + 1</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_no_path():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 2:</span>
+<span class="diff-unchanged">      A 3x3 grid where the start is completely blocked off.</span>
+<span class="diff-unchanged">      Start is at (0,0) and obstacles are placed so that there is no valid move.</span>
+<span class="diff-unchanged">      The planner should return that no path is found.</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [1, 1, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">      assert found is False, "No path should be found if the start is blocked."</span>
+<span class="diff-unchanged">      assert path == [], "Path should be empty when no path is found."</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_obstacle_detour():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 3:</span>
+<span class="diff-unchanged">      A 3x3 grid with a vertical obstacle in the middle.</span>
+<span class="diff-unchanged">      The start is at (0,0) and the goal is at (2,2). A detour is required.</span>
+<span class="diff-unchanged">      We expect the planner to find a valid path.</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">      assert found is True, "A path should be found around the obstacle."</span>
+<span class="diff-unchanged">      assert path[0] == goal, "Path should start with the goal node."</span>
+<span class="diff-unchanged">      assert path[-1] == start, "Path should end with the start node."</span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+     </span></code></pre>
+                    </details>
+                </td>
+                <td>
+                    <details>
+                        <summary>View More</summary>
+                        <div><strong>STDERR:</strong> <pre><code class="language-python"></code></pre></div>
+                        <div><strong>STDOUT:</strong> <pre><code class="language-python">============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0
+rootdir: /home/quanlac/code/maude/cover-agent/dijkstra
+plugins: anyio-4.6.2.post1, cov-6.0.0
+collected 3 items
+
+test_app.py ...                                                          [100%]
+
+---------- coverage: platform linux, python 3.12.3-final-0 -----------
+Name          Stmts   Miss  Cover
+---------------------------------
+app.py          106     20    81%
+test_app.py      30      0   100%
+---------------------------------
+TOTAL           136     20    85%
+Coverage XML written to file coverage.xml
+
+
+============================== 3 passed in 0.04s ===============================
+</code></pre></div>
+                        <div><strong>Test Code:</strong> <pre><code class="language-python"></code></pre></div>
+                        <div><strong>Imports:</strong> <pre><code class="language-python"></code></pre></div>
+                    </details>
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="status-FAIL">FAIL</td>
+                <td>Coverage did not increase</td>
+                <td>0</td>
+                <td>python</td>
+                <td>
+                    <details>
+                        <summary>View Full Code</summary>
+                        <pre><code><span class="diff-unchanged">  import pytest</span>
+<span class="diff-unchanged">  from app import Node, Dijkstra</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_simple_path():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 1:</span>
+<span class="diff-unchanged">      A simple 3x3 grid with no obstacles. The start is at (0,0) and the goal is at (2,2).</span>
+<span class="diff-unchanged">      We expect the planner to find a path.</span>
+<span class="diff-unchanged">      Note: The returned path is in reverse order (goal to start).</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 0, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      </span>
+<span class="diff-unchanged">      assert found is True, "Path should be found in a clear grid."</span>
+<span class="diff-unchanged">      # Check that the path starts at the goal and ends at the start.</span>
+<span class="diff-unchanged">      assert path[0] == goal, "Path should start with the goal node."</span>
+<span class="diff-unchanged">      assert path[-1] == start, "Path should end with the start node."</span>
+<span class="diff-unchanged">      # Optionally, check that the length of the path is reasonable (at least Manhattan distance + 1)</span>
+<span class="diff-unchanged">      manhattan_distance = abs(goal.x - start.x) + abs(goal.y - start.y)</span>
+<span class="diff-unchanged">      assert len(path) >= manhattan_distance + 1</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_no_path():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 2:</span>
+<span class="diff-unchanged">      A 3x3 grid where the start is completely blocked off.</span>
+<span class="diff-unchanged">      Start is at (0,0) and obstacles are placed so that there is no valid move.</span>
+<span class="diff-unchanged">      The planner should return that no path is found.</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [1, 1, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">      assert found is False, "No path should be found if the start is blocked."</span>
+<span class="diff-unchanged">      assert path == [], "Path should be empty when no path is found."</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_obstacle_detour():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 3:</span>
+<span class="diff-unchanged">      A 3x3 grid with a vertical obstacle in the middle.</span>
+<span class="diff-unchanged">      The start is at (0,0) and the goal is at (2,2). A detour is required.</span>
+<span class="diff-unchanged">      We expect the planner to find a valid path.</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">      assert found is True, "A path should be found around the obstacle."</span>
+<span class="diff-unchanged">      assert path[0] == goal, "Path should start with the goal node."</span>
+<span class="diff-unchanged">      assert path[-1] == start, "Path should end with the start node."</span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+     def test_various_list_sizes_and_types(self):</span>
+<span class="diff-added">+         # Test cases for different list sizes and types</span>
+<span class="diff-added">+         test_cases = [</span>
+<span class="diff-added">+             ([0], int),</span>
+<span class="diff-added">+             ([1], str),</span>
+<span class="diff-added">+             ([2], bool),</span>
+<span class="diff-added">+             ([-1], float)</span>
+<span class="diff-added">+         ]</span>
+<span class="diff-added">+         </span>
+<span class="diff-added">+         for size, dtype in test_cases:</span>
+<span class="diff-added">+             input_list = [size]  # Using a single-element list as per existing function</span>
+<span class="diff-added">+             result = self.single_element_list(input_list)</span>
+<span class="diff-added">+             </span>
+<span class="diff-added">+             if isinstance(size, int):</span>
+<span class="diff-added">+                 expected_output = "single-element integer"</span>
+<span class="diff-added">+             elif isinstance(size, str):</span>
+<span class="diff-added">+                 expected_output = "single-element string"</span>
+<span class="diff-added">+             elif isinstance(size, bool):</span>
+<span class="diff-added">+                 expected_output = "single-element boolean"</span>
+<span class="diff-added">+             else:</span>
+<span class="diff-added">+                 expected_output = "single-element float"</span>
+<span class="diff-added">+                 </span>
+<span class="diff-added">+             assert result == expected_output, f"Test failed for input {input_list}"</span>
+<span class="diff-added">+             </span>
+<span class="diff-added">+         print("All test cases passed successfully")</span></code></pre>
+                    </details>
+                </td>
+                <td>
+                    <details>
+                        <summary>View More</summary>
+                        <div><strong>STDERR:</strong> <pre><code class="language-python"></code></pre></div>
+                        <div><strong>STDOUT:</strong> <pre><code class="language-python">============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0
+rootdir: /home/quanlac/code/maude/cover-agent/dijkstra
+plugins: anyio-4.6.2.post1, cov-6.0.0
+collected 3 items
+
+test_app.py ...                                                          [100%]
+
+---------- coverage: platform linux, python 3.12.3-final-0 -----------
+Name          Stmts   Miss  Cover
+---------------------------------
+app.py          106     20    81%
+test_app.py      44     13    70%
+---------------------------------
+TOTAL           150     33    78%
+Coverage XML written to file coverage.xml
+
+
+============================== 3 passed in 0.05s ===============================
+</code></pre></div>
+                        <div><strong>Test Code:</strong> <pre><code class="language-python">def test_various_list_sizes_and_types(self):
+    # Test cases for different list sizes and types
+    test_cases = [
+        ([0], int),
+        ([1], str),
+        ([2], bool),
+        ([-1], float)
+    ]
+    
+    for size, dtype in test_cases:
+        input_list = [size]  # Using a single-element list as per existing function
+        result = self.single_element_list(input_list)
+        
+        if isinstance(size, int):
+            expected_output = "single-element integer"
+        elif isinstance(size, str):
+            expected_output = "single-element string"
+        elif isinstance(size, bool):
+            expected_output = "single-element boolean"
+        else:
+            expected_output = "single-element float"
+            
+        assert result == expected_output, f"Test failed for input {input_list}"
+        
+    print("All test cases passed successfully")
+</code></pre></div>
+                        <div><strong>Imports:</strong> <pre><code class="language-python"></code></pre></div>
+                    </details>
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="status-FAIL">FAIL</td>
+                <td>Coverage did not increase</td>
+                <td>0</td>
+                <td>python</td>
+                <td>
+                    <details>
+                        <summary>View Full Code</summary>
+                        <pre><code><span class="diff-unchanged">  import pytest</span>
+<span class="diff-unchanged">  from app import Node, Dijkstra</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_simple_path():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 1:</span>
+<span class="diff-unchanged">      A simple 3x3 grid with no obstacles. The start is at (0,0) and the goal is at (2,2).</span>
+<span class="diff-unchanged">      We expect the planner to find a path.</span>
+<span class="diff-unchanged">      Note: The returned path is in reverse order (goal to start).</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 0, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      </span>
+<span class="diff-unchanged">      assert found is True, "Path should be found in a clear grid."</span>
+<span class="diff-unchanged">      # Check that the path starts at the goal and ends at the start.</span>
+<span class="diff-unchanged">      assert path[0] == goal, "Path should start with the goal node."</span>
+<span class="diff-unchanged">      assert path[-1] == start, "Path should end with the start node."</span>
+<span class="diff-unchanged">      # Optionally, check that the length of the path is reasonable (at least Manhattan distance + 1)</span>
+<span class="diff-unchanged">      manhattan_distance = abs(goal.x - start.x) + abs(goal.y - start.y)</span>
+<span class="diff-unchanged">      assert len(path) >= manhattan_distance + 1</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_no_path():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 2:</span>
+<span class="diff-unchanged">      A 3x3 grid where the start is completely blocked off.</span>
+<span class="diff-unchanged">      Start is at (0,0) and obstacles are placed so that there is no valid move.</span>
+<span class="diff-unchanged">      The planner should return that no path is found.</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [1, 1, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">      assert found is False, "No path should be found if the start is blocked."</span>
+<span class="diff-unchanged">      assert path == [], "Path should be empty when no path is found."</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_obstacle_detour():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 3:</span>
+<span class="diff-unchanged">      A 3x3 grid with a vertical obstacle in the middle.</span>
+<span class="diff-unchanged">      The start is at (0,0) and the goal is at (2,2). A detour is required.</span>
+<span class="diff-unchanged">      We expect the planner to find a valid path.</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">      assert found is True, "A path should be found around the obstacle."</span>
+<span class="diff-unchanged">      assert path[0] == goal, "Path should start with the goal node."</span>
+<span class="diff-unchanged">      assert path[-1] == start, "Path should end with the start node."</span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+     def testUnexpectedType(self):</span>
+<span class="diff-added">+       # Test when the input is not a list</span>
+<span class="diff-added">+       with self.assertRaises(Exception):</span>
+<span class="diff-added">+         some_function([1,2,3], "invalid input type")</span></code></pre>
+                    </details>
+                </td>
+                <td>
+                    <details>
+                        <summary>View More</summary>
+                        <div><strong>STDERR:</strong> <pre><code class="language-python"></code></pre></div>
+                        <div><strong>STDOUT:</strong> <pre><code class="language-python">============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0
+rootdir: /home/quanlac/code/maude/cover-agent/dijkstra
+plugins: anyio-4.6.2.post1, cov-6.0.0
+collected 3 items
+
+test_app.py ...                                                          [100%]
+
+---------- coverage: platform linux, python 3.12.3-final-0 -----------
+Name          Stmts   Miss  Cover
+---------------------------------
+app.py          106     20    81%
+test_app.py      33      2    94%
+---------------------------------
+TOTAL           139     22    84%
+Coverage XML written to file coverage.xml
+
+
+============================== 3 passed in 0.04s ===============================
+</code></pre></div>
+                        <div><strong>Test Code:</strong> <pre><code class="language-python">def testUnexpectedType(self):
+  # Test when the input is not a list
+  with self.assertRaises(Exception):
+    some_function([1,2,3], "invalid input type")
+</code></pre></div>
+                        <div><strong>Imports:</strong> <pre><code class="language-python"></code></pre></div>
+                    </details>
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="status-FAIL">FAIL</td>
+                <td>Coverage did not increase</td>
+                <td>0</td>
+                <td>python</td>
+                <td>
+                    <details>
+                        <summary>View Full Code</summary>
+                        <pre><code><span class="diff-unchanged">  import pytest</span>
+<span class="diff-unchanged">  from app import Node, Dijkstra</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_simple_path():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 1:</span>
+<span class="diff-unchanged">      A simple 3x3 grid with no obstacles. The start is at (0,0) and the goal is at (2,2).</span>
+<span class="diff-unchanged">      We expect the planner to find a path.</span>
+<span class="diff-unchanged">      Note: The returned path is in reverse order (goal to start).</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 0, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      </span>
+<span class="diff-unchanged">      assert found is True, "Path should be found in a clear grid."</span>
+<span class="diff-unchanged">      # Check that the path starts at the goal and ends at the start.</span>
+<span class="diff-unchanged">      assert path[0] == goal, "Path should start with the goal node."</span>
+<span class="diff-unchanged">      assert path[-1] == start, "Path should end with the start node."</span>
+<span class="diff-unchanged">      # Optionally, check that the length of the path is reasonable (at least Manhattan distance + 1)</span>
+<span class="diff-unchanged">      manhattan_distance = abs(goal.x - start.x) + abs(goal.y - start.y)</span>
+<span class="diff-unchanged">      assert len(path) >= manhattan_distance + 1</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_no_path():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 2:</span>
+<span class="diff-unchanged">      A 3x3 grid where the start is completely blocked off.</span>
+<span class="diff-unchanged">      Start is at (0,0) and obstacles are placed so that there is no valid move.</span>
+<span class="diff-unchanged">      The planner should return that no path is found.</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [1, 1, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">      assert found is False, "No path should be found if the start is blocked."</span>
+<span class="diff-unchanged">      assert path == [], "Path should be empty when no path is found."</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_obstacle_detour():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 3:</span>
+<span class="diff-unchanged">      A 3x3 grid with a vertical obstacle in the middle.</span>
+<span class="diff-unchanged">      The start is at (0,0) and the goal is at (2,2). A detour is required.</span>
+<span class="diff-unchanged">      We expect the planner to find a valid path.</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">      assert found is True, "A path should be found around the obstacle."</span>
+<span class="diff-unchanged">      assert path[0] == goal, "Path should start with the goal node."</span>
+<span class="diff-unchanged">      assert path[-1] == start, "Path should end with the start node."</span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+     </span></code></pre>
+                    </details>
+                </td>
+                <td>
+                    <details>
+                        <summary>View More</summary>
+                        <div><strong>STDERR:</strong> <pre><code class="language-python"></code></pre></div>
+                        <div><strong>STDOUT:</strong> <pre><code class="language-python">============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0
+rootdir: /home/quanlac/code/maude/cover-agent/dijkstra
+plugins: anyio-4.6.2.post1, cov-6.0.0
+collected 3 items
+
+test_app.py ...                                                          [100%]
+
+---------- coverage: platform linux, python 3.12.3-final-0 -----------
+Name          Stmts   Miss  Cover
+---------------------------------
+app.py          106     20    81%
+test_app.py      30      0   100%
+---------------------------------
+TOTAL           136     20    85%
+Coverage XML written to file coverage.xml
+
+
+============================== 3 passed in 0.04s ===============================
+</code></pre></div>
+                        <div><strong>Test Code:</strong> <pre><code class="language-python"></code></pre></div>
+                        <div><strong>Imports:</strong> <pre><code class="language-python"></code></pre></div>
+                    </details>
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="status-FAIL">FAIL</td>
+                <td>Coverage did not increase</td>
+                <td>0</td>
+                <td>python</td>
+                <td>
+                    <details>
+                        <summary>View Full Code</summary>
+                        <pre><code><span class="diff-unchanged">  import pytest</span>
+<span class="diff-unchanged">  from app import Node, Dijkstra</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_simple_path():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 1:</span>
+<span class="diff-unchanged">      A simple 3x3 grid with no obstacles. The start is at (0,0) and the goal is at (2,2).</span>
+<span class="diff-unchanged">      We expect the planner to find a path.</span>
+<span class="diff-unchanged">      Note: The returned path is in reverse order (goal to start).</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 0, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      </span>
+<span class="diff-unchanged">      assert found is True, "Path should be found in a clear grid."</span>
+<span class="diff-unchanged">      # Check that the path starts at the goal and ends at the start.</span>
+<span class="diff-unchanged">      assert path[0] == goal, "Path should start with the goal node."</span>
+<span class="diff-unchanged">      assert path[-1] == start, "Path should end with the start node."</span>
+<span class="diff-unchanged">      # Optionally, check that the length of the path is reasonable (at least Manhattan distance + 1)</span>
+<span class="diff-unchanged">      manhattan_distance = abs(goal.x - start.x) + abs(goal.y - start.y)</span>
+<span class="diff-unchanged">      assert len(path) >= manhattan_distance + 1</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_no_path():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 2:</span>
+<span class="diff-unchanged">      A 3x3 grid where the start is completely blocked off.</span>
+<span class="diff-unchanged">      Start is at (0,0) and obstacles are placed so that there is no valid move.</span>
+<span class="diff-unchanged">      The planner should return that no path is found.</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [1, 1, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">      assert found is False, "No path should be found if the start is blocked."</span>
+<span class="diff-unchanged">      assert path == [], "Path should be empty when no path is found."</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_obstacle_detour():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 3:</span>
+<span class="diff-unchanged">      A 3x3 grid with a vertical obstacle in the middle.</span>
+<span class="diff-unchanged">      The start is at (0,0) and the goal is at (2,2). A detour is required.</span>
+<span class="diff-unchanged">      We expect the planner to find a valid path.</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">      assert found is True, "A path should be found around the obstacle."</span>
+<span class="diff-unchanged">      assert path[0] == goal, "Path should start with the goal node."</span>
+<span class="diff-unchanged">      assert path[-1] == start, "Path should end with the start node."</span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+     import heapq</span>
+<span class="diff-added">+     </span>
+<span class="diff-added">+     def dijkstra(graph, start):</span>
+<span class="diff-added">+         # existing code...</span>
+<span class="diff-added">+         if not heap:</span>
+<span class="diff-added">+             return None</span></code></pre>
+                    </details>
+                </td>
+                <td>
+                    <details>
+                        <summary>View More</summary>
+                        <div><strong>STDERR:</strong> <pre><code class="language-python"></code></pre></div>
+                        <div><strong>STDOUT:</strong> <pre><code class="language-python">============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0
+rootdir: /home/quanlac/code/maude/cover-agent/dijkstra
+plugins: anyio-4.6.2.post1, cov-6.0.0
+collected 3 items
+
+test_app.py ...                                                          [100%]
+
+---------- coverage: platform linux, python 3.12.3-final-0 -----------
+Name          Stmts   Miss  Cover
+---------------------------------
+app.py          106     20    81%
+test_app.py      34      2    94%
+---------------------------------
+TOTAL           140     22    84%
+Coverage XML written to file coverage.xml
+
+
+============================== 3 passed in 0.04s ===============================
+</code></pre></div>
+                        <div><strong>Test Code:</strong> <pre><code class="language-python">import heapq
+
+def dijkstra(graph, start):
+    # existing code...
+    if not heap:
+        return None
+</code></pre></div>
+                        <div><strong>Imports:</strong> <pre><code class="language-python"></code></pre></div>
+                    </details>
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="status-FAIL">FAIL</td>
+                <td>Coverage did not increase</td>
+                <td>0</td>
+                <td>python</td>
+                <td>
+                    <details>
+                        <summary>View Full Code</summary>
+                        <pre><code><span class="diff-unchanged">  import pytest</span>
+<span class="diff-unchanged">  from app import Node, Dijkstra</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_simple_path():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 1:</span>
+<span class="diff-unchanged">      A simple 3x3 grid with no obstacles. The start is at (0,0) and the goal is at (2,2).</span>
+<span class="diff-unchanged">      We expect the planner to find a path.</span>
+<span class="diff-unchanged">      Note: The returned path is in reverse order (goal to start).</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 0, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      </span>
+<span class="diff-unchanged">      assert found is True, "Path should be found in a clear grid."</span>
+<span class="diff-unchanged">      # Check that the path starts at the goal and ends at the start.</span>
+<span class="diff-unchanged">      assert path[0] == goal, "Path should start with the goal node."</span>
+<span class="diff-unchanged">      assert path[-1] == start, "Path should end with the start node."</span>
+<span class="diff-unchanged">      # Optionally, check that the length of the path is reasonable (at least Manhattan distance + 1)</span>
+<span class="diff-unchanged">      manhattan_distance = abs(goal.x - start.x) + abs(goal.y - start.y)</span>
+<span class="diff-unchanged">      assert len(path) >= manhattan_distance + 1</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_no_path():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 2:</span>
+<span class="diff-unchanged">      A 3x3 grid where the start is completely blocked off.</span>
+<span class="diff-unchanged">      Start is at (0,0) and obstacles are placed so that there is no valid move.</span>
+<span class="diff-unchanged">      The planner should return that no path is found.</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [1, 1, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">      assert found is False, "No path should be found if the start is blocked."</span>
+<span class="diff-unchanged">      assert path == [], "Path should be empty when no path is found."</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_obstacle_detour():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 3:</span>
+<span class="diff-unchanged">      A 3x3 grid with a vertical obstacle in the middle.</span>
+<span class="diff-unchanged">      The start is at (0,0) and the goal is at (2,2). A detour is required.</span>
+<span class="diff-unchanged">      We expect the planner to find a valid path.</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">      assert found is True, "A path should be found around the obstacle."</span>
+<span class="diff-unchanged">      assert path[0] == goal, "Path should start with the goal node."</span>
+<span class="diff-unchanged">      assert path[-1] == start, "Path should end with the start node."</span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+     import heapq</span>
+<span class="diff-added">+     </span>
+<span class="diff-added">+     def dijkstra(graph, start):</span>
+<span class="diff-added">+         # existing code...</span>
+<span class="diff-added">+         if prev.get(target) is None:</span>
+<span class="diff-added">+             return None</span></code></pre>
+                    </details>
+                </td>
+                <td>
+                    <details>
+                        <summary>View More</summary>
+                        <div><strong>STDERR:</strong> <pre><code class="language-python"></code></pre></div>
+                        <div><strong>STDOUT:</strong> <pre><code class="language-python">============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0
+rootdir: /home/quanlac/code/maude/cover-agent/dijkstra
+plugins: anyio-4.6.2.post1, cov-6.0.0
+collected 3 items
+
+test_app.py ...                                                          [100%]
+
+---------- coverage: platform linux, python 3.12.3-final-0 -----------
+Name          Stmts   Miss  Cover
+---------------------------------
+app.py          106     20    81%
+test_app.py      34      2    94%
+---------------------------------
+TOTAL           140     22    84%
+Coverage XML written to file coverage.xml
+
+
+============================== 3 passed in 0.04s ===============================
+</code></pre></div>
+                        <div><strong>Test Code:</strong> <pre><code class="language-python">import heapq
+
+def dijkstra(graph, start):
+    # existing code...
+    if prev.get(target) is None:
+        return None
+</code></pre></div>
+                        <div><strong>Imports:</strong> <pre><code class="language-python"></code></pre></div>
+                    </details>
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="status-FAIL">FAIL</td>
+                <td>Coverage did not increase</td>
+                <td>0</td>
+                <td>python</td>
+                <td>
+                    <details>
+                        <summary>View Full Code</summary>
+                        <pre><code><span class="diff-unchanged">  import pytest</span>
+<span class="diff-unchanged">  from app import Node, Dijkstra</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_simple_path():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 1:</span>
+<span class="diff-unchanged">      A simple 3x3 grid with no obstacles. The start is at (0,0) and the goal is at (2,2).</span>
+<span class="diff-unchanged">      We expect the planner to find a path.</span>
+<span class="diff-unchanged">      Note: The returned path is in reverse order (goal to start).</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 0, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      </span>
+<span class="diff-unchanged">      assert found is True, "Path should be found in a clear grid."</span>
+<span class="diff-unchanged">      # Check that the path starts at the goal and ends at the start.</span>
+<span class="diff-unchanged">      assert path[0] == goal, "Path should start with the goal node."</span>
+<span class="diff-unchanged">      assert path[-1] == start, "Path should end with the start node."</span>
+<span class="diff-unchanged">      # Optionally, check that the length of the path is reasonable (at least Manhattan distance + 1)</span>
+<span class="diff-unchanged">      manhattan_distance = abs(goal.x - start.x) + abs(goal.y - start.y)</span>
+<span class="diff-unchanged">      assert len(path) >= manhattan_distance + 1</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_no_path():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 2:</span>
+<span class="diff-unchanged">      A 3x3 grid where the start is completely blocked off.</span>
+<span class="diff-unchanged">      Start is at (0,0) and obstacles are placed so that there is no valid move.</span>
+<span class="diff-unchanged">      The planner should return that no path is found.</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [1, 1, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">      assert found is False, "No path should be found if the start is blocked."</span>
+<span class="diff-unchanged">      assert path == [], "Path should be empty when no path is found."</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_obstacle_detour():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 3:</span>
+<span class="diff-unchanged">      A 3x3 grid with a vertical obstacle in the middle.</span>
+<span class="diff-unchanged">      The start is at (0,0) and the goal is at (2,2). A detour is required.</span>
+<span class="diff-unchanged">      We expect the planner to find a valid path.</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">      assert found is True, "A path should be found around the obstacle."</span>
+<span class="diff-unchanged">      assert path[0] == goal, "Path should start with the goal node."</span>
+<span class="diff-unchanged">      assert path[-1] == start, "Path should end with the start node."</span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+     import heapq</span>
+<span class="diff-added">+     </span>
+<span class="diff-added">+     def dijkstra(graph, start):</span>
+<span class="diff-added">+         # existing code...</span>
+<span class="diff-added">+         pass</span></code></pre>
+                    </details>
+                </td>
+                <td>
+                    <details>
+                        <summary>View More</summary>
+                        <div><strong>STDERR:</strong> <pre><code class="language-python"></code></pre></div>
+                        <div><strong>STDOUT:</strong> <pre><code class="language-python">============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0
+rootdir: /home/quanlac/code/maude/cover-agent/dijkstra
+plugins: anyio-4.6.2.post1, cov-6.0.0
+collected 3 items
+
+test_app.py ...                                                          [100%]
+
+---------- coverage: platform linux, python 3.12.3-final-0 -----------
+Name          Stmts   Miss  Cover
+---------------------------------
+app.py          106     20    81%
+test_app.py      33      1    97%
+---------------------------------
+TOTAL           139     21    85%
+Coverage XML written to file coverage.xml
+
+
+============================== 3 passed in 0.05s ===============================
+</code></pre></div>
+                        <div><strong>Test Code:</strong> <pre><code class="language-python">import heapq
+
+def dijkstra(graph, start):
+    # existing code...
+    pass
+</code></pre></div>
+                        <div><strong>Imports:</strong> <pre><code class="language-python"></code></pre></div>
+                    </details>
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="status-FAIL">FAIL</td>
+                <td>Test failed</td>
+                <td>1</td>
+                <td>python</td>
+                <td>
+                    <details>
+                        <summary>View Full Code</summary>
+                        <pre><code><span class="diff-unchanged">  import pytest</span>
+<span class="diff-unchanged">  from app import Node, Dijkstra</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_simple_path():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 1:</span>
+<span class="diff-unchanged">      A simple 3x3 grid with no obstacles. The start is at (0,0) and the goal is at (2,2).</span>
+<span class="diff-unchanged">      We expect the planner to find a path.</span>
+<span class="diff-unchanged">      Note: The returned path is in reverse order (goal to start).</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 0, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      </span>
+<span class="diff-unchanged">      assert found is True, "Path should be found in a clear grid."</span>
+<span class="diff-unchanged">      # Check that the path starts at the goal and ends at the start.</span>
+<span class="diff-unchanged">      assert path[0] == goal, "Path should start with the goal node."</span>
+<span class="diff-unchanged">      assert path[-1] == start, "Path should end with the start node."</span>
+<span class="diff-unchanged">      # Optionally, check that the length of the path is reasonable (at least Manhattan distance + 1)</span>
+<span class="diff-unchanged">      manhattan_distance = abs(goal.x - start.x) + abs(goal.y - start.y)</span>
+<span class="diff-unchanged">      assert len(path) >= manhattan_distance + 1</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_no_path():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 2:</span>
+<span class="diff-unchanged">      A 3x3 grid where the start is completely blocked off.</span>
+<span class="diff-unchanged">      Start is at (0,0) and obstacles are placed so that there is no valid move.</span>
+<span class="diff-unchanged">      The planner should return that no path is found.</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [1, 1, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">      assert found is False, "No path should be found if the start is blocked."</span>
+<span class="diff-unchanged">      assert path == [], "Path should be empty when no path is found."</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_obstacle_detour():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 3:</span>
+<span class="diff-unchanged">      A 3x3 grid with a vertical obstacle in the middle.</span>
+<span class="diff-unchanged">      The start is at (0,0) and the goal is at (2,2). A detour is required.</span>
+<span class="diff-unchanged">      We expect the planner to find a valid path.</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">      assert found is True, "A path should be found around the obstacle."</span>
+<span class="diff-unchanged">      assert path[0] == goal, "Path should start with the goal node."</span>
+<span class="diff-unchanged">      assert path[-1] == start, "Path should end with the start node."</span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+     import pytest</span>
+<span class="diff-added">+     from existing_module import func, expected_output</span>
+<span class="diff-added">+     </span>
+<span class="diff-added">+     def test_single_element_list():</span>
+<span class="diff-added">+         # Test case where list has one element</span>
+<span class="diff-added">+         assert func([1]) == expected_output</span>
+<span class="diff-added">+     </span>
+<span class="diff-added">+         # Test case where list is empty (if applicable)</span>
+<span class="diff-added">+         if hasattr(func, 'empty_list_case'):</span>
+<span class="diff-added">+             assert func([]) == expected_output.empty_list_case</span></code></pre>
+                    </details>
+                </td>
+                <td>
+                    <details>
+                        <summary>View More</summary>
+                        <div><strong>STDERR:</strong> <pre><code class="language-python"></code></pre></div>
+                        <div><strong>STDOUT:</strong> <pre><code class="language-python">============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0
+rootdir: /home/quanlac/code/maude/cover-agent/dijkstra
+plugins: anyio-4.6.2.post1, cov-6.0.0
+collected 3 items
+
+test_app.py ..F                                                          [100%]
+
+=================================== FAILURES ===================================
+_____________________________ test_obstacle_detour _____________________________
+
+    def test_obstacle_detour():
+        """
+        Test case 3:
+        A 3x3 grid with a vertical obstacle in the middle.
+        The start is at (0,0) and the goal is at (2,2). A detour is required.
+        We expect the planner to find a valid path.
+        """
+        grid = [
+            [0, 1, 0],
+            [0, 1, 0],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0, 0)
+        goal = Node(2, 2, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+    
+        assert found is True, "A path should be found around the obstacle."
+        assert path[0] == goal, "Path should start with the goal node."
+        assert path[-1] == start, "Path should end with the start node."
+    
+    
+        import pytest
+>       from existing_module import func, expected_output
+E       ModuleNotFoundError: No module named 'existing_module'
+
+test_app.py:72: ModuleNotFoundError
+
+---------- coverage: platform linux, python 3.12.3-final-0 -----------
+Name          Stmts   Miss  Cover
+---------------------------------
+app.py          106     20    81%
+test_app.py      36      4    89%
+---------------------------------
+TOTAL           142     24    83%
+Coverage XML written to file coverage.xml
+
+=========================== short test summary info ============================
+FAILED test_app.py::test_obstacle_detour - ModuleNotFoundError: No module nam...
+========================= 1 failed, 2 passed in 0.05s ==========================
+</code></pre></div>
+                        <div><strong>Test Code:</strong> <pre><code class="language-python">import pytest
+from existing_module import func, expected_output
+
+def test_single_element_list():
+    # Test case where list has one element
+    assert func([1]) == expected_output
+
+    # Test case where list is empty (if applicable)
+    if hasattr(func, 'empty_list_case'):
+        assert func([]) == expected_output.empty_list_case
+</code></pre></div>
+                        <div><strong>Imports:</strong> <pre><code class="language-python"></code></pre></div>
+                    </details>
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="status-FAIL">FAIL</td>
+                <td>Test failed</td>
+                <td>1</td>
+                <td>python</td>
+                <td>
+                    <details>
+                        <summary>View Full Code</summary>
+                        <pre><code><span class="diff-unchanged">  import pytest</span>
+<span class="diff-unchanged">  from app import Node, Dijkstra</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_simple_path():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 1:</span>
+<span class="diff-unchanged">      A simple 3x3 grid with no obstacles. The start is at (0,0) and the goal is at (2,2).</span>
+<span class="diff-unchanged">      We expect the planner to find a path.</span>
+<span class="diff-unchanged">      Note: The returned path is in reverse order (goal to start).</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 0, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      </span>
+<span class="diff-unchanged">      assert found is True, "Path should be found in a clear grid."</span>
+<span class="diff-unchanged">      # Check that the path starts at the goal and ends at the start.</span>
+<span class="diff-unchanged">      assert path[0] == goal, "Path should start with the goal node."</span>
+<span class="diff-unchanged">      assert path[-1] == start, "Path should end with the start node."</span>
+<span class="diff-unchanged">      # Optionally, check that the length of the path is reasonable (at least Manhattan distance + 1)</span>
+<span class="diff-unchanged">      manhattan_distance = abs(goal.x - start.x) + abs(goal.y - start.y)</span>
+<span class="diff-unchanged">      assert len(path) >= manhattan_distance + 1</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_no_path():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 2:</span>
+<span class="diff-unchanged">      A 3x3 grid where the start is completely blocked off.</span>
+<span class="diff-unchanged">      Start is at (0,0) and obstacles are placed so that there is no valid move.</span>
+<span class="diff-unchanged">      The planner should return that no path is found.</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [1, 1, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">      assert found is False, "No path should be found if the start is blocked."</span>
+<span class="diff-unchanged">      assert path == [], "Path should be empty when no path is found."</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_obstacle_detour():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 3:</span>
+<span class="diff-unchanged">      A 3x3 grid with a vertical obstacle in the middle.</span>
+<span class="diff-unchanged">      The start is at (0,0) and the goal is at (2,2). A detour is required.</span>
+<span class="diff-unchanged">      We expect the planner to find a valid path.</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">      assert found is True, "A path should be found around the obstacle."</span>
+<span class="diff-unchanged">      assert path[0] == goal, "Path should start with the goal node."</span>
+<span class="diff-unchanged">      assert path[-1] == start, "Path should end with the start node."</span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+     import pytest</span>
+<span class="diff-added">+     from existing_module import func, expected_output</span>
+<span class="diff-added">+     </span>
+<span class="diff-added">+     def test_a_equals_b():</span>
+<span class="diff-added">+         # Test case where 'a' equals 'b'</span>
+<span class="diff-added">+         assert func('a', 'b') == expected_output</span>
+<span class="diff-added">+     </span>
+<span class="diff-added">+         # Test case where 'a' does not equal 'b'</span>
+<span class="diff-added">+         assert not func('x', 'y')</span></code></pre>
+                    </details>
+                </td>
+                <td>
+                    <details>
+                        <summary>View More</summary>
+                        <div><strong>STDERR:</strong> <pre><code class="language-python"></code></pre></div>
+                        <div><strong>STDOUT:</strong> <pre><code class="language-python">============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0
+rootdir: /home/quanlac/code/maude/cover-agent/dijkstra
+plugins: anyio-4.6.2.post1, cov-6.0.0
+collected 3 items
+
+test_app.py ..F                                                          [100%]
+
+=================================== FAILURES ===================================
+_____________________________ test_obstacle_detour _____________________________
+
+    def test_obstacle_detour():
+        """
+        Test case 3:
+        A 3x3 grid with a vertical obstacle in the middle.
+        The start is at (0,0) and the goal is at (2,2). A detour is required.
+        We expect the planner to find a valid path.
+        """
+        grid = [
+            [0, 1, 0],
+            [0, 1, 0],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0, 0)
+        goal = Node(2, 2, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+    
+        assert found is True, "A path should be found around the obstacle."
+        assert path[0] == goal, "Path should start with the goal node."
+        assert path[-1] == start, "Path should end with the start node."
+    
+    
+        import pytest
+>       from existing_module import func, expected_output
+E       ModuleNotFoundError: No module named 'existing_module'
+
+test_app.py:72: ModuleNotFoundError
+
+---------- coverage: platform linux, python 3.12.3-final-0 -----------
+Name          Stmts   Miss  Cover
+---------------------------------
+app.py          106     20    81%
+test_app.py      35      3    91%
+---------------------------------
+TOTAL           141     23    84%
+Coverage XML written to file coverage.xml
+
+=========================== short test summary info ============================
+FAILED test_app.py::test_obstacle_detour - ModuleNotFoundError: No module nam...
+========================= 1 failed, 2 passed in 0.05s ==========================
+</code></pre></div>
+                        <div><strong>Test Code:</strong> <pre><code class="language-python">import pytest
+from existing_module import func, expected_output
+
+def test_a_equals_b():
+    # Test case where 'a' equals 'b'
+    assert func('a', 'b') == expected_output
+
+    # Test case where 'a' does not equal 'b'
+    assert not func('x', 'y')
+</code></pre></div>
+                        <div><strong>Imports:</strong> <pre><code class="language-python"></code></pre></div>
+                    </details>
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="status-FAIL">FAIL</td>
+                <td>Test failed</td>
+                <td>1</td>
+                <td>python</td>
+                <td>
+                    <details>
+                        <summary>View Full Code</summary>
+                        <pre><code><span class="diff-unchanged">  import pytest</span>
+<span class="diff-unchanged">  from app import Node, Dijkstra</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_simple_path():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 1:</span>
+<span class="diff-unchanged">      A simple 3x3 grid with no obstacles. The start is at (0,0) and the goal is at (2,2).</span>
+<span class="diff-unchanged">      We expect the planner to find a path.</span>
+<span class="diff-unchanged">      Note: The returned path is in reverse order (goal to start).</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 0, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      </span>
+<span class="diff-unchanged">      assert found is True, "Path should be found in a clear grid."</span>
+<span class="diff-unchanged">      # Check that the path starts at the goal and ends at the start.</span>
+<span class="diff-unchanged">      assert path[0] == goal, "Path should start with the goal node."</span>
+<span class="diff-unchanged">      assert path[-1] == start, "Path should end with the start node."</span>
+<span class="diff-unchanged">      # Optionally, check that the length of the path is reasonable (at least Manhattan distance + 1)</span>
+<span class="diff-unchanged">      manhattan_distance = abs(goal.x - start.x) + abs(goal.y - start.y)</span>
+<span class="diff-unchanged">      assert len(path) >= manhattan_distance + 1</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_no_path():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 2:</span>
+<span class="diff-unchanged">      A 3x3 grid where the start is completely blocked off.</span>
+<span class="diff-unchanged">      Start is at (0,0) and obstacles are placed so that there is no valid move.</span>
+<span class="diff-unchanged">      The planner should return that no path is found.</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [1, 1, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">      assert found is False, "No path should be found if the start is blocked."</span>
+<span class="diff-unchanged">      assert path == [], "Path should be empty when no path is found."</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_obstacle_detour():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 3:</span>
+<span class="diff-unchanged">      A 3x3 grid with a vertical obstacle in the middle.</span>
+<span class="diff-unchanged">      The start is at (0,0) and the goal is at (2,2). A detour is required.</span>
+<span class="diff-unchanged">      We expect the planner to find a valid path.</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">      assert found is True, "A path should be found around the obstacle."</span>
+<span class="diff-unchanged">      assert path[0] == goal, "Path should start with the goal node."</span>
+<span class="diff-unchanged">      assert path[-1] == start, "Path should end with the start node."</span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+     import pytest</span>
+<span class="diff-added">+     from existing_module import func, expected_output</span>
+<span class="diff-added">+     </span>
+<span class="diff-added">+     def test_multiple_arguments():</span>
+<span class="diff-added">+         # Test case with default values</span>
+<span class="diff-added">+         assert func(1) == expected_output</span>
+<span class="diff-added">+     </span>
+<span class="diff-added">+         # Test case with multiple arguments</span>
+<span class="diff-added">+         assert func(1, 2, 3) == expected_output</span></code></pre>
+                    </details>
+                </td>
+                <td>
+                    <details>
+                        <summary>View More</summary>
+                        <div><strong>STDERR:</strong> <pre><code class="language-python"></code></pre></div>
+                        <div><strong>STDOUT:</strong> <pre><code class="language-python">============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0
+rootdir: /home/quanlac/code/maude/cover-agent/dijkstra
+plugins: anyio-4.6.2.post1, cov-6.0.0
+collected 3 items
+
+test_app.py ..F                                                          [100%]
+
+=================================== FAILURES ===================================
+_____________________________ test_obstacle_detour _____________________________
+
+    def test_obstacle_detour():
+        """
+        Test case 3:
+        A 3x3 grid with a vertical obstacle in the middle.
+        The start is at (0,0) and the goal is at (2,2). A detour is required.
+        We expect the planner to find a valid path.
+        """
+        grid = [
+            [0, 1, 0],
+            [0, 1, 0],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0, 0)
+        goal = Node(2, 2, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+    
+        assert found is True, "A path should be found around the obstacle."
+        assert path[0] == goal, "Path should start with the goal node."
+        assert path[-1] == start, "Path should end with the start node."
+    
+    
+        import pytest
+>       from existing_module import func, expected_output
+E       ModuleNotFoundError: No module named 'existing_module'
+
+test_app.py:72: ModuleNotFoundError
+
+---------- coverage: platform linux, python 3.12.3-final-0 -----------
+Name          Stmts   Miss  Cover
+---------------------------------
+app.py          106     20    81%
+test_app.py      35      3    91%
+---------------------------------
+TOTAL           141     23    84%
+Coverage XML written to file coverage.xml
+
+=========================== short test summary info ============================
+FAILED test_app.py::test_obstacle_detour - ModuleNotFoundError: No module nam...
+========================= 1 failed, 2 passed in 0.05s ==========================
+</code></pre></div>
+                        <div><strong>Test Code:</strong> <pre><code class="language-python">import pytest
+from existing_module import func, expected_output
+
+def test_multiple_arguments():
+    # Test case with default values
+    assert func(1) == expected_output
+
+    # Test case with multiple arguments
+    assert func(1, 2, 3) == expected_output
+</code></pre></div>
+                        <div><strong>Imports:</strong> <pre><code class="language-python"></code></pre></div>
+                    </details>
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="status-FAIL">FAIL</td>
+                <td>Test failed</td>
+                <td>1</td>
+                <td>python</td>
+                <td>
+                    <details>
+                        <summary>View Full Code</summary>
+                        <pre><code><span class="diff-unchanged">  import pytest</span>
+<span class="diff-unchanged">  from app import Node, Dijkstra</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_simple_path():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 1:</span>
+<span class="diff-unchanged">      A simple 3x3 grid with no obstacles. The start is at (0,0) and the goal is at (2,2).</span>
+<span class="diff-unchanged">      We expect the planner to find a path.</span>
+<span class="diff-unchanged">      Note: The returned path is in reverse order (goal to start).</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 0, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      </span>
+<span class="diff-unchanged">      assert found is True, "Path should be found in a clear grid."</span>
+<span class="diff-unchanged">      # Check that the path starts at the goal and ends at the start.</span>
+<span class="diff-unchanged">      assert path[0] == goal, "Path should start with the goal node."</span>
+<span class="diff-unchanged">      assert path[-1] == start, "Path should end with the start node."</span>
+<span class="diff-unchanged">      # Optionally, check that the length of the path is reasonable (at least Manhattan distance + 1)</span>
+<span class="diff-unchanged">      manhattan_distance = abs(goal.x - start.x) + abs(goal.y - start.y)</span>
+<span class="diff-unchanged">      assert len(path) >= manhattan_distance + 1</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_no_path():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 2:</span>
+<span class="diff-unchanged">      A 3x3 grid where the start is completely blocked off.</span>
+<span class="diff-unchanged">      Start is at (0,0) and obstacles are placed so that there is no valid move.</span>
+<span class="diff-unchanged">      The planner should return that no path is found.</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [1, 1, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">      assert found is False, "No path should be found if the start is blocked."</span>
+<span class="diff-unchanged">      assert path == [], "Path should be empty when no path is found."</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_obstacle_detour():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 3:</span>
+<span class="diff-unchanged">      A 3x3 grid with a vertical obstacle in the middle.</span>
+<span class="diff-unchanged">      The start is at (0,0) and the goal is at (2,2). A detour is required.</span>
+<span class="diff-unchanged">      We expect the planner to find a valid path.</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">      assert found is True, "A path should be found around the obstacle."</span>
+<span class="diff-unchanged">      assert path[0] == goal, "Path should start with the goal node."</span>
+<span class="diff-unchanged">      assert path[-1] == start, "Path should end with the start node."</span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+     import pytest</span>
+<span class="diff-added">+     from existing_module import func, expected_output</span>
+<span class="diff-added">+     </span>
+<span class="diff-added">+     def test_c_in_list():</span>
+<span class="diff-added">+         # Test case where 'c' is present in the list</span>
+<span class="diff-added">+         assert func(['a', 'b', 'c']) == expected_output</span>
+<span class="diff-added">+     </span>
+<span class="diff-added">+         # Test case where 'c' is not present in the list</span>
+<span class="diff-added">+         assert not func(['a', 'b', 'd'])</span></code></pre>
+                    </details>
+                </td>
+                <td>
+                    <details>
+                        <summary>View More</summary>
+                        <div><strong>STDERR:</strong> <pre><code class="language-python"></code></pre></div>
+                        <div><strong>STDOUT:</strong> <pre><code class="language-python">============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0
+rootdir: /home/quanlac/code/maude/cover-agent/dijkstra
+plugins: anyio-4.6.2.post1, cov-6.0.0
+collected 3 items
+
+test_app.py ..F                                                          [100%]
+
+=================================== FAILURES ===================================
+_____________________________ test_obstacle_detour _____________________________
+
+    def test_obstacle_detour():
+        """
+        Test case 3:
+        A 3x3 grid with a vertical obstacle in the middle.
+        The start is at (0,0) and the goal is at (2,2). A detour is required.
+        We expect the planner to find a valid path.
+        """
+        grid = [
+            [0, 1, 0],
+            [0, 1, 0],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0, 0)
+        goal = Node(2, 2, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+    
+        assert found is True, "A path should be found around the obstacle."
+        assert path[0] == goal, "Path should start with the goal node."
+        assert path[-1] == start, "Path should end with the start node."
+    
+    
+        import pytest
+>       from existing_module import func, expected_output
+E       ModuleNotFoundError: No module named 'existing_module'
+
+test_app.py:72: ModuleNotFoundError
+
+---------- coverage: platform linux, python 3.12.3-final-0 -----------
+Name          Stmts   Miss  Cover
+---------------------------------
+app.py          106     20    81%
+test_app.py      35      3    91%
+---------------------------------
+TOTAL           141     23    84%
+Coverage XML written to file coverage.xml
+
+=========================== short test summary info ============================
+FAILED test_app.py::test_obstacle_detour - ModuleNotFoundError: No module nam...
+========================= 1 failed, 2 passed in 0.05s ==========================
+</code></pre></div>
+                        <div><strong>Test Code:</strong> <pre><code class="language-python">import pytest
+from existing_module import func, expected_output
+
+def test_c_in_list():
+    # Test case where 'c' is present in the list
+    assert func(['a', 'b', 'c']) == expected_output
+
+    # Test case where 'c' is not present in the list
+    assert not func(['a', 'b', 'd'])
+</code></pre></div>
+                        <div><strong>Imports:</strong> <pre><code class="language-python"></code></pre></div>
+                    </details>
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="status-FAIL">FAIL</td>
+                <td>Test failed</td>
+                <td>1</td>
+                <td>python</td>
+                <td>
+                    <details>
+                        <summary>View Full Code</summary>
+                        <pre><code><span class="diff-unchanged">  import pytest</span>
+<span class="diff-unchanged">  from app import Node, Dijkstra</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_simple_path():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 1:</span>
+<span class="diff-unchanged">      A simple 3x3 grid with no obstacles. The start is at (0,0) and the goal is at (2,2).</span>
+<span class="diff-unchanged">      We expect the planner to find a path.</span>
+<span class="diff-unchanged">      Note: The returned path is in reverse order (goal to start).</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 0, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      </span>
+<span class="diff-unchanged">      assert found is True, "Path should be found in a clear grid."</span>
+<span class="diff-unchanged">      # Check that the path starts at the goal and ends at the start.</span>
+<span class="diff-unchanged">      assert path[0] == goal, "Path should start with the goal node."</span>
+<span class="diff-unchanged">      assert path[-1] == start, "Path should end with the start node."</span>
+<span class="diff-unchanged">      # Optionally, check that the length of the path is reasonable (at least Manhattan distance + 1)</span>
+<span class="diff-unchanged">      manhattan_distance = abs(goal.x - start.x) + abs(goal.y - start.y)</span>
+<span class="diff-unchanged">      assert len(path) >= manhattan_distance + 1</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_no_path():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 2:</span>
+<span class="diff-unchanged">      A 3x3 grid where the start is completely blocked off.</span>
+<span class="diff-unchanged">      Start is at (0,0) and obstacles are placed so that there is no valid move.</span>
+<span class="diff-unchanged">      The planner should return that no path is found.</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [1, 1, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">      assert found is False, "No path should be found if the start is blocked."</span>
+<span class="diff-unchanged">      assert path == [], "Path should be empty when no path is found."</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_obstacle_detour():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 3:</span>
+<span class="diff-unchanged">      A 3x3 grid with a vertical obstacle in the middle.</span>
+<span class="diff-unchanged">      The start is at (0,0) and the goal is at (2,2). A detour is required.</span>
+<span class="diff-unchanged">      We expect the planner to find a valid path.</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">      assert found is True, "A path should be found around the obstacle."</span>
+<span class="diff-unchanged">      assert path[0] == goal, "Path should start with the goal node."</span>
+<span class="diff-unchanged">      assert path[-1] == start, "Path should end with the start node."</span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+     import pytest</span>
+<span class="diff-added">+     from existing_module import func, expected_output</span>
+<span class="diff-added">+     </span>
+<span class="diff-added">+     def test_c_not_in_list():</span>
+<span class="diff-added">+         # Test case where 'c' is absent from the list</span>
+<span class="diff-added">+         assert not func(['a', 'b'])</span>
+<span class="diff-added">+     </span>
+<span class="diff-added">+         # Test case where 'c' is present in multiple positions</span>
+<span class="diff-added">+         assert func(['a', 'c', 'b']) == expected_output</span></code></pre>
+                    </details>
+                </td>
+                <td>
+                    <details>
+                        <summary>View More</summary>
+                        <div><strong>STDERR:</strong> <pre><code class="language-python"></code></pre></div>
+                        <div><strong>STDOUT:</strong> <pre><code class="language-python">============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0
+rootdir: /home/quanlac/code/maude/cover-agent/dijkstra
+plugins: anyio-4.6.2.post1, cov-6.0.0
+collected 3 items
+
+test_app.py ..F                                                          [100%]
+
+=================================== FAILURES ===================================
+_____________________________ test_obstacle_detour _____________________________
+
+    def test_obstacle_detour():
+        """
+        Test case 3:
+        A 3x3 grid with a vertical obstacle in the middle.
+        The start is at (0,0) and the goal is at (2,2). A detour is required.
+        We expect the planner to find a valid path.
+        """
+        grid = [
+            [0, 1, 0],
+            [0, 1, 0],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0, 0)
+        goal = Node(2, 2, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+    
+        assert found is True, "A path should be found around the obstacle."
+        assert path[0] == goal, "Path should start with the goal node."
+        assert path[-1] == start, "Path should end with the start node."
+    
+    
+        import pytest
+>       from existing_module import func, expected_output
+E       ModuleNotFoundError: No module named 'existing_module'
+
+test_app.py:72: ModuleNotFoundError
+
+---------- coverage: platform linux, python 3.12.3-final-0 -----------
+Name          Stmts   Miss  Cover
+---------------------------------
+app.py          106     20    81%
+test_app.py      35      3    91%
+---------------------------------
+TOTAL           141     23    84%
+Coverage XML written to file coverage.xml
+
+=========================== short test summary info ============================
+FAILED test_app.py::test_obstacle_detour - ModuleNotFoundError: No module nam...
+========================= 1 failed, 2 passed in 0.05s ==========================
+</code></pre></div>
+                        <div><strong>Test Code:</strong> <pre><code class="language-python">import pytest
+from existing_module import func, expected_output
+
+def test_c_not_in_list():
+    # Test case where 'c' is absent from the list
+    assert not func(['a', 'b'])
+
+    # Test case where 'c' is present in multiple positions
+    assert func(['a', 'c', 'b']) == expected_output
+</code></pre></div>
+                        <div><strong>Imports:</strong> <pre><code class="language-python"></code></pre></div>
+                    </details>
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="status-FAIL">FAIL</td>
+                <td>Test failed</td>
+                <td>1</td>
+                <td>python</td>
+                <td>
+                    <details>
+                        <summary>View Full Code</summary>
+                        <pre><code><span class="diff-unchanged">  import pytest</span>
+<span class="diff-unchanged">  from app import Node, Dijkstra</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_simple_path():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 1:</span>
+<span class="diff-unchanged">      A simple 3x3 grid with no obstacles. The start is at (0,0) and the goal is at (2,2).</span>
+<span class="diff-unchanged">      We expect the planner to find a path.</span>
+<span class="diff-unchanged">      Note: The returned path is in reverse order (goal to start).</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 0, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      </span>
+<span class="diff-unchanged">      assert found is True, "Path should be found in a clear grid."</span>
+<span class="diff-unchanged">      # Check that the path starts at the goal and ends at the start.</span>
+<span class="diff-unchanged">      assert path[0] == goal, "Path should start with the goal node."</span>
+<span class="diff-unchanged">      assert path[-1] == start, "Path should end with the start node."</span>
+<span class="diff-unchanged">      # Optionally, check that the length of the path is reasonable (at least Manhattan distance + 1)</span>
+<span class="diff-unchanged">      manhattan_distance = abs(goal.x - start.x) + abs(goal.y - start.y)</span>
+<span class="diff-unchanged">      assert len(path) >= manhattan_distance + 1</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_no_path():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 2:</span>
+<span class="diff-unchanged">      A 3x3 grid where the start is completely blocked off.</span>
+<span class="diff-unchanged">      Start is at (0,0) and obstacles are placed so that there is no valid move.</span>
+<span class="diff-unchanged">      The planner should return that no path is found.</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [1, 1, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">      assert found is False, "No path should be found if the start is blocked."</span>
+<span class="diff-unchanged">      assert path == [], "Path should be empty when no path is found."</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_obstacle_detour():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 3:</span>
+<span class="diff-unchanged">      A 3x3 grid with a vertical obstacle in the middle.</span>
+<span class="diff-unchanged">      The start is at (0,0) and the goal is at (2,2). A detour is required.</span>
+<span class="diff-unchanged">      We expect the planner to find a valid path.</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">      assert found is True, "A path should be found around the obstacle."</span>
+<span class="diff-unchanged">      assert path[0] == goal, "Path should start with the goal node."</span>
+<span class="diff-unchanged">      assert path[-1] == start, "Path should end with the start node."</span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+     import pytest</span>
+<span class="diff-added">+     from existing_module import func, expected_output</span>
+<span class="diff-added">+     </span>
+<span class="diff-added">+     def test_d_in_list():</span>
+<span class="diff-added">+         # Test case where 'd' is present in the first position</span>
+<span class="diff-added">+         assert func(['d', 'e']) == expected_output</span>
+<span class="diff-added">+     </span>
+<span class="diff-added">+         # Test case where 'd' is absent but 'e' is present</span>
+<span class="diff-added">+         assert not func(['e', 'f'])</span></code></pre>
+                    </details>
+                </td>
+                <td>
+                    <details>
+                        <summary>View More</summary>
+                        <div><strong>STDERR:</strong> <pre><code class="language-python"></code></pre></div>
+                        <div><strong>STDOUT:</strong> <pre><code class="language-python">============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0
+rootdir: /home/quanlac/code/maude/cover-agent/dijkstra
+plugins: anyio-4.6.2.post1, cov-6.0.0
+collected 3 items
+
+test_app.py ..F                                                          [100%]
+
+=================================== FAILURES ===================================
+_____________________________ test_obstacle_detour _____________________________
+
+    def test_obstacle_detour():
+        """
+        Test case 3:
+        A 3x3 grid with a vertical obstacle in the middle.
+        The start is at (0,0) and the goal is at (2,2). A detour is required.
+        We expect the planner to find a valid path.
+        """
+        grid = [
+            [0, 1, 0],
+            [0, 1, 0],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0, 0)
+        goal = Node(2, 2, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+    
+        assert found is True, "A path should be found around the obstacle."
+        assert path[0] == goal, "Path should start with the goal node."
+        assert path[-1] == start, "Path should end with the start node."
+    
+    
+        import pytest
+>       from existing_module import func, expected_output
+E       ModuleNotFoundError: No module named 'existing_module'
+
+test_app.py:72: ModuleNotFoundError
+
+---------- coverage: platform linux, python 3.12.3-final-0 -----------
+Name          Stmts   Miss  Cover
+---------------------------------
+app.py          106     20    81%
+test_app.py      35      3    91%
+---------------------------------
+TOTAL           141     23    84%
+Coverage XML written to file coverage.xml
+
+=========================== short test summary info ============================
+FAILED test_app.py::test_obstacle_detour - ModuleNotFoundError: No module nam...
+========================= 1 failed, 2 passed in 0.05s ==========================
+</code></pre></div>
+                        <div><strong>Test Code:</strong> <pre><code class="language-python">import pytest
+from existing_module import func, expected_output
+
+def test_d_in_list():
+    # Test case where 'd' is present in the first position
+    assert func(['d', 'e']) == expected_output
+
+    # Test case where 'd' is absent but 'e' is present
+    assert not func(['e', 'f'])
+</code></pre></div>
+                        <div><strong>Imports:</strong> <pre><code class="language-python"></code></pre></div>
+                    </details>
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="status-FAIL">FAIL</td>
+                <td>Test failed</td>
+                <td>1</td>
+                <td>python</td>
+                <td>
+                    <details>
+                        <summary>View Full Code</summary>
+                        <pre><code><span class="diff-unchanged">  import pytest</span>
+<span class="diff-unchanged">  from app import Node, Dijkstra</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_simple_path():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 1:</span>
+<span class="diff-unchanged">      A simple 3x3 grid with no obstacles. The start is at (0,0) and the goal is at (2,2).</span>
+<span class="diff-unchanged">      We expect the planner to find a path.</span>
+<span class="diff-unchanged">      Note: The returned path is in reverse order (goal to start).</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 0, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      </span>
+<span class="diff-unchanged">      assert found is True, "Path should be found in a clear grid."</span>
+<span class="diff-unchanged">      # Check that the path starts at the goal and ends at the start.</span>
+<span class="diff-unchanged">      assert path[0] == goal, "Path should start with the goal node."</span>
+<span class="diff-unchanged">      assert path[-1] == start, "Path should end with the start node."</span>
+<span class="diff-unchanged">      # Optionally, check that the length of the path is reasonable (at least Manhattan distance + 1)</span>
+<span class="diff-unchanged">      manhattan_distance = abs(goal.x - start.x) + abs(goal.y - start.y)</span>
+<span class="diff-unchanged">      assert len(path) >= manhattan_distance + 1</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_no_path():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 2:</span>
+<span class="diff-unchanged">      A 3x3 grid where the start is completely blocked off.</span>
+<span class="diff-unchanged">      Start is at (0,0) and obstacles are placed so that there is no valid move.</span>
+<span class="diff-unchanged">      The planner should return that no path is found.</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [1, 1, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">      assert found is False, "No path should be found if the start is blocked."</span>
+<span class="diff-unchanged">      assert path == [], "Path should be empty when no path is found."</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_obstacle_detour():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 3:</span>
+<span class="diff-unchanged">      A 3x3 grid with a vertical obstacle in the middle.</span>
+<span class="diff-unchanged">      The start is at (0,0) and the goal is at (2,2). A detour is required.</span>
+<span class="diff-unchanged">      We expect the planner to find a valid path.</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">      assert found is True, "A path should be found around the obstacle."</span>
+<span class="diff-unchanged">      assert path[0] == goal, "Path should start with the goal node."</span>
+<span class="diff-unchanged">      assert path[-1] == start, "Path should end with the start node."</span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+     import pytest</span>
+<span class="diff-added">+     from existing_module import func, expected_output</span>
+<span class="diff-added">+     </span>
+<span class="diff-added">+     def test_e_equals_f():</span>
+<span class="diff-added">+         # Test case where 'e' equals 'f'</span>
+<span class="diff-added">+         assert func('e', 'f') == expected_output</span>
+<span class="diff-added">+     </span>
+<span class="diff-added">+         # Test case where 'e' does not equal 'f'</span>
+<span class="diff-added">+         assert not func('x', 'y')</span></code></pre>
+                    </details>
+                </td>
+                <td>
+                    <details>
+                        <summary>View More</summary>
+                        <div><strong>STDERR:</strong> <pre><code class="language-python"></code></pre></div>
+                        <div><strong>STDOUT:</strong> <pre><code class="language-python">============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0
+rootdir: /home/quanlac/code/maude/cover-agent/dijkstra
+plugins: anyio-4.6.2.post1, cov-6.0.0
+collected 3 items
+
+test_app.py ..F                                                          [100%]
+
+=================================== FAILURES ===================================
+_____________________________ test_obstacle_detour _____________________________
+
+    def test_obstacle_detour():
+        """
+        Test case 3:
+        A 3x3 grid with a vertical obstacle in the middle.
+        The start is at (0,0) and the goal is at (2,2). A detour is required.
+        We expect the planner to find a valid path.
+        """
+        grid = [
+            [0, 1, 0],
+            [0, 1, 0],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0, 0)
+        goal = Node(2, 2, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+    
+        assert found is True, "A path should be found around the obstacle."
+        assert path[0] == goal, "Path should start with the goal node."
+        assert path[-1] == start, "Path should end with the start node."
+    
+    
+        import pytest
+>       from existing_module import func, expected_output
+E       ModuleNotFoundError: No module named 'existing_module'
+
+test_app.py:72: ModuleNotFoundError
+
+---------- coverage: platform linux, python 3.12.3-final-0 -----------
+Name          Stmts   Miss  Cover
+---------------------------------
+app.py          106     20    81%
+test_app.py      35      3    91%
+---------------------------------
+TOTAL           141     23    84%
+Coverage XML written to file coverage.xml
+
+=========================== short test summary info ============================
+FAILED test_app.py::test_obstacle_detour - ModuleNotFoundError: No module nam...
+========================= 1 failed, 2 passed in 0.05s ==========================
+</code></pre></div>
+                        <div><strong>Test Code:</strong> <pre><code class="language-python">import pytest
+from existing_module import func, expected_output
+
+def test_e_equals_f():
+    # Test case where 'e' equals 'f'
+    assert func('e', 'f') == expected_output
+
+    # Test case where 'e' does not equal 'f'
+    assert not func('x', 'y')
+</code></pre></div>
+                        <div><strong>Imports:</strong> <pre><code class="language-python"></code></pre></div>
+                    </details>
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="status-FAIL">FAIL</td>
+                <td>Coverage did not increase</td>
+                <td>0</td>
+                <td>python</td>
+                <td>
+                    <details>
+                        <summary>View Full Code</summary>
+                        <pre><code><span class="diff-unchanged">  import pytest</span>
+<span class="diff-unchanged">  from app import Node, Dijkstra</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_simple_path():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 1:</span>
+<span class="diff-unchanged">      A simple 3x3 grid with no obstacles. The start is at (0,0) and the goal is at (2,2).</span>
+<span class="diff-unchanged">      We expect the planner to find a path.</span>
+<span class="diff-unchanged">      Note: The returned path is in reverse order (goal to start).</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 0, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      </span>
+<span class="diff-unchanged">      assert found is True, "Path should be found in a clear grid."</span>
+<span class="diff-unchanged">      # Check that the path starts at the goal and ends at the start.</span>
+<span class="diff-unchanged">      assert path[0] == goal, "Path should start with the goal node."</span>
+<span class="diff-unchanged">      assert path[-1] == start, "Path should end with the start node."</span>
+<span class="diff-unchanged">      # Optionally, check that the length of the path is reasonable (at least Manhattan distance + 1)</span>
+<span class="diff-unchanged">      manhattan_distance = abs(goal.x - start.x) + abs(goal.y - start.y)</span>
+<span class="diff-unchanged">      assert len(path) >= manhattan_distance + 1</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_no_path():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 2:</span>
+<span class="diff-unchanged">      A 3x3 grid where the start is completely blocked off.</span>
+<span class="diff-unchanged">      Start is at (0,0) and obstacles are placed so that there is no valid move.</span>
+<span class="diff-unchanged">      The planner should return that no path is found.</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [1, 1, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">      assert found is False, "No path should be found if the start is blocked."</span>
+<span class="diff-unchanged">      assert path == [], "Path should be empty when no path is found."</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_obstacle_detour():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 3:</span>
+<span class="diff-unchanged">      A 3x3 grid with a vertical obstacle in the middle.</span>
+<span class="diff-unchanged">      The start is at (0,0) and the goal is at (2,2). A detour is required.</span>
+<span class="diff-unchanged">      We expect the planner to find a valid path.</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">      assert found is True, "A path should be found around the obstacle."</span>
+<span class="diff-unchanged">      assert path[0] == goal, "Path should start with the goal node."</span>
+<span class="diff-unchanged">      assert path[-1] == start, "Path should end with the start node."</span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+     def test_empty_list():</span>
+<span class="diff-added">+         # Test that the function returns an empty result when given an empty list</span>
+<span class="diff-added">+         assert func([]) == []</span></code></pre>
+                    </details>
+                </td>
+                <td>
+                    <details>
+                        <summary>View More</summary>
+                        <div><strong>STDERR:</strong> <pre><code class="language-python"></code></pre></div>
+                        <div><strong>STDOUT:</strong> <pre><code class="language-python">============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0
+rootdir: /home/quanlac/code/maude/cover-agent/dijkstra
+plugins: anyio-4.6.2.post1, cov-6.0.0
+collected 3 items
+
+test_app.py ...                                                          [100%]
+
+---------- coverage: platform linux, python 3.12.3-final-0 -----------
+Name          Stmts   Miss  Cover
+---------------------------------
+app.py          106     20    81%
+test_app.py      32      1    97%
+---------------------------------
+TOTAL           138     21    85%
+Coverage XML written to file coverage.xml
+
+
+============================== 3 passed in 0.04s ===============================
+</code></pre></div>
+                        <div><strong>Test Code:</strong> <pre><code class="language-python">def test_empty_list():
+    # Test that the function returns an empty result when given an empty list
+    assert func([]) == []
+</code></pre></div>
+                        <div><strong>Imports:</strong> <pre><code class="language-python"></code></pre></div>
+                    </details>
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="status-FAIL">FAIL</td>
+                <td>Coverage did not increase</td>
+                <td>0</td>
+                <td>python</td>
+                <td>
+                    <details>
+                        <summary>View Full Code</summary>
+                        <pre><code><span class="diff-unchanged">  import pytest</span>
+<span class="diff-unchanged">  from app import Node, Dijkstra</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_simple_path():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 1:</span>
+<span class="diff-unchanged">      A simple 3x3 grid with no obstacles. The start is at (0,0) and the goal is at (2,2).</span>
+<span class="diff-unchanged">      We expect the planner to find a path.</span>
+<span class="diff-unchanged">      Note: The returned path is in reverse order (goal to start).</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 0, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      </span>
+<span class="diff-unchanged">      assert found is True, "Path should be found in a clear grid."</span>
+<span class="diff-unchanged">      # Check that the path starts at the goal and ends at the start.</span>
+<span class="diff-unchanged">      assert path[0] == goal, "Path should start with the goal node."</span>
+<span class="diff-unchanged">      assert path[-1] == start, "Path should end with the start node."</span>
+<span class="diff-unchanged">      # Optionally, check that the length of the path is reasonable (at least Manhattan distance + 1)</span>
+<span class="diff-unchanged">      manhattan_distance = abs(goal.x - start.x) + abs(goal.y - start.y)</span>
+<span class="diff-unchanged">      assert len(path) >= manhattan_distance + 1</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_no_path():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 2:</span>
+<span class="diff-unchanged">      A 3x3 grid where the start is completely blocked off.</span>
+<span class="diff-unchanged">      Start is at (0,0) and obstacles are placed so that there is no valid move.</span>
+<span class="diff-unchanged">      The planner should return that no path is found.</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [1, 1, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">      assert found is False, "No path should be found if the start is blocked."</span>
+<span class="diff-unchanged">      assert path == [], "Path should be empty when no path is found."</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_obstacle_detour():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 3:</span>
+<span class="diff-unchanged">      A 3x3 grid with a vertical obstacle in the middle.</span>
+<span class="diff-unchanged">      The start is at (0,0) and the goal is at (2,2). A detour is required.</span>
+<span class="diff-unchanged">      We expect the planner to find a valid path.</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">      assert found is True, "A path should be found around the obstacle."</span>
+<span class="diff-unchanged">      assert path[0] == goal, "Path should start with the goal node."</span>
+<span class="diff-unchanged">      assert path[-1] == start, "Path should end with the start node."</span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+     def test_single_element_list():</span>
+<span class="diff-added">+         # Test that the function returns a list with one element when given an empty list</span>
+<span class="diff-added">+         assert len(func([5])) == 1</span></code></pre>
+                    </details>
+                </td>
+                <td>
+                    <details>
+                        <summary>View More</summary>
+                        <div><strong>STDERR:</strong> <pre><code class="language-python"></code></pre></div>
+                        <div><strong>STDOUT:</strong> <pre><code class="language-python">============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0
+rootdir: /home/quanlac/code/maude/cover-agent/dijkstra
+plugins: anyio-4.6.2.post1, cov-6.0.0
+collected 3 items
+
+test_app.py ...                                                          [100%]
+
+---------- coverage: platform linux, python 3.12.3-final-0 -----------
+Name          Stmts   Miss  Cover
+---------------------------------
+app.py          106     20    81%
+test_app.py      32      1    97%
+---------------------------------
+TOTAL           138     21    85%
+Coverage XML written to file coverage.xml
+
+
+============================== 3 passed in 0.05s ===============================
+</code></pre></div>
+                        <div><strong>Test Code:</strong> <pre><code class="language-python">def test_single_element_list():
+    # Test that the function returns a list with one element when given an empty list
+    assert len(func([5])) == 1
+</code></pre></div>
+                        <div><strong>Imports:</strong> <pre><code class="language-python"></code></pre></div>
+                    </details>
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="status-FAIL">FAIL</td>
+                <td>Coverage did not increase</td>
+                <td>0</td>
+                <td>python</td>
+                <td>
+                    <details>
+                        <summary>View Full Code</summary>
+                        <pre><code><span class="diff-unchanged">  import pytest</span>
+<span class="diff-unchanged">  from app import Node, Dijkstra</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_simple_path():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 1:</span>
+<span class="diff-unchanged">      A simple 3x3 grid with no obstacles. The start is at (0,0) and the goal is at (2,2).</span>
+<span class="diff-unchanged">      We expect the planner to find a path.</span>
+<span class="diff-unchanged">      Note: The returned path is in reverse order (goal to start).</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 0, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">      </span>
+<span class="diff-unchanged">      assert found is True, "Path should be found in a clear grid."</span>
+<span class="diff-unchanged">      # Check that the path starts at the goal and ends at the start.</span>
+<span class="diff-unchanged">      assert path[0] == goal, "Path should start with the goal node."</span>
+<span class="diff-unchanged">      assert path[-1] == start, "Path should end with the start node."</span>
+<span class="diff-unchanged">      # Optionally, check that the length of the path is reasonable (at least Manhattan distance + 1)</span>
+<span class="diff-unchanged">      manhattan_distance = abs(goal.x - start.x) + abs(goal.y - start.y)</span>
+<span class="diff-unchanged">      assert len(path) >= manhattan_distance + 1</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_no_path():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 2:</span>
+<span class="diff-unchanged">      A 3x3 grid where the start is completely blocked off.</span>
+<span class="diff-unchanged">      Start is at (0,0) and obstacles are placed so that there is no valid move.</span>
+<span class="diff-unchanged">      The planner should return that no path is found.</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [1, 1, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">      assert found is False, "No path should be found if the start is blocked."</span>
+<span class="diff-unchanged">      assert path == [], "Path should be empty when no path is found."</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">  def test_obstacle_detour():</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      Test case 3:</span>
+<span class="diff-unchanged">      A 3x3 grid with a vertical obstacle in the middle.</span>
+<span class="diff-unchanged">      The start is at (0,0) and the goal is at (2,2). A detour is required.</span>
+<span class="diff-unchanged">      We expect the planner to find a valid path.</span>
+<span class="diff-unchanged">      """</span>
+<span class="diff-unchanged">      grid = [</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [0, 1, 0],</span>
+<span class="diff-unchanged">          [0, 0, 0]</span>
+<span class="diff-unchanged">      ]</span>
+<span class="diff-unchanged">      start = Node(0, 0, 0)</span>
+<span class="diff-unchanged">      goal = Node(2, 2, 0)</span>
+<span class="diff-unchanged">      planner = Dijkstra(grid)</span>
+<span class="diff-unchanged">      found, path = planner.plan(start, goal)</span>
+<span class="diff-unchanged">  </span>
+<span class="diff-unchanged">      assert found is True, "A path should be found around the obstacle."</span>
+<span class="diff-unchanged">      assert path[0] == goal, "Path should start with the goal node."</span>
+<span class="diff-unchanged">      assert path[-1] == start, "Path should end with the start node."</span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+ </span>
+<span class="diff-added">+     def test_loop_correctness():</span>
+<span class="diff-added">+         # Test that all iterations of the loop are processed correctly</span>
+<span class="diff-added">+         list = [1, 2, 3]</span>
+<span class="diff-added">+         func(list)</span>
+<span class="diff-added">+         assert len(list) == 3</span></code></pre>
+                    </details>
+                </td>
+                <td>
+                    <details>
+                        <summary>View More</summary>
+                        <div><strong>STDERR:</strong> <pre><code class="language-python"></code></pre></div>
+                        <div><strong>STDOUT:</strong> <pre><code class="language-python">============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0
+rootdir: /home/quanlac/code/maude/cover-agent/dijkstra
+plugins: anyio-4.6.2.post1, cov-6.0.0
+collected 3 items
+
+test_app.py ...                                                          [100%]
+
+---------- coverage: platform linux, python 3.12.3-final-0 -----------
+Name          Stmts   Miss  Cover
+---------------------------------
+app.py          106     20    81%
+test_app.py      34      3    91%
+---------------------------------
+TOTAL           140     23    84%
+Coverage XML written to file coverage.xml
+
+
+============================== 3 passed in 0.05s ===============================
+</code></pre></div>
+                        <div><strong>Test Code:</strong> <pre><code class="language-python">def test_loop_correctness():
+    # Test that all iterations of the loop are processed correctly
+    list = [1, 2, 3]
+    func(list)
+    assert len(list) == 3</code></pre></div>
+                        <div><strong>Imports:</strong> <pre><code class="language-python"></code></pre></div>
+                    </details>
+                </td>
+            </tr>
+            
+        </table>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/prism.min.js"></script>
+    </body>
+    </html>
+    

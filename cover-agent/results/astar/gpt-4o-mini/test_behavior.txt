@@ -1,0 +1,66 @@
+Test Behavior: Test the case where the goal is outside the grid boundaries.
+The expected result is that no path should be found.
+
+Test Behavior: Test the case where the grid is empty.
+The expected result is that no path should be found.
+
+Test Behavior: Test the case where the grid has obstacles surrounding the start node.
+The expected result is that no path should be found.
+
+Test Behavior: Test the case where the grid is empty.
+The expected result is that no path should be found.
+
+Test Behavior: Test the case where the grid has obstacles surrounding the start node.
+The expected result is that no path should be found.
+
+Test Behavior: Test the case where the goal is unreachable due to obstacles.
+The expected result is that no path should be found.
+
+Test Behavior: Test the case where the grid is empty.
+The expected result is that no path should be found.
+
+Test Behavior: Test the case where the grid has obstacles surrounding the goal node.
+The expected result is that no path should be found.
+
+Test Behavior: Test the case where the grid has obstacles surrounding the start node.
+The expected result is that no path should be found.
+
+Test Behavior: Test the case where the grid is empty.
+The expected result is that no path should be found.
+
+Test Behavior: Test the case where the grid has obstacles surrounding the goal node.
+The expected result is that no path should be found.
+
+Test Behavior: Test the case where the grid has obstacles surrounding the start node.
+The expected result is that no path should be found.
+
+Test Behavior: Test the case where the goal is unreachable due to obstacles.
+The expected result is that no path should be found.
+
+Test Behavior: Test the case where the grid is empty.
+The expected result is that no path should be found.
+
+Test Behavior: Test the case where the goal is unreachable due to obstacles.
+The expected result is that no path should be found.
+
+Test Behavior: Test the case where the grid has obstacles surrounding the goal node.
+The expected result is that no path should be found.
+
+Test Behavior: Test the case where the grid is empty.
+The expected result is that no path should be found.
+
+Test Behavior: Test the case where the goal is unreachable due to obstacles.
+The expected result is that no path should be found.
+
+Test Behavior: Test the case where the grid has obstacles surrounding the goal node.
+The expected result is that no path should be found.
+
+Test Behavior: Test the case where the grid is empty.
+The expected result is that no path should be found.
+
+Test Behavior: Test the case where the goal is unreachable due to obstacles.
+The expected result is that no path should be found.
+
+Test Behavior: Test the case where the grid has obstacles surrounding the goal node.
+The expected result is that no path should be found.
+
