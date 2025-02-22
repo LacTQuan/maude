@@ -1,0 +1,95 @@
+Test Behavior: Test that the Node's __repr__ method returns the correct string representation.
+
+Test Behavior: Test that the convert_closed_list_to_path function handles the case where the goal node is not found.
+
+Test Behavior: Test that the convert_closed_list_to_path function handles the case where a parent node is not found during backtracking.
+
+Test Behavior: Test that the grid is correctly initialized with the specified size.
+
+Test Behavior: Test that the start and goal nodes are correctly generated and within the grid boundaries.
+
+Test Behavior: Test that the planner correctly handles the case where no path exists but start and goal are valid.
+
+Test Behavior: Test that the grid is correctly initialized with the specified size.
+
+Test Behavior: Test that the start and goal nodes are correctly generated and within the grid boundaries.
+
+Test Behavior: Test that the node's string representation is correctly formatted.
+
+Test Behavior: Test that the planner correctly handles the case where no path exists but start and goal are valid.
+
+Test Behavior: Test that the grid is correctly initialized with the specified size.
+
+Test Behavior: Test that the start and goal nodes are correctly generated and within the grid boundaries.
+
+Test Behavior: Test that the planner correctly handles the case where no path exists but start and goal are valid.
+
+Test Behavior: Test that the function correctly handles the case where a parent node is not found during backtracking.
+
+Test Behavior: Test that the grid is correctly initialized with the specified size.
+
+Test Behavior: Test that the start and goal nodes are correctly generated and within the grid boundaries.
+
+Test Behavior: Test that the node's string representation is correctly formatted.
+
+Test Behavior: Test that the planner correctly handles the case where no path exists but start and goal are valid.
+
+Test Behavior: Test that the function correctly handles the case where a parent node is not found during backtracking.
+
+Test Behavior: Test that the grid is correctly initialized with the specified size.
+
+Test Behavior: Test that the start and goal nodes are correctly generated and within the grid boundaries.
+
+Test Behavior: Test that the node's string representation is correctly formatted.
+
+Test Behavior: Test that the function correctly handles the case where a parent node is not found during backtracking.
+
+Test Behavior: Test that the planner correctly handles the case where no path exists but start and goal are valid.
+
+Test Behavior: Test that the main execution correctly initializes and runs the planner.
+
+Test Behavior: Test that the grid is correctly initialized with the specified size.
+
+Test Behavior: Test that the start and goal nodes are correctly generated and within the grid boundaries.
+
+Test Behavior: Test that the node's string representation is correctly formatted.
+
+Test Behavior: Test that the planner correctly handles the case where no path exists but start and goal are valid.
+
+Test Behavior: Test that the function correctly handles the case where a parent node is not found during backtracking.
+
+Test Behavior: Test that the grid is correctly initialized with the specified size.
+
+Test Behavior: Test that the start and goal nodes are correctly generated and within the grid boundaries.
+
+Test Behavior: Test that the node's string representation is correctly formatted.
+
+Test Behavior: Test that the planner correctly handles the case where no path exists but start and goal are valid.
+
+Test Behavior: Test that the function correctly handles the case where a parent node is not found during backtracking.
+
+Test Behavior: Test that the grid is correctly initialized with the specified size.
+Test Behavior: Test that the start and goal nodes are correctly generated and within the grid boundaries.
+Test Behavior: Test that the node's string representation is correctly formatted.
+Test Behavior: Test that the planner correctly handles the case where no path exists but start and goal are valid.
+Test Behavior: Test that the main execution correctly initializes and runs the planner.
+Test Behavior: Test that the grid is correctly initialized with the specified size.
+
+Test Behavior: Test that the start and goal nodes are correctly generated and within the grid boundaries.
+
+Test Behavior: Test that the node's string representation is correctly formatted.
+
+Test Behavior: Test that the planner correctly handles the case where no path exists but start and goal are valid.
+
+Test Behavior: Test that the main execution correctly initializes and runs the planner.
+
+Test Behavior: Test that the grid is correctly initialized with the specified size.
+
+Test Behavior: Test that the start and goal nodes are correctly generated and within the grid boundaries.
+
+Test Behavior: Test that the node's string representation is correctly formatted.
+
+Test Behavior: Test that the planner correctly handles the case where no path exists but start and goal are valid.
+
+Test Behavior: Test that the main execution correctly initializes and runs the planner.
+

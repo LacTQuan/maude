@@ -1,0 +1,92 @@
+Test Behavior: Test that the __eq__ method correctly handles non-Node objects.
+
+Test Behavior: Test that the plan method correctly skips already visited nodes.
+
+Test Behavior: Test that the convert_closed_list_to_path method handles an unreachable goal.
+
+Test Behavior: Test that the make_grid function is called and grid is unchanged.
+
+Test Behavior: Test that the print_grid function correctly prints the grid.
+
+Test Behavior: Test that the print_path function correctly marks the path.
+
+Test Behavior: Test the main function's execution with a sample grid.
+
+Test Behavior: Test that the make_grid function does not modify the input grid.
+
+Test Behavior: Test that the print_grid function correctly prints the grid content.
+
+Test Behavior: Test that the print_path function correctly marks the path in the grid.
+
+Test Behavior: Test that the main function correctly handles the case where start equals goal.
+
+Test Behavior: Test that the main function correctly handles the case where no path exists.
+
+Test Behavior: Test that the plan method correctly skips already visited nodes.
+
+Test Behavior: Test that the convert_closed_list_to_path method handles an unreachable goal.
+
+Test Behavior: Test that the plan method correctly skips already visited nodes by adding the start node to the closed list before planning.
+
+Test Behavior: Test that the convert_closed_list_to_path method handles an unreachable goal by returning an empty path.
+
+Test Behavior: Test that the main function correctly handles the case where no path exists by printing "No path found."
+
+Test Behavior: Test that the main function correctly handles a successful path finding by printing the path and the grid with the path marked.
+
+Test Behavior: Test that the plan method correctly skips already visited nodes by adding the start node to the closed list before planning.
+
+Test Behavior: Test that the convert_closed_list_to_path method handles an unreachable goal by returning an empty path.
+
+Test Behavior: Test that the main function correctly handles the case where no path exists by printing "No path found."
+
+Test Behavior: Test that the main function correctly handles a successful path finding by printing the path and the grid with the path marked.
+
+Test Behavior: Test that the plan method correctly skips already visited nodes by adding the start node to the closed list before planning.
+
+Test Behavior: Test that the convert_closed_list_to_path method handles an unreachable goal by returning an empty path.
+
+Test Behavior: Test that the main function correctly handles the case where no path exists by printing "No path found."
+
+Test Behavior: Test that the main function correctly handles a successful path finding by printing the path and the grid with the path marked.
+
+Test Behavior: Test that the plan method correctly skips already visited nodes by adding the start node to the closed list before planning.
+
+Test Behavior: Test that the convert_closed_list_to_path method handles an unreachable goal by returning an empty path.
+
+Test Behavior: Test that the main function correctly handles the case where no path exists by printing "No path found."
+
+Test Behavior: Test that the main function correctly handles a successful path finding by printing the path and the grid with the path marked.
+
+Test Behavior: Test that the plan method correctly skips already visited nodes by adding the start node to the closed list before planning.
+
+Test Behavior: Test that the convert_closed_list_to_path method handles an unreachable goal by returning an empty path.
+
+Test Behavior: Test that the main function correctly handles the case where no path exists by printing "No path found."
+
+Test Behavior: Test that the main function correctly handles a successful path finding by printing the path and the grid with the path marked.
+
+Test Behavior: Test that the plan method correctly skips already visited nodes by adding the start node to the closed list before planning.
+
+Test Behavior: Test that the convert_closed_list_to_path method handles an unreachable goal by returning an empty path.
+
+Test Behavior: Test that the main function correctly handles a successful path finding by printing the path and the grid with the path marked.
+
+Test Behavior: Test that the main function correctly handles the case where no path exists by printing "No path found."
+
+Test Behavior: Test that the plan method correctly skips already visited nodes by adding the start node to the closed list before planning.
+
+Test Behavior: Test that the convert_closed_list_to_path method handles an unreachable goal by returning an empty path.
+
+Test Behavior: Test that the main function correctly handles the case where no path exists by printing "No path found."
+
+Test Behavior: Test that the main function correctly handles a successful path finding by printing the path and the grid with the path marked.
+
+Test Behavior: Test that the plan method correctly skips already visited nodes by adding the start node to the closed list before planning.
+
+Test Behavior: Test that the convert_closed_list_to_path method handles an unreachable goal by returning an empty path.
+
+Test Behavior: Test that the main function correctly handles the case where no path exists by printing "No path found."
+
+Test Behavior: Test that the main function correctly handles a successful path finding by printing the path and the grid with the path marked.
+

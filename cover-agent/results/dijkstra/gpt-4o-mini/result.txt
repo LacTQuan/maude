@@ -9,7 +9,7 @@ language: python
 testing_framework: pytest
 number_of_tests: 3
 relevant_line_number_to_insert_tests_after: 69
-relevant_line_number_to_insert_imports_after: 1
+relevant_line_number_to_insert_imports_after: 2
 ```
 ```yaml
 language: python
@@ -17,9 +17,9 @@ existing_test_function_signature: |
   def test_simple_path():
 new_tests:
 - test_behavior: |
-    Test that the path is found when the start and goal are the same.
+    Test that the pathfinding algorithm correctly identifies when the start and goal are the same.
   lines_to_cover: |
-    [49]
+    [49, 137, 138]
   test_name: |
     test_start_equals_goal
   test_code: |
@@ -33,42 +33,18 @@ new_tests:
         goal = Node(1, 1, 0)
         planner = Dijkstra(grid)
         found, path = planner.plan(start, goal)
-
-        assert found is True, "Path should be found when start equals goal."
+        
+        assert found is True, "Path should be found when start and goal are the same."
         assert len(path) == 1, "Path should contain only the start/goal node."
-        assert path[0] == start, "Path should include the start/goal node."
+        assert path[0] == start, "Path should start and end with the same node."
   new_imports_code: |
     ""
   test_tags: happy path
 
 - test_behavior: |
-    Test that the path is not found when the start is outside the grid.
+    Test that the pathfinding algorithm handles the case where the goal is outside the grid boundaries.
   lines_to_cover: |
-    [137, 138]
-  test_name: |
-    test_start_outside_boundary
-  test_code: |
-    def test_start_outside_boundary():
-        grid = [
-            [0, 0, 0],
-            [0, 0, 0],
-            [0, 0, 0]
-        ]
-        start = Node(-1, -1, 0)  # Outside the grid
-        goal = Node(2, 2, 0)
-        planner = Dijkstra(grid)
-        found, path = planner.plan(start, goal)
-
-        assert found is False, "No path should be found if the start is outside the grid."
-        assert path == [], "Path should be empty when no path is found."
-  new_imports_code: |
-    ""
-  test_tags: edge case
-
-- test_behavior: |
-    Test that the path is not found when the goal is outside the grid.
-  lines_to_cover: |
-    [137, 138]
+    [49, 137, 138]
   test_name: |
     test_goal_outside_boundary
   test_code: |
@@ -83,31 +59,246 @@ new_tests:
         planner = Dijkstra(grid)
         found, path = planner.plan(start, goal)
 
-        assert found is False, "No path should be found if the goal is outside the grid."
+        assert found is False, "No path should be found when the goal is outside the grid."
         assert path == [], "Path should be empty when no path is found."
   new_imports_code: |
     ""
   test_tags: edge case
 
 - test_behavior: |
-    Test that the path is not found when both start and goal are outside the grid.
+    Test that the pathfinding algorithm correctly identifies when all paths to the goal are blocked.
   lines_to_cover: |
-    [137, 138]
+    [49, 137, 138]
   test_name: |
-    test_both_start_and_goal_outside_boundary
+    test_all_paths_blocked
   test_code: |
-    def test_both_start_and_goal_outside_boundary():
+    def test_all_paths_blocked():
+        grid = [
+            [0, 1, 0],
+            [1, 1, 0],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0, 0)
+        goal = Node(2, 2, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False, "No path should be found when all paths are blocked."
+        assert path == [], "Path should be empty when no path is found."
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test that the pathfinding algorithm correctly handles a grid with all obstacles.
+  lines_to_cover: |
+    [49, 137, 138]
+  test_name: |
+    test_all_obstacles
+  test_code: |
+    def test_all_obstacles():
+        grid = [
+            [1, 1, 1],
+            [1, 1, 1],
+            [1, 1, 1]
+        ]
+        start = Node(0, 0, 0)
+        goal = Node(2, 2, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False, "No path should be found when the grid is completely blocked."
+        assert path == [], "Path should be empty when no path is found."
+  new_imports_code: |
+    ""
+  test_tags: edge case
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test that the pathfinding algorithm correctly handles a grid with a single obstacle directly in the path.
+    The start is at (0,0) and the goal is at (0,2) with an obstacle at (0,1).
+    We expect the planner to find a valid path around the obstacle.
+  lines_to_cover: |
+    [49, 137, 138]
+  test_name: |
+    test_obstacle_in_path
+  test_code: |
+    def test_obstacle_in_path():
+        grid = [
+            [0, 1, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0, 0)
+        goal = Node(0, 2, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is True, "A path should be found around the obstacle."
+        assert path[0] == goal, "Path should start with the goal node."
+        assert path[-1] == start, "Path should end with the start node."
+  new_imports_code: |
+    ""
+  test_tags: happy path
+
+- test_behavior: |
+    Test that the pathfinding algorithm correctly handles a case where the start is at the edge of the grid.
+    The start is at (0,0) and the goal is at (1,1) with a clear path.
+    We expect the planner to find a valid path.
+  lines_to_cover: |
+    [49, 137, 138]
+  test_name: |
+    test_edge_start
+  test_code: |
+    def test_edge_start():
         grid = [
             [0, 0, 0],
             [0, 0, 0],
             [0, 0, 0]
         ]
-        start = Node(-1, -1, 0)  # Outside the grid
-        goal = Node(3, 3, 0)      # Outside the grid
+        start = Node(0, 0, 0)
+        goal = Node(1, 1, 0)
         planner = Dijkstra(grid)
         found, path = planner.plan(start, goal)
 
-        assert found is False, "No path should be found if both start and goal are outside the grid."
+        assert found is True, "A path should be found from the edge of the grid."
+        assert path[0] == goal, "Path should start with the goal node."
+        assert path[-1] == start, "Path should end with the start node."
+  new_imports_code: |
+    ""
+  test_tags: happy path
+
+- test_behavior: |
+    Test that the pathfinding algorithm correctly identifies when the goal is unreachable due to surrounding obstacles.
+    The start is at (1,1) and the goal is at (0,0) with obstacles blocking the path.
+    We expect the planner to return that no path is found.
+  lines_to_cover: |
+    [49, 137, 138]
+  test_name: |
+    test_goal_unreachable
+  test_code: |
+    def test_goal_unreachable():
+        grid = [
+            [1, 1, 1],
+            [1, 0, 1],
+            [1, 1, 1]
+        ]
+        start = Node(1, 1, 0)
+        goal = Node(0, 0, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False, "No path should be found when the goal is unreachable."
+        assert path == [], "Path should be empty when no path is found."
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test that the pathfinding algorithm correctly handles a grid with a single row and multiple columns.
+    The start is at (0,0) and the goal is at (0,4) with obstacles in between.
+    We expect the planner to return that no path is found.
+  lines_to_cover: |
+    [49, 137, 138]
+  test_name: |
+    test_single_row_with_obstacles
+  test_code: |
+    def test_single_row_with_obstacles():
+        grid = [
+            [0, 1, 0, 1, 0]
+        ]
+        start = Node(0, 0, 0)
+        goal = Node(0, 4, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False, "No path should be found when obstacles block the way."
+        assert path == [], "Path should be empty when no path is found."
+  new_imports_code: |
+    ""
+  test_tags: edge case
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test that the pathfinding algorithm correctly handles a case where the start is at the edge of the grid.
+    The start is at (0,0) and the goal is at (1,1) with a clear path.
+    We expect the planner to find a valid path.
+  lines_to_cover: |
+    [49, 137, 138]
+  test_name: |
+    test_edge_case_start
+  test_code: |
+    def test_edge_case_start():
+        grid = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0, 0)
+        goal = Node(1, 1, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is True, "A path should be found from the edge of the grid."
+        assert path[0] == goal, "Path should start with the goal node."
+        assert path[-1] == start, "Path should end with the start node."
+  new_imports_code: |
+    ""
+  test_tags: happy path
+
+- test_behavior: |
+    Test that the pathfinding algorithm correctly identifies when the goal is unreachable due to surrounding obstacles.
+    The start is at (1,1) and the goal is at (0,0) with obstacles blocking the path.
+    We expect the planner to return that no path is found.
+  lines_to_cover: |
+    [49, 137, 138]
+  test_name: |
+    test_goal_unreachable_due_to_obstacles
+  test_code: |
+    def test_goal_unreachable_due_to_obstacles():
+        grid = [
+            [1, 1, 1],
+            [1, 0, 1],
+            [1, 1, 1]
+        ]
+        start = Node(1, 1, 0)
+        goal = Node(0, 0, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False, "No path should be found when the goal is unreachable."
+        assert path == [], "Path should be empty when no path is found."
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test that the pathfinding algorithm correctly handles a grid with a single row and multiple columns.
+    The start is at (0,0) and the goal is at (0,4) with obstacles in between.
+    We expect the planner to return that no path is found.
+  lines_to_cover: |
+    [49, 137, 138]
+  test_name: |
+    test_single_row_with_obstacles
+  test_code: |
+    def test_single_row_with_obstacles():
+        grid = [
+            [0, 1, 0, 1, 0]
+        ]
+        start = Node(0, 0, 0)
+        goal = Node(0, 4, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False, "No path should be found when obstacles block the way."
         assert path == [], "Path should be empty when no path is found."
   new_imports_code: |
     ""
@@ -119,41 +310,63 @@ existing_test_function_signature: |
   def test_simple_path(self):
 new_tests:
 - test_behavior: |
-    Test that the path is found when there are multiple valid paths.
-    A 4x4 grid with obstacles that allows for multiple routes from start to goal.
+    Test that the pathfinding algorithm correctly handles a grid with a single row and multiple columns.
+    The start is at (0,0) and the goal is at (0,4) with obstacles in between.
+    We expect the planner to return that no path is found.
   lines_to_cover: |
-    [49]
+    [49, 137, 138]
   test_name: |
-    test_multiple_paths
+    test_single_row_with_obstacles
   test_code: |
-    def test_multiple_paths(self):
+    def test_single_row_with_obstacles(self):
         grid = [
-            [0, 0, 0, 0],
-            [1, 1, 0, 0],
-            [0, 0, 0, 1],
-            [0, 1, 0, 0]
+            [0, 1, 0, 1, 0]
         ]
         start = Node(0, 0, 0)
-        goal = Node(3, 3, 0)
+        goal = Node(0, 4, 0)
         planner = Dijkstra(grid)
         found, path = planner.plan(start, goal)
 
-        assert found is True, "A path should be found with multiple valid routes."
-        assert path[0] == goal, "Path should start with the goal node."
-        assert path[-1] == start, "Path should end with the start node."
+        assert found is False, "No path should be found when obstacles block the way."
+        assert path == [], "Path should be empty when no path is found."
   new_imports_code: |
     ""
-  test_tags: happy path
-
+  test_tags: edge case
 - test_behavior: |
-    Test that the path is not found when the grid is completely blocked.
-    A 3x3 grid where all cells are obstacles.
+    Test that the pathfinding algorithm correctly identifies when the goal is unreachable due to surrounding obstacles.
+    The start is at (1,1) and the goal is at (0,0) with obstacles blocking the path.
+    We expect the planner to return that no path is found.
   lines_to_cover: |
-    [137, 138]
+    [49, 137, 138]
   test_name: |
-    test_completely_blocked_grid
+    test_goal_unreachable_due_to_obstacles
   test_code: |
-    def test_completely_blocked_grid(self):
+    def test_goal_unreachable_due_to_obstacles(self):
+        grid = [
+            [1, 1, 1],
+            [1, 0, 1],
+            [1, 1, 1]
+        ]
+        start = Node(1, 1, 0)
+        goal = Node(0, 0, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False, "No path should be found when the goal is unreachable."
+        assert path == [], "Path should be empty when no path is found."
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test that the pathfinding algorithm correctly handles a grid with all obstacles.
+    The start is at (0,0) and the goal is at (2,2).
+    We expect the planner to return that no path is found.
+  lines_to_cover: |
+    [49, 137, 138]
+  test_name: |
+    test_all_obstacles
+  test_code: |
+    def test_all_obstacles(self):
         grid = [
             [1, 1, 1],
             [1, 1, 1],
@@ -164,58 +377,7 @@ new_tests:
         planner = Dijkstra(grid)
         found, path = planner.plan(start, goal)
 
-        assert found is False, "No path should be found in a completely blocked grid."
-        assert path == [], "Path should be empty when no path is found."
-  new_imports_code: |
-    ""
-  test_tags: edge case
-
-- test_behavior: |
-    Test that the path is found when the grid has a single obstacle.
-    A 3x3 grid where only one cell is blocked.
-  lines_to_cover: |
-    [137, 138]
-  test_name: |
-    test_single_obstacle
-  test_code: |
-    def test_single_obstacle(self):
-        grid = [
-            [0, 0, 0],
-            [0, 1, 0],
-            [0, 0, 0]
-        ]
-        start = Node(0, 0, 0)
-        goal = Node(2, 2, 0)
-        planner = Dijkstra(grid)
-        found, path = planner.plan(start, goal)
-
-        assert found is True, "A path should be found around a single obstacle."
-        assert path[0] == goal, "Path should start with the goal node."
-        assert path[-1] == start, "Path should end with the start node."
-  new_imports_code: |
-    ""
-  test_tags: happy path
-
-- test_behavior: |
-    Test that the path is not found when the start is on an obstacle.
-    A 3x3 grid where the start position is blocked.
-  lines_to_cover: |
-    [137, 138]
-  test_name: |
-    test_start_on_obstacle
-  test_code: |
-    def test_start_on_obstacle(self):
-        grid = [
-            [0, 0, 0],
-            [1, 0, 0],
-            [0, 0, 0]
-        ]
-        start = Node(1, 0, 0)  # Start is on an obstacle
-        goal = Node(2, 2, 0)
-        planner = Dijkstra(grid)
-        found, path = planner.plan(start, goal)
-
-        assert found is False, "No path should be found if the start is on an obstacle."
+        assert found is False, "No path should be found when the grid is completely blocked."
         assert path == [], "Path should be empty when no path is found."
   new_imports_code: |
     ""
@@ -227,14 +389,68 @@ existing_test_function_signature: |
   def test_simple_path():
 new_tests:
 - test_behavior: |
-    Test that the path is not found when the grid is completely blocked.
-    A 3x3 grid where all cells are obstacles.
+    Test that the pathfinding algorithm correctly handles a case where the start is at the edge of the grid and the goal is reachable.
+    The start is at (0,0) and the goal is at (1,1) with a clear path.
+    We expect the planner to find a valid path.
   lines_to_cover: |
-    [137, 138]
+    [49, 137, 138]
   test_name: |
-    test_completely_blocked_grid
+    test_edge_case_start
   test_code: |
-    def test_completely_blocked_grid():
+    def test_edge_case_start():
+        grid = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0, 0)
+        goal = Node(1, 1, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is True, "A path should be found from the edge of the grid."
+        assert path[0] == goal, "Path should start with the goal node."
+        assert path[-1] == start, "Path should end with the start node."
+  new_imports_code: |
+    ""
+  test_tags: happy path
+
+- test_behavior: |
+    Test that the pathfinding algorithm correctly identifies when the goal is unreachable due to surrounding obstacles.
+    The start is at (1,1) and the goal is at (0,0) with obstacles blocking the path.
+    We expect the planner to return that no path is found.
+  lines_to_cover: |
+    [49, 137, 138]
+  test_name: |
+    test_goal_unreachable_due_to_obstacles
+  test_code: |
+    def test_goal_unreachable_due_to_obstacles():
+        grid = [
+            [1, 1, 1],
+            [1, 0, 1],
+            [1, 1, 1]
+        ]
+        start = Node(1, 1, 0)
+        goal = Node(0, 0, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False, "No path should be found when the goal is unreachable."
+        assert path == [], "Path should be empty when no path is found."
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test that the pathfinding algorithm correctly handles a grid with all obstacles.
+    The start is at (0,0) and the goal is at (2,2).
+    We expect the planner to return that no path is found.
+  lines_to_cover: |
+    [49, 137, 138]
+  test_name: |
+    test_all_obstacles
+  test_code: |
+    def test_all_obstacles():
         grid = [
             [1, 1, 1],
             [1, 1, 1],
@@ -245,84 +461,35 @@ new_tests:
         planner = Dijkstra(grid)
         found, path = planner.plan(start, goal)
 
-        assert found is False, "No path should be found in a completely blocked grid."
+        assert found is False, "No path should be found when the grid is completely blocked."
         assert path == [], "Path should be empty when no path is found."
   new_imports_code: |
     ""
   test_tags: edge case
 
 - test_behavior: |
-    Test that the path is not found when the start is on an obstacle.
-    A 3x3 grid where the start position is blocked.
+    Test that the pathfinding algorithm correctly identifies when the start and goal are the same.
+    The start is at (1,1) and the goal is also at (1,1).
+    We expect the planner to find a path consisting of just that node.
   lines_to_cover: |
-    [137, 138]
+    [49, 137, 138]
   test_name: |
-    test_start_on_obstacle
+    test_start_equals_goal
   test_code: |
-    def test_start_on_obstacle():
+    def test_start_equals_goal():
         grid = [
             [0, 0, 0],
-            [1, 0, 0],
+            [0, 0, 0],
             [0, 0, 0]
         ]
-        start = Node(1, 0, 0)  # Start is on an obstacle
-        goal = Node(2, 2, 0)
+        start = Node(1, 1, 0)
+        goal = Node(1, 1, 0)
         planner = Dijkstra(grid)
         found, path = planner.plan(start, goal)
 
-        assert found is False, "No path should be found if the start is on an obstacle."
-        assert path == [], "Path should be empty when no path is found."
-  new_imports_code: |
-    ""
-  test_tags: edge case
-
-- test_behavior: |
-    Test that the path is not found when the goal is on an obstacle.
-    A 3x3 grid where the goal position is blocked.
-  lines_to_cover: |
-    [137, 138]
-  test_name: |
-    test_goal_on_obstacle
-  test_code: |
-    def test_goal_on_obstacle():
-        grid = [
-            [0, 0, 0],
-            [0, 0, 1],
-            [0, 0, 0]
-        ]
-        start = Node(0, 0, 0)
-        goal = Node(1, 2, 0)  # Goal is on an obstacle
-        planner = Dijkstra(grid)
-        found, path = planner.plan(start, goal)
-
-        assert found is False, "No path should be found if the goal is on an obstacle."
-        assert path == [], "Path should be empty when no path is found."
-  new_imports_code: |
-    ""
-  test_tags: edge case
-
-- test_behavior: |
-    Test that the path is found when the grid has a single obstacle.
-    A 3x3 grid where only one cell is blocked.
-  lines_to_cover: |
-    [137, 138]
-  test_name: |
-    test_single_obstacle
-  test_code: |
-    def test_single_obstacle():
-        grid = [
-            [0, 0, 0],
-            [0, 1, 0],
-            [0, 0, 0]
-        ]
-        start = Node(0, 0, 0)
-        goal = Node(2, 2, 0)
-        planner = Dijkstra(grid)
-        found, path = planner.plan(start, goal)
-
-        assert found is True, "A path should be found around a single obstacle."
-        assert path[0] == goal, "Path should start with the goal node."
-        assert path[-1] == start, "Path should end with the start node."
+        assert found is True, "Path should be found when start and goal are the same."
+        assert len(path) == 1, "Path should contain only the start/goal node."
+        assert path[0] == start, "Path should start and end with the same node."
   new_imports_code: |
     ""
   test_tags: happy path
@@ -333,64 +500,68 @@ existing_test_function_signature: |
   def test_simple_path():
 new_tests:
 - test_behavior: |
-    Test that the path is not found when the start is on an obstacle.
-    A 3x3 grid where the start position is blocked.
+    Test that the pathfinding algorithm correctly handles a case where the start is at the edge of the grid and the goal is reachable.
+    The start is at (0,0) and the goal is at (1,1) with a clear path.
+    We expect the planner to find a valid path.
   lines_to_cover: |
-    [137, 138]
+    [49, 137, 138]
   test_name: |
-    test_start_on_obstacle
+    test_edge_case_start
   test_code: |
-    def test_start_on_obstacle():
+    def test_edge_case_start():
         grid = [
             [0, 0, 0],
-            [1, 0, 0],  # Start is on an obstacle
-            [0, 0, 0]
-        ]
-        start = Node(1, 0, 0)
-        goal = Node(2, 2, 0)
-        planner = Dijkstra(grid)
-        found, path = planner.plan(start, goal)
-
-        assert found is False, "No path should be found if the start is on an obstacle."
-        assert path == [], "Path should be empty when no path is found."
-  new_imports_code: |
-    ""
-  test_tags: edge case
-
-- test_behavior: |
-    Test that the path is not found when the goal is on an obstacle.
-    A 3x3 grid where the goal position is blocked.
-  lines_to_cover: |
-    [137, 138]
-  test_name: |
-    test_goal_on_obstacle
-  test_code: |
-    def test_goal_on_obstacle():
-        grid = [
             [0, 0, 0],
-            [0, 0, 1],  # Goal is on an obstacle
             [0, 0, 0]
         ]
         start = Node(0, 0, 0)
-        goal = Node(1, 2, 0)
+        goal = Node(1, 1, 0)
         planner = Dijkstra(grid)
         found, path = planner.plan(start, goal)
 
-        assert found is False, "No path should be found if the goal is on an obstacle."
+        assert found is True, "A path should be found from the edge of the grid."
+        assert path[0] == goal, "Path should start with the goal node."
+        assert path[-1] == start, "Path should end with the start node."
+  new_imports_code: |
+    ""
+  test_tags: happy path
+
+- test_behavior: |
+    Test that the pathfinding algorithm correctly identifies when the goal is unreachable due to surrounding obstacles.
+    The start is at (1,1) and the goal is at (0,0) with obstacles blocking the path.
+    We expect the planner to return that no path is found.
+  lines_to_cover: |
+    [49, 137, 138]
+  test_name: |
+    test_goal_unreachable_due_to_obstacles
+  test_code: |
+    def test_goal_unreachable_due_to_obstacles():
+        grid = [
+            [1, 1, 1],
+            [1, 0, 1],
+            [1, 1, 1]
+        ]
+        start = Node(1, 1, 0)
+        goal = Node(0, 0, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False, "No path should be found when the goal is unreachable."
         assert path == [], "Path should be empty when no path is found."
   new_imports_code: |
     ""
   test_tags: edge case
 
 - test_behavior: |
-    Test that the path is not found when the grid is completely blocked.
-    A 3x3 grid where all cells are obstacles.
+    Test that the pathfinding algorithm correctly handles a grid with all obstacles.
+    The start is at (0,0) and the goal is at (2,2).
+    We expect the planner to return that no path is found.
   lines_to_cover: |
-    [137, 138]
+    [49, 137, 138]
   test_name: |
-    test_completely_blocked_grid
+    test_all_obstacles
   test_code: |
-    def test_completely_blocked_grid():
+    def test_all_obstacles():
         grid = [
             [1, 1, 1],
             [1, 1, 1],
@@ -401,34 +572,35 @@ new_tests:
         planner = Dijkstra(grid)
         found, path = planner.plan(start, goal)
 
-        assert found is False, "No path should be found in a completely blocked grid."
+        assert found is False, "No path should be found when the grid is completely blocked."
         assert path == [], "Path should be empty when no path is found."
   new_imports_code: |
     ""
   test_tags: edge case
 
 - test_behavior: |
-    Test that the path is found when the grid has a single obstacle.
-    A 3x3 grid where only one cell is blocked.
+    Test that the pathfinding algorithm correctly identifies when the start and goal are the same.
+    The start is at (1,1) and the goal is also at (1,1).
+    We expect the planner to find a path consisting of just that node.
   lines_to_cover: |
-    [137, 138]
+    [49, 137, 138]
   test_name: |
-    test_single_obstacle
+    test_start_equals_goal
   test_code: |
-    def test_single_obstacle():
+    def test_start_equals_goal():
         grid = [
             [0, 0, 0],
-            [0, 1, 0],  # Single obstacle
+            [0, 0, 0],
             [0, 0, 0]
         ]
-        start = Node(0, 0, 0)
-        goal = Node(2, 2, 0)
+        start = Node(1, 1, 0)
+        goal = Node(1, 1, 0)
         planner = Dijkstra(grid)
         found, path = planner.plan(start, goal)
 
-        assert found is True, "A path should be found around a single obstacle."
-        assert path[0] == goal, "Path should start with the goal node."
-        assert path[-1] == start, "Path should end with the start node."
+        assert found is True, "Path should be found when start and goal are the same."
+        assert len(path) == 1, "Path should contain only the start/goal node."
+        assert path[0] == start, "Path should start and end with the same node."
   new_imports_code: |
     ""
   test_tags: happy path
@@ -439,64 +611,68 @@ existing_test_function_signature: |
   def test_simple_path():
 new_tests:
 - test_behavior: |
-    Test that the path is not found when the start node is on an obstacle.
-    A 3x3 grid where the start position is blocked.
+    Test that the pathfinding algorithm correctly handles a case where the start is at the edge of the grid and the goal is reachable.
+    The start is at (0,0) and the goal is at (1,1) with a clear path.
+    We expect the planner to find a valid path.
   lines_to_cover: |
-    [137, 138]
+    [49, 137, 138]
   test_name: |
-    test_start_on_obstacle
+    test_edge_case_start
   test_code: |
-    def test_start_on_obstacle():
+    def test_edge_case_start():
         grid = [
             [0, 0, 0],
-            [1, 0, 0],  # Start is on an obstacle
-            [0, 0, 0]
-        ]
-        start = Node(1, 0, 0)
-        goal = Node(2, 2, 0)
-        planner = Dijkstra(grid)
-        found, path = planner.plan(start, goal)
-
-        assert found is False, "No path should be found if the start is on an obstacle."
-        assert path == [], "Path should be empty when no path is found."
-  new_imports_code: |
-    ""
-  test_tags: edge case
-
-- test_behavior: |
-    Test that the path is not found when the goal node is on an obstacle.
-    A 3x3 grid where the goal position is blocked.
-  lines_to_cover: |
-    [137, 138]
-  test_name: |
-    test_goal_on_obstacle
-  test_code: |
-    def test_goal_on_obstacle():
-        grid = [
             [0, 0, 0],
-            [0, 0, 1],  # Goal is on an obstacle
             [0, 0, 0]
         ]
         start = Node(0, 0, 0)
-        goal = Node(1, 2, 0)
+        goal = Node(1, 1, 0)
         planner = Dijkstra(grid)
         found, path = planner.plan(start, goal)
 
-        assert found is False, "No path should be found if the goal is on an obstacle."
+        assert found is True, "A path should be found from the edge of the grid."
+        assert path[0] == goal, "Path should start with the goal node."
+        assert path[-1] == start, "Path should end with the start node."
+  new_imports_code: |
+    ""
+  test_tags: happy path
+
+- test_behavior: |
+    Test that the pathfinding algorithm correctly identifies when the goal is unreachable due to surrounding obstacles.
+    The start is at (1,1) and the goal is at (0,0) with obstacles blocking the path.
+    We expect the planner to return that no path is found.
+  lines_to_cover: |
+    [49, 137, 138]
+  test_name: |
+    test_goal_unreachable_due_to_obstacles
+  test_code: |
+    def test_goal_unreachable_due_to_obstacles():
+        grid = [
+            [1, 1, 1],
+            [1, 0, 1],
+            [1, 1, 1]
+        ]
+        start = Node(1, 1, 0)
+        goal = Node(0, 0, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False, "No path should be found when the goal is unreachable."
         assert path == [], "Path should be empty when no path is found."
   new_imports_code: |
     ""
   test_tags: edge case
 
 - test_behavior: |
-    Test that the path is not found when the grid is completely blocked.
-    A 3x3 grid where all cells are obstacles.
+    Test that the pathfinding algorithm correctly handles a grid with all obstacles.
+    The start is at (0,0) and the goal is at (2,2).
+    We expect the planner to return that no path is found.
   lines_to_cover: |
-    [137, 138]
+    [49, 137, 138]
   test_name: |
-    test_completely_blocked_grid
+    test_all_obstacles
   test_code: |
-    def test_completely_blocked_grid():
+    def test_all_obstacles():
         grid = [
             [1, 1, 1],
             [1, 1, 1],
@@ -507,34 +683,35 @@ new_tests:
         planner = Dijkstra(grid)
         found, path = planner.plan(start, goal)
 
-        assert found is False, "No path should be found in a completely blocked grid."
+        assert found is False, "No path should be found when the grid is completely blocked."
         assert path == [], "Path should be empty when no path is found."
   new_imports_code: |
     ""
   test_tags: edge case
 
 - test_behavior: |
-    Test that the path is found when the grid has a single obstacle.
-    A 3x3 grid where only one cell is blocked.
+    Test that the pathfinding algorithm correctly identifies when the start and goal are the same.
+    The start is at (1,1) and the goal is also at (1,1).
+    We expect the planner to find a path consisting of just that node.
   lines_to_cover: |
-    [137, 138]
+    [49, 137, 138]
   test_name: |
-    test_single_obstacle
+    test_start_equals_goal
   test_code: |
-    def test_single_obstacle():
+    def test_start_equals_goal():
         grid = [
             [0, 0, 0],
-            [0, 1, 0],  # Single obstacle
+            [0, 0, 0],
             [0, 0, 0]
         ]
-        start = Node(0, 0, 0)
-        goal = Node(2, 2, 0)
+        start = Node(1, 1, 0)
+        goal = Node(1, 1, 0)
         planner = Dijkstra(grid)
         found, path = planner.plan(start, goal)
 
-        assert found is True, "A path should be found around a single obstacle."
-        assert path[0] == goal, "Path should start with the goal node."
-        assert path[-1] == start, "Path should end with the start node."
+        assert found is True, "Path should be found when start and goal are the same."
+        assert len(path) == 1, "Path should contain only the start/goal node."
+        assert path[0] == start, "Path should start and end with the same node."
   new_imports_code: |
     ""
   test_tags: happy path
@@ -545,62 +722,68 @@ existing_test_function_signature: |
   def test_simple_path():
 new_tests:
 - test_behavior: |
-    Test that the path is not found when the start node is on an obstacle.
-    A 3x3 grid where the start position is blocked.
+    Test that the pathfinding algorithm correctly handles a case where the start and goal are the same.
+    The start is at (1,1) and the goal is also at (1,1).
+    We expect the planner to find a path consisting of just that node.
   lines_to_cover: |
-    [137, 138]
+    [49, 137, 138]
   test_name: |
-    test_start_on_obstacle
+    test_start_equals_goal
   test_code: |
-    def test_start_on_obstacle():
+    def test_start_equals_goal():
         grid = [
             [0, 0, 0],
-            [1, 0, 0],  # Start is on an obstacle
+            [0, 0, 0],
             [0, 0, 0]
         ]
-        start = Node(1, 0, 0)
-        goal = Node(2, 2, 0)
+        start = Node(1, 1, 0)
+        goal = Node(1, 1, 0)
         planner = Dijkstra(grid)
         found, path = planner.plan(start, goal)
 
-        assert found is False, "No path should be found if the start is on an obstacle."
+        assert found is True, "Path should be found when start and goal are the same."
+        assert len(path) == 1, "Path should contain only the start/goal node."
+        assert path[0] == start, "Path should start and end with the same node."
+  new_imports_code: |
+    ""
+  test_tags: happy path
+
+- test_behavior: |
+    Test that the pathfinding algorithm correctly identifies when the goal is unreachable due to surrounding obstacles.
+    The start is at (1,1) and the goal is at (0,0) with obstacles blocking the path.
+    We expect the planner to return that no path is found.
+  lines_to_cover: |
+    [49, 137, 138]
+  test_name: |
+    test_goal_unreachable_due_to_obstacles
+  test_code: |
+    def test_goal_unreachable_due_to_obstacles():
+        grid = [
+            [1, 1, 1],
+            [1, 0, 1],
+            [1, 1, 1]
+        ]
+        start = Node(1, 1, 0)
+        goal = Node(0, 0, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False, "No path should be found when the goal is unreachable."
         assert path == [], "Path should be empty when no path is found."
   new_imports_code: |
     ""
   test_tags: edge case
-- test_behavior: |
-    Test that the path is not found when the goal node is on an obstacle.
-    A 3x3 grid where the goal position is blocked.
-  lines_to_cover: |
-    [137, 138]
-  test_name: |
-    test_goal_on_obstacle
-  test_code: |
-    def test_goal_on_obstacle():
-        grid = [
-            [0, 0, 0],
-            [0, 0, 1],  # Goal is on an obstacle
-            [0, 0, 0]
-        ]
-        start = Node(0, 0, 0)
-        goal = Node(1, 2, 0)
-        planner = Dijkstra(grid)
-        found, path = planner.plan(start, goal)
 
-        assert found is False, "No path should be found if the goal is on an obstacle."
-        assert path == [], "Path should be empty when no path is found."
-  new_imports_code: |
-    ""
-  test_tags: edge case
 - test_behavior: |
-    Test that the path is not found when the grid is completely blocked.
-    A 3x3 grid where all cells are obstacles.
+    Test that the pathfinding algorithm correctly handles a grid with all obstacles.
+    The start is at (0,0) and the goal is at (2,2).
+    We expect the planner to return that no path is found.
   lines_to_cover: |
-    [137, 138]
+    [49, 137, 138]
   test_name: |
-    test_completely_blocked_grid
+    test_all_obstacles
   test_code: |
-    def test_completely_blocked_grid():
+    def test_all_obstacles():
         grid = [
             [1, 1, 1],
             [1, 1, 1],
@@ -611,36 +794,37 @@ new_tests:
         planner = Dijkstra(grid)
         found, path = planner.plan(start, goal)
 
-        assert found is False, "No path should be found in a completely blocked grid."
+        assert found is False, "No path should be found when the grid is completely blocked."
         assert path == [], "Path should be empty when no path is found."
   new_imports_code: |
     ""
   test_tags: edge case
+
 - test_behavior: |
-    Test that the path is found when the grid has a single obstacle.
-    A 3x3 grid where only one cell is blocked.
+    Test that the pathfinding algorithm correctly identifies when the goal is outside the grid boundaries.
+    The start is at (1,1) and the goal is at (3,3) which is outside the grid.
+    We expect the planner to return that no path is found.
   lines_to_cover: |
-    [137, 138]
+    [49, 137, 138]
   test_name: |
-    test_single_obstacle
+    test_goal_outside_boundary
   test_code: |
-    def test_single_obstacle():
+    def test_goal_outside_boundary():
         grid = [
             [0, 0, 0],
-            [0, 1, 0],  # Single obstacle
+            [0, 0, 0],
             [0, 0, 0]
         ]
-        start = Node(0, 0, 0)
-        goal = Node(2, 2, 0)
+        start = Node(1, 1, 0)
+        goal = Node(3, 3, 0)  # Outside the grid
         planner = Dijkstra(grid)
         found, path = planner.plan(start, goal)
 
-        assert found is True, "A path should be found around a single obstacle."
-        assert path[0] == goal, "Path should start with the goal node."
-        assert path[-1] == start, "Path should end with the start node."
+        assert found is False, "No path should be found when the goal is outside the grid."
+        assert path == [], "Path should be empty when no path is found."
   new_imports_code: |
     ""
-  test_tags: happy path
+  test_tags: edge case
 ```
 ```yaml
 language: python
@@ -648,62 +832,68 @@ existing_test_function_signature: |
   def test_simple_path():
 new_tests:
 - test_behavior: |
-    Test that the path is not found when the start node is on an obstacle.
-    A 3x3 grid where the start position is blocked.
+    Test that the pathfinding algorithm correctly handles a case where the start and goal are the same.
+    The start is at (1,1) and the goal is also at (1,1).
+    We expect the planner to find a path consisting of just that node.
   lines_to_cover: |
-    [137, 138]
+    [49, 137, 138]
   test_name: |
-    test_start_on_obstacle
+    test_start_equals_goal
   test_code: |
-    def test_start_on_obstacle():
+    def test_start_equals_goal():
         grid = [
             [0, 0, 0],
-            [1, 0, 0],  # Start is on an obstacle
+            [0, 0, 0],
             [0, 0, 0]
         ]
-        start = Node(1, 0, 0)
-        goal = Node(2, 2, 0)
+        start = Node(1, 1, 0)
+        goal = Node(1, 1, 0)
         planner = Dijkstra(grid)
         found, path = planner.plan(start, goal)
 
-        assert found is False, "No path should be found if the start is on an obstacle."
+        assert found is True, "Path should be found when start and goal are the same."
+        assert len(path) == 1, "Path should contain only the start/goal node."
+        assert path[0] == start, "Path should start and end with the same node."
+  new_imports_code: |
+    ""
+  test_tags: happy path
+
+- test_behavior: |
+    Test that the pathfinding algorithm correctly identifies when the goal is unreachable due to surrounding obstacles.
+    The start is at (1,1) and the goal is at (0,0) with obstacles blocking the path.
+    We expect the planner to return that no path is found.
+  lines_to_cover: |
+    [152, 153]
+  test_name: |
+    test_goal_unreachable_due_to_obstacles
+  test_code: |
+    def test_goal_unreachable_due_to_obstacles():
+        grid = [
+            [1, 1, 1],
+            [1, 0, 1],
+            [1, 1, 1]
+        ]
+        start = Node(1, 1, 0)
+        goal = Node(0, 0, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False, "No path should be found when the goal is unreachable."
         assert path == [], "Path should be empty when no path is found."
   new_imports_code: |
     ""
   test_tags: edge case
-- test_behavior: |
-    Test that the path is not found when the goal node is on an obstacle.
-    A 3x3 grid where the goal position is blocked.
-  lines_to_cover: |
-    [137, 138]
-  test_name: |
-    test_goal_on_obstacle
-  test_code: |
-    def test_goal_on_obstacle():
-        grid = [
-            [0, 0, 0],
-            [0, 0, 1],  # Goal is on an obstacle
-            [0, 0, 0]
-        ]
-        start = Node(0, 0, 0)
-        goal = Node(1, 2, 0)
-        planner = Dijkstra(grid)
-        found, path = planner.plan(start, goal)
 
-        assert found is False, "No path should be found if the goal is on an obstacle."
-        assert path == [], "Path should be empty when no path is found."
-  new_imports_code: |
-    ""
-  test_tags: edge case
 - test_behavior: |
-    Test that the path is not found in a completely blocked grid.
-    A 3x3 grid where all cells are obstacles.
+    Test that the pathfinding algorithm correctly handles a grid with all obstacles.
+    The start is at (0,0) and the goal is at (2,2).
+    We expect the planner to return that no path is found.
   lines_to_cover: |
-    [137, 138]
+    [152, 153]
   test_name: |
-    test_completely_blocked_grid
+    test_all_obstacles
   test_code: |
-    def test_completely_blocked_grid():
+    def test_all_obstacles():
         grid = [
             [1, 1, 1],
             [1, 1, 1],
@@ -714,34 +904,114 @@ new_tests:
         planner = Dijkstra(grid)
         found, path = planner.plan(start, goal)
 
-        assert found is False, "No path should be found in a completely blocked grid."
+        assert found is False, "No path should be found when the grid is completely blocked."
+        assert path == [], "Path should be empty when no path is found."
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test that the pathfinding algorithm correctly identifies when the goal is outside the grid boundaries.
+    The start is at (1,1) and the goal is at (3,3) which is outside the grid.
+    We expect the planner to return that no path is found.
+  lines_to_cover: |
+    [161, 162]
+  test_name: |
+    test_goal_outside_boundary
+  test_code: |
+    def test_goal_outside_boundary():
+        grid = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(1, 1, 0)
+        goal = Node(3, 3, 0)  # Outside the grid
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False, "No path should be found when the goal is outside the grid."
+        assert path == [], "Path should be empty when no path is found."
+  new_imports_code: |
+    ""
+  test_tags: edge case
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test that the pathfinding algorithm correctly handles a grid with a single row and multiple columns.
+    The start is at (0,0) and the goal is at (0,4) with obstacles in between.
+    We expect the planner to return that no path is found.
+  lines_to_cover: |
+    [49, 137, 138]
+  test_name: |
+    test_single_row_with_obstacles
+  test_code: |
+    def test_single_row_with_obstacles():
+        grid = [
+            [0, 1, 0, 1, 0]
+        ]
+        start = Node(0, 0, 0)
+        goal = Node(0, 4, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False, "No path should be found when obstacles block the way."
         assert path == [], "Path should be empty when no path is found."
   new_imports_code: |
     ""
   test_tags: edge case
 - test_behavior: |
-    Test that the path is found when the grid has a single obstacle.
-    A 3x3 grid where only one cell is blocked.
+    Test that the pathfinding algorithm correctly identifies when the goal is unreachable due to surrounding obstacles.
+    The start is at (1,1) and the goal is at (0,0) with obstacles blocking the path.
+    We expect the planner to return that no path is found.
   lines_to_cover: |
-    [137, 138]
+    [152, 153]
   test_name: |
-    test_single_obstacle
+    test_goal_unreachable_due_to_obstacles
   test_code: |
-    def test_single_obstacle():
+    def test_goal_unreachable_due_to_obstacles():
         grid = [
-            [0, 0, 0],
-            [0, 1, 0],  # Single obstacle
-            [0, 0, 0]
+            [1, 1, 1],
+            [1, 0, 1],
+            [1, 1, 1]
+        ]
+        start = Node(1, 1, 0)
+        goal = Node(0, 0, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False, "No path should be found when the goal is unreachable."
+        assert path == [], "Path should be empty when no path is found."
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test that the pathfinding algorithm correctly handles a grid with all obstacles.
+    The start is at (0,0) and the goal is at (2,2).
+    We expect the planner to return that no path is found.
+  lines_to_cover: |
+    [152, 153]
+  test_name: |
+    test_all_obstacles
+  test_code: |
+    def test_all_obstacles():
+        grid = [
+            [1, 1, 1],
+            [1, 1, 1],
+            [1, 1, 1]
         ]
         start = Node(0, 0, 0)
         goal = Node(2, 2, 0)
         planner = Dijkstra(grid)
         found, path = planner.plan(start, goal)
 
-        assert found is True, "A path should be found around a single obstacle."
-        assert path[0] == goal, "Path should start with the goal node."
-        assert path[-1] == start, "Path should end with the start node."
+        assert found is False, "No path should be found when the grid is completely blocked."
+        assert path == [], "Path should be empty when no path is found."
   new_imports_code: |
     ""
-  test_tags: happy path
+  test_tags: edge case
 ```

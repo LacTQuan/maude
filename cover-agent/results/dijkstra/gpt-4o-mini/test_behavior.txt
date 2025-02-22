@@ -1,80 +1,140 @@
-Test Behavior: Test that the path is found when the start and goal are the same.
+Test Behavior: Test that the pathfinding algorithm correctly identifies when the start and goal are the same.
 
-Test Behavior: Test that the path is not found when the start is outside the grid.
+Test Behavior: Test that the pathfinding algorithm handles the case where the goal is outside the grid boundaries.
 
-Test Behavior: Test that the path is not found when the goal is outside the grid.
+Test Behavior: Test that the pathfinding algorithm correctly identifies when all paths to the goal are blocked.
 
-Test Behavior: Test that the path is not found when both start and goal are outside the grid.
+Test Behavior: Test that the pathfinding algorithm correctly handles a grid with all obstacles.
 
-Test Behavior: Test that the path is found when there are multiple valid paths.
-A 4x4 grid with obstacles that allows for multiple routes from start to goal.
+Test Behavior: Test that the pathfinding algorithm correctly handles a grid with a single obstacle directly in the path.
+The start is at (0,0) and the goal is at (0,2) with an obstacle at (0,1).
+We expect the planner to find a valid path around the obstacle.
 
-Test Behavior: Test that the path is not found when the grid is completely blocked.
-A 3x3 grid where all cells are obstacles.
+Test Behavior: Test that the pathfinding algorithm correctly handles a case where the start is at the edge of the grid.
+The start is at (0,0) and the goal is at (1,1) with a clear path.
+We expect the planner to find a valid path.
 
-Test Behavior: Test that the path is found when the grid has a single obstacle.
-A 3x3 grid where only one cell is blocked.
+Test Behavior: Test that the pathfinding algorithm correctly identifies when the goal is unreachable due to surrounding obstacles.
+The start is at (1,1) and the goal is at (0,0) with obstacles blocking the path.
+We expect the planner to return that no path is found.
 
-Test Behavior: Test that the path is not found when the start is on an obstacle.
-A 3x3 grid where the start position is blocked.
+Test Behavior: Test that the pathfinding algorithm correctly handles a grid with a single row and multiple columns.
+The start is at (0,0) and the goal is at (0,4) with obstacles in between.
+We expect the planner to return that no path is found.
 
-Test Behavior: Test that the path is not found when the grid is completely blocked.
-A 3x3 grid where all cells are obstacles.
+Test Behavior: Test that the pathfinding algorithm correctly handles a case where the start is at the edge of the grid.
+The start is at (0,0) and the goal is at (1,1) with a clear path.
+We expect the planner to find a valid path.
 
-Test Behavior: Test that the path is not found when the start is on an obstacle.
-A 3x3 grid where the start position is blocked.
+Test Behavior: Test that the pathfinding algorithm correctly identifies when the goal is unreachable due to surrounding obstacles.
+The start is at (1,1) and the goal is at (0,0) with obstacles blocking the path.
+We expect the planner to return that no path is found.
 
-Test Behavior: Test that the path is not found when the goal is on an obstacle.
-A 3x3 grid where the goal position is blocked.
+Test Behavior: Test that the pathfinding algorithm correctly handles a grid with a single row and multiple columns.
+The start is at (0,0) and the goal is at (0,4) with obstacles in between.
+We expect the planner to return that no path is found.
 
-Test Behavior: Test that the path is found when the grid has a single obstacle.
-A 3x3 grid where only one cell is blocked.
+Test Behavior: Test that the pathfinding algorithm correctly handles a grid with a single row and multiple columns.
+The start is at (0,0) and the goal is at (0,4) with obstacles in between.
+We expect the planner to return that no path is found.
 
-Test Behavior: Test that the path is not found when the start is on an obstacle.
-A 3x3 grid where the start position is blocked.
+Test Behavior: Test that the pathfinding algorithm correctly identifies when the goal is unreachable due to surrounding obstacles.
+The start is at (1,1) and the goal is at (0,0) with obstacles blocking the path.
+We expect the planner to return that no path is found.
 
-Test Behavior: Test that the path is not found when the goal is on an obstacle.
-A 3x3 grid where the goal position is blocked.
+Test Behavior: Test that the pathfinding algorithm correctly handles a grid with all obstacles.
+The start is at (0,0) and the goal is at (2,2).
+We expect the planner to return that no path is found.
 
-Test Behavior: Test that the path is not found when the grid is completely blocked.
-A 3x3 grid where all cells are obstacles.
+Test Behavior: Test that the pathfinding algorithm correctly handles a case where the start is at the edge of the grid and the goal is reachable.
+The start is at (0,0) and the goal is at (1,1) with a clear path.
+We expect the planner to find a valid path.
 
-Test Behavior: Test that the path is found when the grid has a single obstacle.
-A 3x3 grid where only one cell is blocked.
+Test Behavior: Test that the pathfinding algorithm correctly identifies when the goal is unreachable due to surrounding obstacles.
+The start is at (1,1) and the goal is at (0,0) with obstacles blocking the path.
+We expect the planner to return that no path is found.
 
-Test Behavior: Test that the path is not found when the start node is on an obstacle.
-A 3x3 grid where the start position is blocked.
+Test Behavior: Test that the pathfinding algorithm correctly handles a grid with all obstacles.
+The start is at (0,0) and the goal is at (2,2).
+We expect the planner to return that no path is found.
 
-Test Behavior: Test that the path is not found when the goal node is on an obstacle.
-A 3x3 grid where the goal position is blocked.
+Test Behavior: Test that the pathfinding algorithm correctly identifies when the start and goal are the same.
+The start is at (1,1) and the goal is also at (1,1).
+We expect the planner to find a path consisting of just that node.
 
-Test Behavior: Test that the path is not found when the grid is completely blocked.
-A 3x3 grid where all cells are obstacles.
+Test Behavior: Test that the pathfinding algorithm correctly handles a case where the start is at the edge of the grid and the goal is reachable.
+The start is at (0,0) and the goal is at (1,1) with a clear path.
+We expect the planner to find a valid path.
 
-Test Behavior: Test that the path is found when the grid has a single obstacle.
-A 3x3 grid where only one cell is blocked.
+Test Behavior: Test that the pathfinding algorithm correctly identifies when the goal is unreachable due to surrounding obstacles.
+The start is at (1,1) and the goal is at (0,0) with obstacles blocking the path.
+We expect the planner to return that no path is found.
 
-Test Behavior: Test that the path is not found when the start node is on an obstacle.
-A 3x3 grid where the start position is blocked.
+Test Behavior: Test that the pathfinding algorithm correctly handles a grid with all obstacles.
+The start is at (0,0) and the goal is at (2,2).
+We expect the planner to return that no path is found.
 
-Test Behavior: Test that the path is not found when the goal node is on an obstacle.
-A 3x3 grid where the goal position is blocked.
+Test Behavior: Test that the pathfinding algorithm correctly identifies when the start and goal are the same.
+The start is at (1,1) and the goal is also at (1,1).
+We expect the planner to find a path consisting of just that node.
 
-Test Behavior: Test that the path is not found when the grid is completely blocked.
-A 3x3 grid where all cells are obstacles.
+Test Behavior: Test that the pathfinding algorithm correctly handles a case where the start is at the edge of the grid and the goal is reachable.
+The start is at (0,0) and the goal is at (1,1) with a clear path.
+We expect the planner to find a valid path.
 
-Test Behavior: Test that the path is found when the grid has a single obstacle.
-A 3x3 grid where only one cell is blocked.
+Test Behavior: Test that the pathfinding algorithm correctly identifies when the goal is unreachable due to surrounding obstacles.
+The start is at (1,1) and the goal is at (0,0) with obstacles blocking the path.
+We expect the planner to return that no path is found.
 
-Test Behavior: Test that the path is not found when the start node is on an obstacle.
-A 3x3 grid where the start position is blocked.
+Test Behavior: Test that the pathfinding algorithm correctly handles a grid with all obstacles.
+The start is at (0,0) and the goal is at (2,2).
+We expect the planner to return that no path is found.
 
-Test Behavior: Test that the path is not found when the goal node is on an obstacle.
-A 3x3 grid where the goal position is blocked.
+Test Behavior: Test that the pathfinding algorithm correctly identifies when the start and goal are the same.
+The start is at (1,1) and the goal is also at (1,1).
+We expect the planner to find a path consisting of just that node.
 
-Test Behavior: Test that the path is not found in a completely blocked grid.
-A 3x3 grid where all cells are obstacles.
+Test Behavior: Test that the pathfinding algorithm correctly handles a case where the start and goal are the same.
+The start is at (1,1) and the goal is also at (1,1).
+We expect the planner to find a path consisting of just that node.
 
-Test Behavior: Test that the path is found when the grid has a single obstacle.
-A 3x3 grid where only one cell is blocked.
+Test Behavior: Test that the pathfinding algorithm correctly identifies when the goal is unreachable due to surrounding obstacles.
+The start is at (1,1) and the goal is at (0,0) with obstacles blocking the path.
+We expect the planner to return that no path is found.
+
+Test Behavior: Test that the pathfinding algorithm correctly handles a grid with all obstacles.
+The start is at (0,0) and the goal is at (2,2).
+We expect the planner to return that no path is found.
+
+Test Behavior: Test that the pathfinding algorithm correctly identifies when the goal is outside the grid boundaries.
+The start is at (1,1) and the goal is at (3,3) which is outside the grid.
+We expect the planner to return that no path is found.
+
+Test Behavior: Test that the pathfinding algorithm correctly handles a case where the start and goal are the same.
+The start is at (1,1) and the goal is also at (1,1).
+We expect the planner to find a path consisting of just that node.
+
+Test Behavior: Test that the pathfinding algorithm correctly identifies when the goal is unreachable due to surrounding obstacles.
+The start is at (1,1) and the goal is at (0,0) with obstacles blocking the path.
+We expect the planner to return that no path is found.
+
+Test Behavior: Test that the pathfinding algorithm correctly handles a grid with all obstacles.
+The start is at (0,0) and the goal is at (2,2).
+We expect the planner to return that no path is found.
+
+Test Behavior: Test that the pathfinding algorithm correctly identifies when the goal is outside the grid boundaries.
+The start is at (1,1) and the goal is at (3,3) which is outside the grid.
+We expect the planner to return that no path is found.
+
+Test Behavior: Test that the pathfinding algorithm correctly handles a grid with a single row and multiple columns.
+The start is at (0,0) and the goal is at (0,4) with obstacles in between.
+We expect the planner to return that no path is found.
+
+Test Behavior: Test that the pathfinding algorithm correctly identifies when the goal is unreachable due to surrounding obstacles.
+The start is at (1,1) and the goal is at (0,0) with obstacles blocking the path.
+We expect the planner to return that no path is found.
+
+Test Behavior: Test that the pathfinding algorithm correctly handles a grid with all obstacles.
+The start is at (0,0) and the goal is at (2,2).
+We expect the planner to return that no path is found.
 

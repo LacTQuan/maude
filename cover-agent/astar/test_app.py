@@ -7,6 +7,9 @@ To run these tests, execute:
 
 import pytest
 from app import Node, AStar, compare_coordinates
+from app import make_grid, print_path
+from app import print_grid
+from app import make_grid
 
 def test_start_equals_goal():
     """
@@ -66,34 +69,3 @@ def test_no_path():
     found, path = astar.plan(start, goal)
     assert found is False, "No path should be found when obstacles block the way"
     assert path == [], "The path should be empty when no path exists"
-
-grid = [
-    [0, 0],
-    [0, 0]
-]
-start = Node(0, 0)
-goal = Node(2, 2)
-# Set the start node's id and parent id.
-start.id = 0
-start.pid = 0
-astar = AStar(grid)
-found, path = astar.plan(start, goal)
-assert found is False, "Path should not be found when the goal is outside the grid"
-
-
-def test_path_reconstruction_error():
-    grid = [[0, 0], [0, 0]]
-    start = Node(0, 0)
-    goal = Node(1, 1)
-    start.id = 0
-    start.pid = 0
-    astar = AStar(grid)
-
-    # Manually create a closed list with an invalid parent id
-    closed_list = {start, goal}
-    goal.pid = -1  # Invalid parent ID
-
-    # Call the path conversion function directly
-    path = astar.convert_closed_list_to_path(closed_list, start, goal)
-    assert path == []
-

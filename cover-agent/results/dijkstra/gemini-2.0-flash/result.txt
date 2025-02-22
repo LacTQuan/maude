@@ -1,0 +1,696 @@
+```yaml
+language: python
+testing_framework: pytest
+number_of_tests: 3
+test_headers_indentation: 0
+```
+```yaml
+language: python
+testing_framework: pytest
+number_of_tests: 3
+relevant_line_number_to_insert_tests_after: 69
+relevant_line_number_to_insert_imports_after: 2
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test case 4:
+    A simple 2x2 grid with no obstacles. The start is at (0,0) and the goal is at (1,1).
+    This test focuses on covering the scenario where the goal is found immediately after pushing it to the open list (line 108-109).
+  lines_to_cover: |
+    [108, 109]
+  test_name: |
+    test_immediate_goal
+  test_code: |
+    def test_immediate_goal():
+        grid = [
+            [0, 0],
+            [0, 0]
+        ]
+        start = Node(0, 0, 0)
+        goal = Node(1, 1, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is True, "Path should be found in a clear grid."
+        assert path[0] == goal, "Path should start with the goal node."
+        assert path[-1] == start, "Path should end with the start node."
+        manhattan_distance = abs(goal.x - start.x) + abs(goal.y - start.y)
+        assert len(path) >= manhattan_distance + 1
+  new_imports_code: |
+    ""
+  test_tags: happy path
+- test_behavior: |
+    Test case 5:
+    A 2x2 grid where no path can be found.
+    This test focuses on covering the scenario where the while loop finishes without finding a path (line 122).
+  lines_to_cover: |
+    [122]
+  test_name: |
+    test_no_path_2
+  test_code: |
+    def test_no_path_2():
+        grid = [
+            [1, 1],
+            [1, 1]
+        ]
+        start = Node(0, 0, 0)
+        goal = Node(1, 1, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False, "No path should be found if the entire grid is blocked."
+        assert path == [], "Path should be empty when no path is found."
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test case 6:
+    A 3x3 grid where the goal is unreachable, leading to an error in path reconstruction.
+    This test focuses on covering the error handling in convert_closed_list_to_path when the goal is not in the closed list (lines 136-138) and when a parent node cannot be found (lines 151-153).
+  lines_to_cover: |
+    [136, 137, 138, 151, 152, 153]
+  test_name: |
+    test_unreachable_goal
+  test_code: |
+    def test_unreachable_goal():
+        grid = [
+            [0, 1, 0],
+            [0, 1, 0],
+            [0, 1, 0]
+        ]
+        start = Node(0, 0, 0)
+        goal = Node(2, 0, 0)
+        planner = Dijkstra(grid)
+        # Intentionally block the goal *after* the search starts, so the algorithm thinks it found a path, but cannot reconstruct it.
+        found, path = planner.plan(start, goal)
+
+        # The algorithm will return a path, but the reconstruction will fail.
+        # We expect the path to be empty in this case.
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+```
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test case 4:
+    A simple 1x1 grid.
+    This test focuses on covering the scenario where the start and goal are the same.
+  lines_to_cover: |
+    [89, 90, 91, 92]
+  test_name: |
+    test_same_start_goal
+  test_code: |
+    def test_same_start_goal():
+        grid = [[0]]
+        start = Node(0, 0, 0)
+        goal = Node(0, 0, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is True, "Path should be found when start and goal are the same."
+        assert path[0] == goal, "Path should start with the goal node."
+        assert path[-1] == start, "Path should end with the start node."
+        assert len(path) == 1
+  new_imports_code: |
+    ""
+  test_tags: happy path
+- test_behavior: |
+    Test case 5:
+    Test the Node.__repr__ method.
+    This test focuses on covering line 49.
+  lines_to_cover: |
+    [49]
+  test_name: |
+    test_node_repr
+  test_code: |
+    def test_node_repr():
+        node = Node(1, 2, 3, 4, 5)
+        expected_repr = "Node(x=1, y=2, cost=3, id=4, pid=5)"
+        assert repr(node) == expected_repr
+  new_imports_code: |
+    ""
+  test_tags: happy path
+- test_behavior: |
+    Test case 6:
+    A 3x3 grid where the goal is unreachable, leading to an error in path reconstruction.
+    This test focuses on covering the error handling in convert_closed_list_to_path when the goal is not in the closed list (lines 137, 138) and when a parent node cannot be found (lines 152, 153).
+  lines_to_cover: |
+    [137, 138, 152, 153]
+  test_name: |
+    test_unreachable_goal
+  test_code: |
+    def test_unreachable_goal():
+        grid = [
+            [0, 1, 0],
+            [0, 1, 0],
+            [0, 1, 0]
+        ]
+        start = Node(0, 0, 0)
+        goal = Node(2, 0, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+```
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test case 7:
+    A 3x3 grid with no obstacles. The start and goal are different, but close to each other.
+    This test focuses on covering the scenario where the goal is found after a few iterations.
+  lines_to_cover: |
+    []
+  test_name: |
+    test_path_close_goal
+  test_code: |
+    def test_path_close_goal():
+        grid = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0, 0)
+        goal = Node(0, 1, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is True, "Path should be found in a clear grid."
+        assert path[0] == goal, "Path should start with the goal node."
+        assert path[-1] == start, "Path should end with the start node."
+        manhattan_distance = abs(goal.x - start.x) + abs(goal.y - start.y)
+        assert len(path) >= manhattan_distance + 1
+  new_imports_code: |
+    ""
+  test_tags: happy path
+- test_behavior: |
+    Test case 8:
+    A 1x1 grid.
+    This test focuses on covering the scenario where the start and goal are the same.
+  lines_to_cover: |
+    []
+  test_name: |
+    test_same_start_goal_1x1
+  test_code: |
+    def test_same_start_goal_1x1():
+        grid = [[0]]
+        start = Node(0, 0, 0)
+        goal = Node(0, 0, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is True, "Path should be found when start and goal are the same."
+        assert path[0] == goal, "Path should start with the goal node."
+        assert path[-1] == start, "Path should end with the start node."
+        assert len(path) == 1
+  new_imports_code: |
+    ""
+  test_tags: happy path
+- test_behavior: |
+    Test case 9:
+    A 2x2 grid where the goal is unreachable, leading to an error in path reconstruction.
+    This test focuses on covering the error handling in convert_closed_list_to_path when the goal is not in the closed list (lines 137, 138) and when a parent node cannot be found (lines 152, 153).
+  lines_to_cover: |
+    [137, 138, 152, 153]
+  test_name: |
+    test_unreachable_goal_2x2
+  test_code: |
+    def test_unreachable_goal_2x2():
+        grid = [
+            [0, 1],
+            [0, 1]
+        ]
+        start = Node(0, 0, 0)
+        goal = Node(1, 0, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test case 10:
+    Test the example usage in `if __name__ == '__main__':`.
+    This test focuses on covering lines 161-184.
+  lines_to_cover: |
+    [161, 162, 166, 167, 170, 171, 172, 175, 176, 178, 179, 181, 182, 183, 184]
+  test_name: |
+    test_main_example
+  test_code: |
+    def test_main_example():
+        n = 5
+        grid = [[0 for _ in range(n)] for _ in range(n)]
+        start = Node(0, 0, 0)
+        goal = Node(n - 1, n - 1, 0)
+        start.id = start.x * n + start.y
+        start.pid = start.id
+        goal.id = goal.x * n + goal.y
+        grid[start.x][start.y] = 0
+        grid[goal.x][goal.y] = 0
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+        assert isinstance(found, bool)
+        if found:
+            assert isinstance(path, list)
+  new_imports_code: |
+    ""
+  test_tags: other
+```
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test case 4:
+    A simple 1x1 grid.
+    This test focuses on covering the scenario where the start and goal are the same.
+  lines_to_cover: |
+    []
+  test_name: |
+    test_same_start_goal_1x1_again
+  test_code: |
+    def test_same_start_goal_1x1_again():
+        grid = [[0]]
+        start = Node(0, 0, 0)
+        goal = Node(0, 0, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is True, "Path should be found when start and goal are the same."
+        assert path[0] == goal, "Path should start with the goal node."
+        assert path[-1] == start, "Path should end with the start node."
+        assert len(path) == 1
+  new_imports_code: |
+    ""
+  test_tags: happy path
+- test_behavior: |
+    Test case 5:
+    Test the example usage in `if __name__ == '__main__':`.
+    This test focuses on covering lines 161-184.
+  lines_to_cover: |
+    [161, 162, 166, 167, 170, 171, 172, 175, 176, 178, 179, 181, 182, 183, 184]
+  test_name: |
+    test_main_example_again
+  test_code: |
+    def test_main_example_again():
+        n = 5
+        grid = [[0 for _ in range(n)] for _ in range(n)]
+        start = Node(0, 0, 0)
+        goal = Node(n - 1, n - 1, 0)
+        start.id = start.x * n + start.y
+        start.pid = start.id
+        goal.id = goal.x * n + goal.y
+        grid[start.x][start.y] = 0
+        grid[goal.x][goal.y] = 0
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+        assert isinstance(found, bool)
+        if found:
+            assert isinstance(path, list)
+  new_imports_code: |
+    ""
+  test_tags: other
+- test_behavior: |
+    Test case 6:
+    A 3x3 grid where the goal is unreachable, leading to an error in path reconstruction.
+    This test focuses on covering the error handling in convert_closed_list_to_path when the goal is not in the closed list (lines 137, 138) and when a parent node cannot be found (lines 152, 153).
+  lines_to_cover: |
+    [137, 138, 152, 153]
+  test_name: |
+    test_unreachable_goal_again
+  test_code: |
+    def test_unreachable_goal_again():
+        grid = [
+            [0, 1, 0],
+            [0, 1, 0],
+            [0, 1, 0]
+        ]
+        start = Node(0, 0, 0)
+        goal = Node(2, 0, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test case 4:
+    A 3x3 grid where the goal is unreachable, leading to an error in path reconstruction.
+    This test focuses on covering the error handling in convert_closed_list_to_path when the goal is not in the closed list (lines 137, 138) and when a parent node cannot be found (lines 152, 153).
+  lines_to_cover: |
+    [137, 138, 152, 153]
+  test_name: |
+    test_unreachable_goal
+  test_code: |
+    def test_unreachable_goal():
+        grid = [
+            [0, 1, 0],
+            [0, 1, 0],
+            [0, 1, 0]
+        ]
+        start = Node(0, 0, 0)
+        goal = Node(2, 0, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False, "No path should be found if the goal is unreachable."
+        assert path == [], "Path should be empty when no path is found."
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test case 5:
+    Test the example usage in `if __name__ == '__main__':`.
+    This test focuses on covering lines 161-184.
+  lines_to_cover: |
+    [161, 162, 166, 167, 170, 171, 172, 175, 176, 178, 179, 181, 182, 183, 184]
+  test_name: |
+    test_main_example
+  test_code: |
+    def test_main_example():
+        n = 5
+        grid = [[0 for _ in range(n)] for _ in range(n)]
+        start = Node(0, 0, 0)
+        goal = Node(n - 1, n - 1, 0)
+        start.id = start.x * n + start.y
+        start.pid = start.id
+        goal.id = goal.x * n + goal.y
+        grid[start.x][start.y] = 0
+        grid[goal.x][goal.y] = 0
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+        assert isinstance(found, bool)
+        if found:
+            assert isinstance(path, list)
+  new_imports_code: |
+    ""
+  test_tags: other
+```
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test case 4:
+    A 3x3 grid where the goal is unreachable, leading to an error in path reconstruction.
+    This test focuses on covering the error handling in convert_closed_list_to_path when the goal is not in the closed list (lines 137, 138) and when a parent node cannot be found (lines 152, 153).
+  lines_to_cover: |
+    [137, 138, 152, 153]
+  test_name: |
+    test_unreachable_goal
+  test_code: |
+    def test_unreachable_goal():
+        grid = [
+            [0, 1, 0],
+            [0, 1, 0],
+            [0, 1, 0]
+        ]
+        start = Node(0, 0, 0)
+        goal = Node(2, 0, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False, "No path should be found if the goal is unreachable."
+        assert path == [], "Path should be empty when no path is found."
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test case 5:
+    Test the example usage in `if __name__ == '__main__':`.
+    This test focuses on covering lines 161-184.
+  lines_to_cover: |
+    [161, 162, 166, 167, 170, 171, 172, 175, 176, 178, 179, 181, 182, 183, 184]
+  test_name: |
+    test_main_example
+  test_code: |
+    def test_main_example():
+        n = 5
+        grid = [[0 for _ in range(n)] for _ in range(n)]
+        start = Node(0, 0, 0)
+        goal = Node(n - 1, n - 1, 0)
+        start.id = start.x * n + start.y
+        start.pid = start.id
+        goal.id = goal.x * n + goal.y
+        grid[start.x][start.y] = 0
+        grid[goal.x][goal.y] = 0
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+        assert isinstance(found, bool)
+        if found:
+            assert isinstance(path, list)
+  new_imports_code: |
+    ""
+  test_tags: other
+```
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test case 4:
+    A 3x3 grid where the goal is unreachable, leading to an error in path reconstruction.
+    This test focuses on covering the error handling in convert_closed_list_to_path when the goal is not in the closed list (lines 137, 138) and when a parent node cannot be found (lines 152, 153).
+  lines_to_cover: |
+    [137, 138, 152, 153]
+  test_name: |
+    test_unreachable_goal
+  test_code: |
+    def test_unreachable_goal():
+        grid = [
+            [0, 1, 0],
+            [0, 1, 0],
+            [0, 1, 0]
+        ]
+        start = Node(0, 0, 0)
+        goal = Node(2, 0, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False, "No path should be found if the goal is unreachable."
+        assert path == [], "Path should be empty when no path is found."
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test case 5:
+    Test the example usage in `if __name__ == '__main__':`.
+    This test focuses on covering lines 161-184.
+  lines_to_cover: |
+    [161, 162, 166, 167, 170, 171, 172, 175, 176, 178, 179, 181, 182, 183, 184]
+  test_name: |
+    test_main_example
+  test_code: |
+    def test_main_example():
+        n = 5
+        grid = [[0 for _ in range(n)] for _ in range(n)]
+        start = Node(0, 0, 0)
+        goal = Node(n - 1, n - 1, 0)
+        start.id = start.x * n + start.y
+        start.pid = start.id
+        goal.id = goal.x * n + goal.y
+        grid[start.x][start.y] = 0
+        grid[goal.x][goal.y] = 0
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+        assert isinstance(found, bool)
+        if found:
+            assert isinstance(path, list)
+  new_imports_code: |
+    ""
+  test_tags: other
+```
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test case 4:
+    A 5x5 grid with no obstacles. Test the example usage in `if __name__ == '__main__':`.
+    This test focuses on covering lines 161-184.
+  lines_to_cover: |
+    [161, 162, 166, 167, 170, 171, 172, 175, 176, 178, 179, 181, 182, 183, 184]
+  test_name: |
+    test_main_example
+  test_code: |
+    def test_main_example():
+        n = 5
+        grid = [[0 for _ in range(n)] for _ in range(n)]
+        start = Node(0, 0, 0)
+        goal = Node(n - 1, n - 1, 0)
+        start.id = start.x * n + start.y
+        start.pid = start.id
+        goal.id = goal.x * n + goal.y
+        grid[start.x][start.y] = 0
+        grid[goal.x][goal.y] = 0
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+        assert isinstance(found, bool)
+        if found:
+            assert isinstance(path, list)
+  new_imports_code: |
+    ""
+  test_tags: other
+- test_behavior: |
+    Test case 5:
+    A 3x3 grid where the goal is unreachable, leading to an error in path reconstruction.
+    This test focuses on covering the error handling in convert_closed_list_to_path when the goal is not in the closed list (lines 137, 138) and when a parent node cannot be found (lines 152, 153).
+  lines_to_cover: |
+    [137, 138, 152, 153]
+  test_name: |
+    test_unreachable_goal
+  test_code: |
+    def test_unreachable_goal():
+        grid = [
+            [0, 1, 0],
+            [0, 1, 0],
+            [0, 1, 0]
+        ]
+        start = Node(0, 0, 0)
+        goal = Node(2, 0, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False, "No path should be found if the goal is unreachable."
+        assert path == [], "Path should be empty when no path is found."
+  new_imports_code: |
+    ""
+  test_tags: edge case
+```
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test case 4:
+    A 4x4 grid where the goal is unreachable, leading to an error in path reconstruction.
+    This test focuses on covering the error handling in convert_closed_list_to_path when the goal is not in the closed list (lines 137, 138) and when a parent node cannot be found (lines 152, 153).
+  lines_to_cover: |
+    [137, 138, 152, 153]
+  test_name: |
+    test_unreachable_goal
+  test_code: |
+    def test_unreachable_goal():
+        grid = [
+            [0, 1, 0, 0],
+            [0, 1, 0, 0],
+            [0, 1, 0, 0],
+            [0, 0, 0, 0]
+        ]
+        start = Node(0, 0, 0)
+        goal = Node(3, 0, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False, "No path should be found if the goal is unreachable."
+        assert path == [], "Path should be empty when no path is found."
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test case 5:
+    Test the example usage in `if __name__ == '__main__':`.
+    This test focuses on covering lines 161-184.
+  lines_to_cover: |
+    [161, 162, 166, 167, 170, 171, 172, 175, 176, 178, 179, 181, 182, 183, 184]
+  test_name: |
+    test_main_example
+  test_code: |
+    def test_main_example():
+        n = 5
+        grid = [[0 for _ in range(n)] for _ in range(n)]
+        start = Node(0, 0, 0)
+        goal = Node(n - 1, n - 1, 0)
+        start.id = start.x * n + start.y
+        start.pid = start.id
+        goal.id = goal.x * n + goal.y
+        grid[start.x][start.y] = 0
+        grid[goal.x][goal.y] = 0
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+        assert isinstance(found, bool)
+        if found:
+            assert isinstance(path, list)
+  new_imports_code: |
+    ""
+  test_tags: other
+```
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test case 4:
+    A 3x3 grid where the goal is unreachable, leading to an error in path reconstruction.
+    This test focuses on covering the error handling in convert_closed_list_to_path when the goal is not in the closed list (lines 137, 138) and when a parent node cannot be found (lines 152, 153).
+  lines_to_cover: |
+    [137, 138, 152, 153]
+  test_name: |
+    test_unreachable_goal
+  test_code: |
+    def test_unreachable_goal():
+        grid = [
+            [0, 1, 0],
+            [0, 1, 0],
+            [0, 1, 0]
+        ]
+        start = Node(0, 0, 0)
+        goal = Node(2, 0, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False, "No path should be found if the goal is unreachable."
+        assert path == [], "Path should be empty when no path is found."
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test case 5:
+    Test the example usage in `if __name__ == '__main__':`.
+    This test focuses on covering lines 161-184.
+  lines_to_cover: |
+    [161, 162, 166, 167, 170, 171, 172, 175, 176, 178, 179, 181, 182, 183, 184]
+  test_name: |
+    test_main_example
+  test_code: |
+    def test_main_example():
+        n = 5
+        grid = [[0 for _ in range(n)] for _ in range(n)]
+        start = Node(0, 0, 0)
+        goal = Node(n - 1, n - 1, 0)
+        start.id = start.x * n + start.y
+        start.pid = start.id
+        goal.id = goal.x * n + goal.y
+        grid[start.x][start.y] = 0
+        grid[goal.x][goal.y] = 0
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+        assert isinstance(found, bool)
+        if found:
+            assert isinstance(path, list)
+  new_imports_code: |
+    ""
+  test_tags: other
+```

@@ -8,21 +8,8 @@ test_headers_indentation: 0
 language: python
 testing_framework: pytest
 number_of_tests: 2
-relevant_line_number_to_insert_tests_after: 46
-relevant_line_number_to_insert_imports_after: 11
-```
-```yaml
-language: python
-testing_framework: pytest
-number_of_tests: 2
-test_headers_indentation: 0
-```
-```yaml
-language: python
-testing_framework: pytest
-number_of_tests: 2
-relevant_line_number_to_insert_tests_after: 46
-relevant_line_number_to_insert_imports_after: 11
+relevant_line_number_to_insert_tests_after: 45
+relevant_line_number_to_insert_imports_after: 13
 ```
 ```yaml
 language: python
@@ -30,98 +17,79 @@ existing_test_function_signature: |
   def test_path_found():
 new_tests:
 - test_behavior: |
-    Test that the LPAStar planner can handle dynamic obstacles being added during the planning process.
+    Test that the LazyPQ correctly handles the insertion of a node that already exists.
   lines_to_cover: |
-    [177, 178, 259, 260, 261, 262, 263, 268, 269, 336, 337]
+    [122, 127]
   test_name: |
-    test_dynamic_obstacles
+    test_lazy_priority_queue_insert_existing_node
   test_code: |
-    def test_dynamic_obstacles():
-        # Create a 5x5 grid with no obstacles.
-        grid = [[0 for _ in range(5)] for _ in range(5)]
-        start = Node(0, 0)
-        goal = Node(4, 4)
-        planner = LPAStar(grid)
-        planner.max_time_step = 1  # limit iterations for testing
-        
-        # Set dynamic obstacles to be discovered over time.
-        time_discovered_obstacles = {
-            1: [Node(1, 1)],
-            2: [Node(2, 2)],
-        }
-        planner.set_dynamic_obstacles(True, time_discovered_obstacles)
-        
-        found, path = planner.plan(start, goal)
-        
-        # Assert that a path was found despite the dynamic obstacles.
-        assert found is True
-        assert len(path) > 0
-        assert compare_coordinates(path[-1], goal)
+    def test_lazy_priority_queue_insert_existing_node():
+        pq = LazyPQ()
+        node = Node(0, 0)
+        pq.insert(node, 1)
+        pq.insert(node, 2)  # Insert the same node with a different key
+        assert pq.top().key == 2  # The key should be updated to the latest
   new_imports_code: |
     ""
   test_tags: other
+
 - test_behavior: |
-    Test that the LazyPQ can handle popping from an empty priority queue.
+    Test that the LPAStar planner correctly detects changes when dynamic obstacles are added.
   lines_to_cover: |
-    [142, 150]
+    [177, 178, 259, 260, 261, 262, 263]
   test_name: |
-    test_lazy_pq_pop_empty
+    test_lpa_star_dynamic_obstacles
   test_code: |
-    def test_lazy_pq_pop_empty():
-        pq = LazyPQ()
-        with pytest.raises(KeyError):
-            pq.pop()
-  new_imports_code: |
-    ""
-  test_tags: edge case
-- test_behavior: |
-    Test that the LazyPQ can handle inserting and removing elements correctly.
-  lines_to_cover: |
-    [121, 122, 130, 131, 136, 137, 138, 139, 140, 141]
-  test_name: |
-    test_lazy_pq_insert_remove
-  test_code: |
-    def test_lazy_pq_insert_remove():
-        pq = LazyPQ()
-        node1 = Node(0, 0)
-        node2 = Node(1, 1)
-        
-        pq.insert(node1, 1)
-        pq.insert(node2, 2)
-        
-        assert not pq.empty()
-        
-        pq.remove(node1)
-        
-        assert pq.is_element_in_struct(node1) is False
-        assert pq.is_element_in_struct(node2) is True
-        
-        pq.pop()  # Should pop node2
-        assert pq.empty()
+    def test_lpa_star_dynamic_obstacles():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        start = Node(0, 0)
+        goal = Node(4, 4)
+        planner = LPAStar(grid)
+        planner.set_dynamic_obstacles(True, {1: [Node(1, 1)]})  # Set a dynamic obstacle
+        planner.max_time_step = 1
+        found, path = planner.plan(start, goal)
+        assert found is True  # Path should still be found despite the obstacle
+        assert len(path) > 0  # Ensure that a path exists
   new_imports_code: |
     ""
   test_tags: happy path
+
 - test_behavior: |
-    Test that the LPAStar planner can handle a case where the start and goal are the same.
+    Test that the LPAStar planner correctly handles the case when no valid path exists due to dynamic obstacles.
   lines_to_cover: |
-    [364, 365, 366]
+    [251, 252, 253, 254]
   test_name: |
-    test_start_equals_goal
+    test_lpa_star_no_path_dynamic_obstacles
   test_code: |
-    def test_start_equals_goal():
-        # Create a 5x5 grid with no obstacles.
+    def test_lpa_star_no_path_dynamic_obstacles():
         grid = [[0 for _ in range(5)] for _ in range(5)]
-        start = Node(2, 2)
-        goal = Node(2, 2)
+        for i in range(5):
+            grid[i][2] = 1  # Create a wall
+        start = Node(0, 0)
+        goal = Node(0, 4)
         planner = LPAStar(grid)
-        planner.max_time_step = 1  # limit iterations for testing
-        
+        planner.set_dynamic_obstacles(True, {1: [Node(1, 1)]})  # Set a dynamic obstacle
+        planner.max_time_step = 1
         found, path = planner.plan(start, goal)
-        
-        # Assert that a path was found and it is just the start node.
-        assert found is True
-        assert len(path) == 1
-        assert compare_coordinates(path[0], start)
+        assert found is False  # No path should be found
+        assert path == []  # Path should be empty
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test that the Node class correctly handles the addition of two nodes.
+  lines_to_cover: |
+    [31, 34]
+  test_name: |
+    test_node_addition
+  test_code: |
+    def test_node_addition():
+        node1 = Node(1, 2)
+        node2 = Node(3, 4)
+        result = node1 + node2
+        assert result.x == 4  # Check x coordinate
+        assert result.y == 6  # Check y coordinate
   new_imports_code: |
     ""
   test_tags: happy path
@@ -132,67 +100,392 @@ existing_test_function_signature: |
   def test_path_found():
 new_tests:
 - test_behavior: |
-    Test that the LazyPQ can handle popping from an empty priority queue.
+    Test that the LazyPQ correctly handles the top operation when the priority queue is empty.
   lines_to_cover: |
     [142, 150]
   test_name: |
-    test_lazy_pq_pop_empty
+    test_lazy_priority_queue_top_empty
   test_code: |
-    def test_lazy_pq_pop_empty():
+    def test_lazy_priority_queue_top_empty():
         pq = LazyPQ()
         with pytest.raises(KeyError):
-            pq.pop()
+            pq.top()  # Should raise KeyError since the queue is empty
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test that the LPAStar planner correctly handles the case when no valid path exists due to obstacles.
+  lines_to_cover: |
+    [251, 252, 253, 254]
+  test_name: |
+    test_lpa_star_no_path_due_to_obstacles
+  test_code: |
+    def test_lpa_star_no_path_due_to_obstacles():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        for i in range(5):
+            grid[i][1] = 1  # Create a wall
+        start = Node(0, 0)
+        goal = Node(0, 4)
+        planner = LPAStar(grid)
+        planner.max_time_step = 1  # limit iterations for testing
+        found, path = planner.plan(start, goal)
+        assert found is False  # No path should be found
+        assert path == []  # Path should be empty
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test that the Node class correctly handles the addition of two nodes with negative coordinates.
+  lines_to_cover: |
+    [31, 34]
+  test_name: |
+    test_node_addition_negative_coordinates
+  test_code: |
+    def test_node_addition_negative_coordinates():
+        node1 = Node(-1, -2)
+        node2 = Node(-3, -4)
+        result = node1 + node2
+        assert result.x == -4  # Check x coordinate
+        assert result.y == -6  # Check y coordinate
+  new_imports_code: |
+    ""
+  test_tags: happy path
+
+- test_behavior: |
+    Test that the print_path function correctly formats the output for a given path.
+  lines_to_cover: |
+    [90, 91, 92, 93]
+  test_name: |
+    test_print_path
+  test_code: |
+    def test_print_path(capfd):
+        path = [Node(0, 0), Node(1, 1), Node(2, 2)]
+        start = Node(0, 0)
+        goal = Node(2, 2)
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        print_path(path, start, goal, grid)
+        captured = capfd.readouterr()
+        assert "Path from start to goal:" in captured.out
+        assert "(0, 0) -> (1, 1) -> (2, 2) -> Goal" in captured.out
+  new_imports_code: |
+    ""
+  test_tags: other
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_path_found():
+new_tests:
+- test_behavior: |
+    Test that the print_path function correctly formats the output for a given path.
+  lines_to_cover: |
+    [90, 91, 92, 93]
+  test_name: |
+    test_print_path
+  test_code: |
+    def test_print_path(capfd):
+        path = [Node(0, 0), Node(1, 1), Node(2, 2)]
+        start = Node(0, 0)
+        goal = Node(2, 2)
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        print_path(path, start, goal, grid)
+        captured = capfd.readouterr()
+        assert "Path from start to goal:" in captured.out
+        assert "(0, 0) -> (1, 1) -> (2, 2) -> Goal" in captured.out
+  new_imports_code: |
+    from app import print_path
+  test_tags: other
+- test_behavior: |
+    Test that the LazyPQ correctly handles the top operation when the priority queue is empty.
+  lines_to_cover: |
+    [142, 150]
+  test_name: |
+    test_lazy_priority_queue_top_empty
+  test_code: |
+    def test_lazy_priority_queue_top_empty():
+        pq = LazyPQ()
+        with pytest.raises(KeyError):
+            pq.top()  # Should raise KeyError since the queue is empty
   new_imports_code: |
     from app import LazyPQ
   test_tags: edge case
 - test_behavior: |
-    Test that the LazyPQ can handle inserting and removing elements correctly.
+    Test that the LPAStar planner correctly handles the case when no valid path exists due to dynamic obstacles.
   lines_to_cover: |
-    [121, 122, 130, 131, 136, 137, 138, 139, 140, 141]
+    [251, 252, 253, 254]
   test_name: |
-    test_lazy_pq_insert_remove
+    test_lpa_star_no_path_dynamic_obstacles
   test_code: |
-    def test_lazy_pq_insert_remove():
-        pq = LazyPQ()
-        node1 = Node(0, 0)
-        node2 = Node(1, 1)
-        
-        pq.insert(node1, 1)
-        pq.insert(node2, 2)
-        
-        assert not pq.empty()
-        
-        pq.remove(node1)
-        
-        assert pq.is_element_in_struct(node1) is False
-        assert pq.is_element_in_struct(node2) is True
-        
-        pq.pop()  # Should pop node2
-        assert pq.empty()
+    def test_lpa_star_no_path_dynamic_obstacles():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        for i in range(5):
+            grid[i][2] = 1  # Create a wall
+        start = Node(0, 0)
+        goal = Node(0, 4)
+        planner = LPAStar(grid)
+        planner.set_dynamic_obstacles(True, {1: [Node(1, 1)]})  # Set a dynamic obstacle
+        planner.max_time_step = 1
+        found, path = planner.plan(start, goal)
+        assert found is False  # No path should be found
+        assert path == []  # Path should be empty
   new_imports_code: |
-    from app import LazyPQ
-  test_tags: happy path
+    from app import LPAStar
+  test_tags: edge case
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_path_found():
+new_tests:
 - test_behavior: |
-    Test that the LPAStar planner can handle a case where the start and goal are the same.
+    Test that the LazyPQ correctly handles the pop operation when the priority queue is empty.
   lines_to_cover: |
-    [364, 365, 366]
+    [150]
   test_name: |
-    test_start_equals_goal
+    test_lazy_priority_queue_pop_empty
   test_code: |
-    def test_start_equals_goal():
-        # Create a 5x5 grid with no obstacles.
+    def test_lazy_priority_queue_pop_empty():
+        pq = LazyPQ()
+        with pytest.raises(KeyError):
+            pq.pop()  # Should raise KeyError since the queue is empty
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test that the LPAStar planner correctly handles the case when no valid path exists due to obstacles.
+  lines_to_cover: |
+    [251, 252, 253, 254]
+  test_name: |
+    test_lpa_star_no_path_due_to_obstacles
+  test_code: |
+    def test_lpa_star_no_path_due_to_obstacles():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        for i in range(5):
+            grid[i][1] = 1  # Create a wall
+        start = Node(0, 0)
+        goal = Node(0, 4)
+        planner = LPAStar(grid)
+        planner.max_time_step = 1  # limit iterations for testing
+        found, path = planner.plan(start, goal)
+        assert found is False  # No path should be found
+        assert path == []  # Path should be empty
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test that the Node class correctly handles the addition of two nodes with coordinates that result in overflow.
+  lines_to_cover: |
+    [31, 34]
+  test_name: |
+    test_node_addition_overflow
+  test_code: |
+    def test_node_addition_overflow():
+        node1 = Node(1000, 1000)
+        node2 = Node(1000, 1000)
+        result = node1 + node2
+        assert result.x == 2000  # Check x coordinate
+        assert result.y == 2000  # Check y coordinate
+  new_imports_code: |
+    ""
+  test_tags: happy path
+
+- test_behavior: |
+    Test that the print_path function correctly formats the output for a path that includes obstacles.
+  lines_to_cover: |
+    [90, 91, 92, 93]
+  test_name: |
+    test_print_path_with_obstacles
+  test_code: |
+    def test_print_path_with_obstacles(capfd):
+        path = [Node(0, 0), Node(1, 1), Node(2, 2)]
+        start = Node(0, 0)
+        goal = Node(2, 2)
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        grid[1][1] = 1  # Add an obstacle
+        print_path(path, start, goal, grid)
+        captured = capfd.readouterr()
+        assert "Path from start to goal:" in captured.out
+        assert "(0, 0) -> (1, 1) -> (2, 2) -> Goal" in captured.out
+  new_imports_code: |
+    ""
+  test_tags: other
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_path_found():
+new_tests:
+- test_behavior: |
+    Test that the LazyPQ correctly handles the insertion of a node that already exists.
+  lines_to_cover: |
+    [122, 127]
+  test_name: |
+    test_lazy_priority_queue_insert_existing_node
+  test_code: |
+    def test_lazy_priority_queue_insert_existing_node():
+        pq = LazyPQ()
+        node = Node(0, 0)
+        pq.insert(node, 1)
+        pq.insert(node, 2)  # Insert the same node with a different key
+        assert pq.top().key == 2  # The key should be updated to the latest
+  new_imports_code: |
+    ""
+  test_tags: other
+
+- test_behavior: |
+    Test that the LPAStar planner correctly handles the case when no valid path exists due to obstacles.
+  lines_to_cover: |
+    [251, 252, 253, 254]
+  test_name: |
+    test_lpa_star_no_path_due_to_obstacles
+  test_code: |
+    def test_lpa_star_no_path_due_to_obstacles():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        for i in range(5):
+            grid[i][1] = 1  # Create a wall
+        start = Node(0, 0)
+        goal = Node(0, 4)
+        planner = LPAStar(grid)
+        planner.max_time_step = 1  # limit iterations for testing
+        found, path = planner.plan(start, goal)
+        assert found is False  # No path should be found
+        assert path == []  # Path should be empty
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test that the LPAStar planner correctly handles the case when no valid path exists due to dynamic obstacles.
+  lines_to_cover: |
+    [251, 252, 253, 254]
+  test_name: |
+    test_lpa_star_no_path_dynamic_obstacles
+  test_code: |
+    def test_lpa_star_no_path_dynamic_obstacles():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        for i in range(5):
+            grid[i][2] = 1  # Create a wall
+        start = Node(0, 0)
+        goal = Node(0, 4)
+        planner = LPAStar(grid)
+        planner.set_dynamic_obstacles(True, {1: [Node(1, 1)]})  # Set a dynamic obstacle
+        planner.max_time_step = 1
+        found, path = planner.plan(start, goal)
+        assert found is False  # No path should be found
+        assert path == []  # Path should be empty
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test that the print_path function correctly formats the output for a path that includes obstacles.
+  lines_to_cover: |
+    [90, 91, 92, 93]
+  test_name: |
+    test_print_path_with_obstacles
+  test_code: |
+    def test_print_path_with_obstacles(capfd):
+        path = [Node(0, 0), Node(1, 1), Node(2, 2)]
+        start = Node(0, 0)
+        goal = Node(2, 2)
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        grid[1][1] = 1  # Add an obstacle
+        print_path(path, start, goal, grid)
+        captured = capfd.readouterr()
+        assert "Path from start to goal:" in captured.out
+        assert "(0, 0) -> (1, 1) -> (2, 2) -> Goal" in captured.out
+  new_imports_code: |
+    ""
+  test_tags: other
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_path_found():
+new_tests:
+- test_behavior: |
+    Test that the LPAStar planner correctly handles the case when no valid path exists due to obstacles.
+  lines_to_cover: |
+    [251, 252, 253, 254]
+  test_name: |
+    test_lpa_star_no_path_due_to_obstacles
+  test_code: |
+    def test_lpa_star_no_path_due_to_obstacles():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        for i in range(5):
+            grid[i][1] = 1  # Create a wall
+        start = Node(0, 0)
+        goal = Node(0, 4)
+        planner = LPAStar(grid)
+        planner.max_time_step = 1  # limit iterations for testing
+        found, path = planner.plan(start, goal)
+        assert found is False  # No path should be found
+        assert path == []  # Path should be empty
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test that the LPAStar planner correctly handles the case when no valid path exists due to dynamic obstacles.
+  lines_to_cover: |
+    [251, 252, 253, 254]
+  test_name: |
+    test_lpa_star_no_path_dynamic_obstacles
+  test_code: |
+    def test_lpa_star_no_path_dynamic_obstacles():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        for i in range(5):
+            grid[i][2] = 1  # Create a wall
+        start = Node(0, 0)
+        goal = Node(0, 4)
+        planner = LPAStar(grid)
+        planner.set_dynamic_obstacles(True, {1: [Node(1, 1)]})  # Set a dynamic obstacle
+        planner.max_time_step = 1
+        found, path = planner.plan(start, goal)
+        assert found is False  # No path should be found
+        assert path == []  # Path should be empty
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test that the LazyPQ correctly handles the case when an element is removed from the queue.
+  lines_to_cover: |
+    [129, 131, 134]
+  test_name: |
+    test_lazy_priority_queue_remove
+  test_code: |
+    def test_lazy_priority_queue_remove():
+        pq = LazyPQ()
+        node = Node(0, 0)
+        pq.insert(node, 1)
+        pq.remove(node)  # Remove the node
+        assert not pq.is_element_in_struct(node)  # The node should no longer be in the queue
+  new_imports_code: |
+    ""
+  test_tags: other
+
+- test_behavior: |
+    Test that the LPAStar planner correctly handles the case when the start and goal nodes are the same.
+  lines_to_cover: |
+    [320, 321, 322, 323]
+  test_name: |
+    test_lpa_star_same_start_goal
+  test_code: |
+    def test_lpa_star_same_start_goal():
         grid = [[0 for _ in range(5)] for _ in range(5)]
         start = Node(2, 2)
         goal = Node(2, 2)
         planner = LPAStar(grid)
-        planner.max_time_step = 1  # limit iterations for testing
-        
+        planner.max_time_step = 1
         found, path = planner.plan(start, goal)
-        
-        # Assert that a path was found and it is just the start node.
-        assert found is True
-        assert len(path) == 1
-        assert compare_coordinates(path[0], start)
+        assert found is True  # A path should be found since start and goal are the same
+        assert len(path) == 1  # Path should contain only the start/goal node
+        assert compare_coordinates(path[0], start)  # The path should be the start node
   new_imports_code: |
     ""
   test_tags: happy path
@@ -203,104 +496,87 @@ existing_test_function_signature: |
   def test_path_found():
 new_tests:
 - test_behavior: |
-    Test that the LazyPQ can handle inserting and removing elements correctly.
+    Test that the LPAStar planner correctly handles the case when no valid path exists due to obstacles.
   lines_to_cover: |
-    [121, 122, 130, 131, 136, 137, 138, 139, 140, 141]
+    [251, 252, 253, 254]
   test_name: |
-    test_lazy_pq_insert_remove
+    test_lpa_star_no_path_due_to_obstacles
   test_code: |
-    def test_lazy_pq_insert_remove():
-        pq = LazyPQ()
-        node1 = Node(0, 0)
-        node2 = Node(1, 1)
-        
-        pq.insert(node1, 1)
-        pq.insert(node2, 2)
-        
-        assert not pq.empty()
-        
-        pq.remove(node1)
-        
-        assert pq.is_element_in_struct(node1) is False
-        assert pq.is_element_in_struct(node2) is True
-        
-        pq.pop()  # Should pop node2
-        assert pq.empty()
+    def test_lpa_star_no_path_due_to_obstacles():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        for i in range(5):
+            grid[i][1] = 1  # Create a wall
+        start = Node(0, 0)
+        goal = Node(0, 4)
+        planner = LPAStar(grid)
+        planner.max_time_step = 1  # limit iterations for testing
+        found, path = planner.plan(start, goal)
+        assert found is False  # No path should be found
+        assert path == []  # Path should be empty
   new_imports_code: |
     ""
-  test_tags: happy path
+  test_tags: edge case
+
 - test_behavior: |
-    Test that the LPAStar planner can handle a case where the start and goal are the same.
+    Test that the LPAStar planner correctly handles the case when no valid path exists due to dynamic obstacles.
   lines_to_cover: |
-    [364, 365, 366]
+    [251, 252, 253, 254]
   test_name: |
-    test_start_equals_goal
+    test_lpa_star_no_path_dynamic_obstacles
   test_code: |
-    def test_start_equals_goal():
-        # Create a 5x5 grid with no obstacles.
+    def test_lpa_star_no_path_dynamic_obstacles():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        for i in range(5):
+            grid[i][2] = 1  # Create a wall
+        start = Node(0, 0)
+        goal = Node(0, 4)
+        planner = LPAStar(grid)
+        planner.set_dynamic_obstacles(True, {1: [Node(1, 1)]})  # Set a dynamic obstacle
+        planner.max_time_step = 1
+        found, path = planner.plan(start, goal)
+        assert found is False  # No path should be found
+        assert path == []  # Path should be empty
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test that the LazyPQ correctly handles the case when an element is removed from the queue.
+  lines_to_cover: |
+    [129, 131, 134]
+  test_name: |
+    test_lazy_priority_queue_remove
+  test_code: |
+    def test_lazy_priority_queue_remove():
+        pq = LazyPQ()
+        node = Node(0, 0)
+        pq.insert(node, 1)
+        pq.remove(node)  # Remove the node
+        assert not pq.is_element_in_struct(node)  # The node should no longer be in the queue
+  new_imports_code: |
+    ""
+  test_tags: other
+
+- test_behavior: |
+    Test that the LPAStar planner correctly handles the case when the start and goal nodes are the same.
+  lines_to_cover: |
+    [320, 321, 322, 323]
+  test_name: |
+    test_lpa_star_same_start_goal
+  test_code: |
+    def test_lpa_star_same_start_goal():
         grid = [[0 for _ in range(5)] for _ in range(5)]
         start = Node(2, 2)
         goal = Node(2, 2)
         planner = LPAStar(grid)
-        planner.max_time_step = 1  # limit iterations for testing
-        
+        planner.max_time_step = 1
         found, path = planner.plan(start, goal)
-        
-        # Assert that a path was found and it is just the start node.
-        assert found is True
-        assert len(path) == 1
-        assert compare_coordinates(path[0], start)
+        assert found is True  # A path should be found since start and goal are the same
+        assert len(path) == 1  # Path should contain only the start/goal node
+        assert compare_coordinates(path[0], start)  # The path should be the start node
   new_imports_code: |
     ""
   test_tags: happy path
-- test_behavior: |
-    Test that the LPAStar planner can handle a case where the grid is completely blocked.
-  lines_to_cover: |
-    [85, 90, 91, 92, 93]
-  test_name: |
-    test_grid_fully_blocked
-  test_code: |
-    def test_grid_fully_blocked():
-        # Create a 5x5 grid fully blocked by obstacles.
-        grid = [[1 for _ in range(5)] for _ in range(5)]
-        start = Node(0, 0)
-        goal = Node(4, 4)
-        planner = LPAStar(grid)
-        planner.max_time_step = 1  # limit iterations for testing
-        
-        found, path = planner.plan(start, goal)
-        
-        # Assert that no path can be found.
-        assert found is False
-        assert path == []
-  new_imports_code: |
-    ""
-  test_tags: edge case
-- test_behavior: |
-    Test that the LPAStar planner can handle a case where the goal is unreachable due to obstacles.
-  lines_to_cover: |
-    [177, 178, 259, 260, 261, 262, 263, 268, 269, 336, 337]
-  test_name: |
-    test_goal_unreachable
-  test_code: |
-    def test_goal_unreachable():
-        # Create a 5x5 grid with obstacles blocking the path to the goal.
-        grid = [[0 for _ in range(5)] for _ in range(5)]
-        grid[1][1] = 1  # Block the path
-        grid[1][2] = 1  # Block the path
-        start = Node(0, 0)
-        goal = Node(4, 4)
-        planner = LPAStar(grid)
-        planner.max_time_step = 1  # limit iterations for testing
-        
-        found, path = planner.plan(start, goal)
-        
-        # Assert that no path can be found.
-        assert found is False
-        assert path == []
-  new_imports_code: |
-    ""
-  test_tags: edge case
 ```
 ```yaml
 language: python
@@ -308,80 +584,66 @@ existing_test_function_signature: |
   def test_path_found():
 new_tests:
 - test_behavior: |
-    Test that the LazyPQ can handle inserting and removing elements correctly.
+    Test that the LPAStar planner correctly handles the case when no valid path exists due to obstacles.
   lines_to_cover: |
-    [121, 122, 130, 131, 136, 137, 138, 139, 140, 141]
+    [251, 252, 253, 254]
   test_name: |
-    test_lazy_pq_insert_remove
+    test_lpa_star_no_path_due_to_obstacles
   test_code: |
-    def test_lazy_pq_insert_remove():
-        pq = LazyPQ()
-        node1 = Node(0, 0)
-        node2 = Node(1, 1)
-        
-        pq.insert(node1, 1)
-        pq.insert(node2, 2)
-        
-        assert not pq.empty()
-        
-        pq.remove(node1)
-        
-        assert pq.is_element_in_struct(node1) is False
-        assert pq.is_element_in_struct(node2) is True
-        
-        pq.pop()  # Should pop node2
-        assert pq.empty()
-  new_imports_code: |
-    ""
-  test_tags: happy path
-- test_behavior: |
-    Test that the LPAStar planner can handle a case where the grid is completely blocked.
-  lines_to_cover: |
-    [85, 90, 91, 92, 93]
-  test_name: |
-    test_grid_fully_blocked
-  test_code: |
-    def test_grid_fully_blocked():
-        # Create a 5x5 grid fully blocked by obstacles.
-        grid = [[1 for _ in range(5)] for _ in range(5)]
-        start = Node(0, 0)
-        goal = Node(4, 4)
-        planner = LPAStar(grid)
-        planner.max_time_step = 1  # limit iterations for testing
-        
-        found, path = planner.plan(start, goal)
-        
-        # Assert that no path can be found.
-        assert found is False
-        assert path == []
-  new_imports_code: |
-    ""
-  test_tags: edge case
-- test_behavior: |
-    Test that the LPAStar planner can handle a case where the goal is unreachable due to obstacles.
-  lines_to_cover: |
-    [177, 178, 259, 260, 261, 262, 263, 265, 266, 267, 268, 269, 275, 296, 336, 337]
-  test_name: |
-    test_goal_unreachable
-  test_code: |
-    def test_goal_unreachable():
-        # Create a 5x5 grid with obstacles blocking the path to the goal.
+    def test_lpa_star_no_path_due_to_obstacles():
         grid = [[0 for _ in range(5)] for _ in range(5)]
-        grid[1][1] = 1  # Block the path
-        grid[1][2] = 1  # Block the path
+        for i in range(5):
+            grid[i][1] = 1  # Create a wall
         start = Node(0, 0)
-        goal = Node(4, 4)
+        goal = Node(0, 4)
         planner = LPAStar(grid)
         planner.max_time_step = 1  # limit iterations for testing
-        
         found, path = planner.plan(start, goal)
-        
-        # Assert that no path can be found.
-        assert found is False
-        assert path == []
+        assert found is False  # No path should be found
+        assert path == []  # Path should be empty
   new_imports_code: |
     ""
   test_tags: edge case
+
+- test_behavior: |
+    Test that the LPAStar planner correctly handles the case when no valid path exists due to dynamic obstacles.
+  lines_to_cover: |
+    [251, 252, 253, 254]
+  test_name: |
+    test_lpa_star_no_path_dynamic_obstacles
+  test_code: |
+    def test_lpa_star_no_path_dynamic_obstacles():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        for i in range(5):
+            grid[i][2] = 1  # Create a wall
+        start = Node(0, 0)
+        goal = Node(0, 4)
+        planner = LPAStar(grid)
+        planner.set_dynamic_obstacles(True, {1: [Node(1, 1)]})  # Set a dynamic obstacle
+        planner.max_time_step = 1
+        found, path = planner.plan(start, goal)
+        assert found is False  # No path should be found
+        assert path == []  # Path should be empty
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test that the LazyPQ correctly handles the case when an element is removed from the queue.
+  lines_to_cover: |
+    [129, 131, 134]
+  test_name: |
+    test_lazy_priority_queue_remove
+  test_code: |
+    def test_lazy_priority_queue_remove():
+        pq = LazyPQ()
+        node = Node(0, 0)
+        pq.insert(node, 1)
+        pq.remove(node)  # Remove the node
+        assert not pq.is_element_in_struct(node)  # The node should no longer be in the queue
+  new_imports_code: |
+    ""
+  test_tags: other
 ```
 ```yaml
 language: python
@@ -389,80 +651,87 @@ existing_test_function_signature: |
   def test_path_found():
 new_tests:
 - test_behavior: |
-    Test that the LazyPQ can handle inserting and removing elements correctly.
+    Test that the LPAStar planner correctly handles the case when no valid path exists due to obstacles.
   lines_to_cover: |
-    [122, 142]
+    [251, 252, 253, 254]
   test_name: |
-    test_lazy_pq_insert_remove
+    test_lpa_star_no_path_due_to_obstacles
   test_code: |
-    def test_lazy_pq_insert_remove():
+    def test_lpa_star_no_path_due_to_obstacles():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        for i in range(5):
+            grid[i][1] = 1  # Create a wall
+        start = Node(0, 0)
+        goal = Node(0, 4)
+        planner = LPAStar(grid)
+        planner.max_time_step = 1  # limit iterations for testing
+        found, path = planner.plan(start, goal)
+        assert found is False  # No path should be found
+        assert path == []  # Path should be empty
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test that the LPAStar planner correctly handles the case when no valid path exists due to dynamic obstacles.
+  lines_to_cover: |
+    [251, 252, 253, 254]
+  test_name: |
+    test_lpa_star_no_path_dynamic_obstacles
+  test_code: |
+    def test_lpa_star_no_path_dynamic_obstacles():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        for i in range(5):
+            grid[i][2] = 1  # Create a wall
+        start = Node(0, 0)
+        goal = Node(0, 4)
+        planner = LPAStar(grid)
+        planner.set_dynamic_obstacles(True, {1: [Node(1, 1)]})  # Set a dynamic obstacle
+        planner.max_time_step = 1
+        found, path = planner.plan(start, goal)
+        assert found is False  # No path should be found
+        assert path == []  # Path should be empty
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test that the LazyPQ correctly handles the case when an element is removed from the queue.
+  lines_to_cover: |
+    [129, 131, 134]
+  test_name: |
+    test_lazy_priority_queue_remove
+  test_code: |
+    def test_lazy_priority_queue_remove():
         pq = LazyPQ()
-        node1 = Node(0, 0)
-        node2 = Node(1, 1)
-        
-        pq.insert(node1, 1)
-        pq.insert(node2, 2)
-        
-        assert not pq.empty()
-        
-        pq.remove(node1)
-        
-        assert pq.is_element_in_struct(node1) is False
-        assert pq.is_element_in_struct(node2) is True
-        
-        pq.pop()  # Should pop node2
-        assert pq.empty()
+        node = Node(0, 0)
+        pq.insert(node, 1)
+        pq.remove(node)  # Remove the node
+        assert not pq.is_element_in_struct(node)  # The node should no longer be in the queue
+  new_imports_code: |
+    ""
+  test_tags: other
+
+- test_behavior: |
+    Test that the LPAStar planner correctly handles the case when the start and goal nodes are the same.
+  lines_to_cover: |
+    [320, 321, 322, 323]
+  test_name: |
+    test_lpa_star_same_start_goal
+  test_code: |
+    def test_lpa_star_same_start_goal():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        start = Node(2, 2)
+        goal = Node(2, 2)
+        planner = LPAStar(grid)
+        planner.max_time_step = 1
+        found, path = planner.plan(start, goal)
+        assert found is True  # A path should be found since start and goal are the same
+        assert len(path) == 1  # Path should contain only the start/goal node
+        assert compare_coordinates(path[0], start)  # The path should be the start node
   new_imports_code: |
     ""
   test_tags: happy path
-- test_behavior: |
-    Test that the LPAStar planner can handle a case where the grid is completely blocked.
-  lines_to_cover: |
-    [85, 90, 91, 92, 93]
-  test_name: |
-    test_grid_fully_blocked
-  test_code: |
-    def test_grid_fully_blocked():
-        # Create a 5x5 grid fully blocked by obstacles.
-        grid = [[1 for _ in range(5)] for _ in range(5)]
-        start = Node(0, 0)
-        goal = Node(4, 4)
-        planner = LPAStar(grid)
-        planner.max_time_step = 1  # limit iterations for testing
-        
-        found, path = planner.plan(start, goal)
-        
-        # Assert that no path can be found.
-        assert found is False
-        assert path == []
-  new_imports_code: |
-    ""
-  test_tags: edge case
-- test_behavior: |
-    Test that the LPAStar planner can handle a case where the goal is unreachable due to obstacles.
-  lines_to_cover: |
-    [209, 251, 252, 253, 254, 259, 260, 261, 262, 263, 265, 266, 267, 268, 269, 275, 296, 336, 337]
-  test_name: |
-    test_goal_unreachable
-  test_code: |
-    def test_goal_unreachable():
-        # Create a 5x5 grid with obstacles blocking the path to the goal.
-        grid = [[0 for _ in range(5)] for _ in range(5)]
-        grid[1][1] = 1  # Block the path
-        grid[1][2] = 1  # Block the path
-        start = Node(0, 0)
-        goal = Node(4, 4)
-        planner = LPAStar(grid)
-        planner.max_time_step = 1  # limit iterations for testing
-        
-        found, path = planner.plan(start, goal)
-        
-        # Assert that no path can be found.
-        assert found is False
-        assert path == []
-  new_imports_code: |
-    ""
-  test_tags: edge case
 ```
 ```yaml
 language: python
@@ -470,159 +739,63 @@ existing_test_function_signature: |
   def test_path_found():
 new_tests:
 - test_behavior: |
-    Test that the LazyPQ can handle inserting and removing elements correctly.
+    Test that the LPAStar planner correctly handles the case when no valid path exists due to dynamic obstacles.
   lines_to_cover: |
-    [122, 142]
+    [251, 252, 253, 254]
   test_name: |
-    test_lazy_pq_insert_remove
+    test_lpa_star_no_path_due_to_dynamic_obstacles
   test_code: |
-    def test_lazy_pq_insert_remove():
-        pq = LazyPQ()
-        node1 = Node(0, 0)
-        node2 = Node(1, 1)
-        
-        pq.insert(node1, 1)
-        pq.insert(node2, 2)
-        
-        assert not pq.empty()
-        
-        pq.remove(node1)
-        
-        assert pq.is_element_in_struct(node1) is False
-        assert pq.is_element_in_struct(node2) is True
-        
-        pq.pop()  # Should pop node2
-        assert pq.empty()
+    def test_lpa_star_no_path_due_to_dynamic_obstacles():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        for i in range(5):
+            grid[i][2] = 1  # Create a wall
+        start = Node(0, 0)
+        goal = Node(0, 4)
+        planner = LPAStar(grid)
+        planner.set_dynamic_obstacles(True, {1: [Node(1, 1)]})  # Set a dynamic obstacle
+        planner.max_time_step = 1
+        found, path = planner.plan(start, goal)
+        assert found is False  # No path should be found
+        assert path == []  # Path should be empty
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test that the LPAStar planner correctly handles the case when the start and goal nodes are the same.
+  lines_to_cover: |
+    [320, 321, 322, 323]
+  test_name: |
+    test_lpa_star_same_start_goal
+  test_code: |
+    def test_lpa_star_same_start_goal():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        start = Node(2, 2)
+        goal = Node(2, 2)
+        planner = LPAStar(grid)
+        planner.max_time_step = 1
+        found, path = planner.plan(start, goal)
+        assert found is True  # A path should be found since start and goal are the same
+        assert len(path) == 1  # Path should contain only the start/goal node
+        assert compare_coordinates(path[0], start)  # The path should be the start node
   new_imports_code: |
     ""
   test_tags: happy path
+
 - test_behavior: |
-    Test that the LPAStar planner can handle a case where the grid is completely blocked.
+    Test that the LazyPQ correctly handles the case when an element is removed from the queue.
   lines_to_cover: |
-    [85, 90, 91, 92, 93]
+    [129, 131, 134]
   test_name: |
-    test_grid_fully_blocked
+    test_lazy_priority_queue_remove
   test_code: |
-    def test_grid_fully_blocked():
-        # Create a 5x5 grid fully blocked by obstacles.
-        grid = [[1 for _ in range(5)] for _ in range(5)]
-        start = Node(0, 0)
-        goal = Node(4, 4)
-        planner = LPAStar(grid)
-        planner.max_time_step = 1  # limit iterations for testing
-        
-        found, path = planner.plan(start, goal)
-        
-        # Assert that no path can be found.
-        assert found is False
-        assert path == []
-  new_imports_code: |
-    ""
-  test_tags: edge case
-- test_behavior: |
-    Test that the LPAStar planner can handle a case where the goal is unreachable due to obstacles.
-  lines_to_cover: |
-    [209, 251, 252, 253, 254, 259, 260, 261, 262, 263, 265, 266, 267, 268, 269, 275, 296, 336, 337]
-  test_name: |
-    test_goal_unreachable
-  test_code: |
-    def test_goal_unreachable():
-        # Create a 5x5 grid with obstacles blocking the path to the goal.
-        grid = [[0 for _ in range(5)] for _ in range(5)]
-        grid[1][1] = 1  # Block the path
-        grid[1][2] = 1  # Block the path
-        start = Node(0, 0)
-        goal = Node(4, 4)
-        planner = LPAStar(grid)
-        planner.max_time_step = 1  # limit iterations for testing
-        
-        found, path = planner.plan(start, goal)
-        
-        # Assert that no path can be found.
-        assert found is False
-        assert path == []
-  new_imports_code: |
-    ""
-  test_tags: edge case
-```
-```yaml
-language: python
-existing_test_function_signature: |
-  def test_path_found():
-new_tests:
-- test_behavior: |
-    Test that the LazyPQ can handle inserting and removing elements correctly.
-  lines_to_cover: |
-    [122, 142]
-  test_name: |
-    test_lazy_pq_insert_remove
-  test_code: |
-    def test_lazy_pq_insert_remove():
+    def test_lazy_priority_queue_remove():
         pq = LazyPQ()
-        node1 = Node(0, 0)
-        node2 = Node(1, 1)
-        
-        pq.insert(node1, 1)
-        pq.insert(node2, 2)
-        
-        assert not pq.empty()
-        
-        pq.remove(node1)
-        
-        assert pq.is_element_in_struct(node1) is False
-        assert pq.is_element_in_struct(node2) is True
-        
-        pq.pop()  # Should pop node2
-        assert pq.empty()
+        node = Node(0, 0)
+        pq.insert(node, 1)
+        pq.remove(node)  # Remove the node
+        assert not pq.is_element_in_struct(node)  # The node should no longer be in the queue
   new_imports_code: |
     ""
-  test_tags: happy path
-- test_behavior: |
-    Test that the LPAStar planner can handle a case where the grid is completely blocked.
-  lines_to_cover: |
-    [85, 90, 91, 92, 93]
-  test_name: |
-    test_grid_fully_blocked
-  test_code: |
-    def test_grid_fully_blocked():
-        # Create a 5x5 grid fully blocked by obstacles.
-        grid = [[1 for _ in range(5)] for _ in range(5)]
-        start = Node(0, 0)
-        goal = Node(4, 4)
-        planner = LPAStar(grid)
-        planner.max_time_step = 1  # limit iterations for testing
-        
-        found, path = planner.plan(start, goal)
-        
-        # Assert that no path can be found.
-        assert found is False
-        assert path == []
-  new_imports_code: |
-    ""
-  test_tags: edge case
-- test_behavior: |
-    Test that the LPAStar planner can handle a case where the goal is unreachable due to obstacles.
-  lines_to_cover: |
-    [209, 251, 252, 253, 254, 259, 260, 261, 262, 263, 265, 266, 267, 268, 269, 275, 296, 336, 337]
-  test_name: |
-    test_goal_unreachable
-  test_code: |
-    def test_goal_unreachable():
-        # Create a 5x5 grid with obstacles blocking the path to the goal.
-        grid = [[0 for _ in range(5)] for _ in range(5)]
-        grid[1][1] = 1  # Block the path
-        grid[1][2] = 1  # Block the path
-        start = Node(0, 0)
-        goal = Node(4, 4)
-        planner = LPAStar(grid)
-        planner.max_time_step = 1  # limit iterations for testing
-        
-        found, path = planner.plan(start, goal)
-        
-        # Assert that no path can be found.
-        assert found is False
-        assert path == []
-  new_imports_code: |
-    ""
-  test_tags: edge case
+  test_tags: other
 ```

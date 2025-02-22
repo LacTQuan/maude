@@ -1,66 +1,80 @@
-Test Behavior: Test the case where the goal is outside the grid boundaries.
-The expected result is that no path should be found.
+Test Behavior: Test a grid where the start and goal are adjacent but blocked by an obstacle.
+This should ensure that the algorithm correctly identifies that no path exists.
 
-Test Behavior: Test the case where the grid is empty.
-The expected result is that no path should be found.
+Test Behavior: Test the behavior when the goal is outside the grid boundaries.
+This should ensure that the algorithm handles out-of-bounds goals correctly.
 
-Test Behavior: Test the case where the grid has obstacles surrounding the start node.
-The expected result is that no path should be found.
+Test Behavior: Test the behavior of the pathfinding algorithm with a grid that has a single obstacle.
+This should ensure that the algorithm can navigate around the obstacle.
 
-Test Behavior: Test the case where the grid is empty.
-The expected result is that no path should be found.
+Test Behavior: Test a grid where the start is surrounded by obstacles, ensuring no path can be found.
 
-Test Behavior: Test the case where the grid has obstacles surrounding the start node.
-The expected result is that no path should be found.
+Test Behavior: Test a grid where the goal is unreachable due to obstacles, ensuring the algorithm returns no path.
 
-Test Behavior: Test the case where the goal is unreachable due to obstacles.
-The expected result is that no path should be found.
+Test Behavior: Test the behavior of the algorithm when the grid is completely filled with obstacles except for the start and goal.
 
-Test Behavior: Test the case where the grid is empty.
-The expected result is that no path should be found.
+Test Behavior: Test the behavior of the algorithm when the grid is completely filled with obstacles except for the start and goal.
+This should ensure that the algorithm correctly identifies that no path exists.
 
-Test Behavior: Test the case where the grid has obstacles surrounding the goal node.
-The expected result is that no path should be found.
+Test Behavior: Test the behavior of the algorithm when the goal is unreachable due to obstacles.
+This should ensure that the algorithm returns no path.
 
-Test Behavior: Test the case where the grid has obstacles surrounding the start node.
-The expected result is that no path should be found.
+Test Behavior: Test the behavior of the algorithm when the start is surrounded by obstacles.
+This should ensure that no path can be found.
 
-Test Behavior: Test the case where the grid is empty.
-The expected result is that no path should be found.
+Test Behavior: Test the behavior of the algorithm when the start and goal are on opposite corners of a grid filled with obstacles, ensuring that no path can be found.
 
-Test Behavior: Test the case where the grid has obstacles surrounding the goal node.
-The expected result is that no path should be found.
+Test Behavior: Test the behavior of the algorithm when the grid is completely empty except for the start and goal, ensuring that a path can be found.
 
-Test Behavior: Test the case where the grid has obstacles surrounding the start node.
-The expected result is that no path should be found.
+Test Behavior: Test the behavior of the algorithm when the start is at the edge of the grid and the goal is at the opposite edge, ensuring that a path can be found.
 
-Test Behavior: Test the case where the goal is unreachable due to obstacles.
-The expected result is that no path should be found.
+Test Behavior: Test the behavior of the algorithm when the grid has a single row with obstacles, ensuring that the algorithm correctly identifies that no path exists.
 
-Test Behavior: Test the case where the grid is empty.
-The expected result is that no path should be found.
+Test Behavior: Test the behavior of the algorithm when the grid is completely filled with obstacles except for the start and goal.
+This should ensure that the algorithm correctly identifies that no path exists.
 
-Test Behavior: Test the case where the goal is unreachable due to obstacles.
-The expected result is that no path should be found.
+Test Behavior: Test the behavior of the algorithm when the start is at the edge of the grid and the goal is at the opposite edge,
+ensuring that a path can be found.
 
-Test Behavior: Test the case where the grid has obstacles surrounding the goal node.
-The expected result is that no path should be found.
+Test Behavior: Test the behavior of the algorithm when the goal is unreachable due to obstacles,
+ensuring that the algorithm returns no path.
 
-Test Behavior: Test the case where the grid is empty.
-The expected result is that no path should be found.
+Test Behavior: Test the behavior of the algorithm when the start and goal are on opposite corners of a grid filled with obstacles, ensuring that no path can be found.
 
-Test Behavior: Test the case where the goal is unreachable due to obstacles.
-The expected result is that no path should be found.
+Test Behavior: Test the behavior of the algorithm when the grid is completely filled with obstacles except for the start and goal, ensuring that no path can be found.
 
-Test Behavior: Test the case where the grid has obstacles surrounding the goal node.
-The expected result is that no path should be found.
+Test Behavior: Test the behavior of the algorithm when the start is surrounded by obstacles, ensuring no path can be found.
 
-Test Behavior: Test the case where the grid is empty.
-The expected result is that no path should be found.
+Test Behavior: Test the behavior of the algorithm when the goal is unreachable due to obstacles, ensuring that the algorithm returns no path.
 
-Test Behavior: Test the case where the goal is unreachable due to obstacles.
-The expected result is that no path should be found.
+Test Behavior: Test the behavior of the algorithm when the grid is completely empty except for the start and goal, ensuring that a path can be found.
 
-Test Behavior: Test the case where the grid has obstacles surrounding the goal node.
-The expected result is that no path should be found.
+Test Behavior: Test the behavior of the algorithm when the grid has a single row with obstacles, ensuring that the algorithm correctly identifies that no path exists.
+
+Test Behavior: Test the behavior of the algorithm when the start and goal are on opposite corners of a grid filled with obstacles, ensuring that no path can be found.
+
+Test Behavior: Test the behavior of the algorithm when the start and goal are on opposite corners of a grid filled with obstacles, ensuring that no path can be found.
+
+Test Behavior: Test the behavior of the algorithm when the grid is completely filled with obstacles except for the start and goal, ensuring that no path can be found.
+
+Test Behavior: Test the behavior of the algorithm when the start is surrounded by obstacles, ensuring no path can be found.
+
+Test Behavior: Test the behavior of the algorithm when the goal is unreachable due to obstacles, ensuring that the algorithm returns no path.
+
+Test Behavior: Test the behavior of the algorithm when the start and goal are on opposite corners of a grid filled with obstacles, ensuring that no path can be found.
+
+Test Behavior: Test the behavior of the algorithm when the grid is completely filled with obstacles except for the start and goal, ensuring that no path can be found.
+
+Test Behavior: Test the behavior of the algorithm when the start is surrounded by obstacles, ensuring no path can be found.
+
+Test Behavior: Test the behavior of the algorithm when the goal is unreachable due to obstacles, ensuring that the algorithm returns no path.
+
+Test Behavior: Test the behavior of the algorithm when the start and goal are adjacent and both are free.
+This should ensure that the algorithm correctly identifies that a path exists.
+
+Test Behavior: Test the behavior of the algorithm when the grid is completely filled with obstacles except for the start and goal,
+ensuring that no path can be found.
+
+Test Behavior: Test the behavior of the algorithm when the start is at the edge of the grid and the goal is at the opposite edge,
+ensuring that a path can be found.
 

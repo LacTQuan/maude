@@ -68,16 +68,16 @@ def test_obstacle_detour():
     assert path[-1] == start, "Path should end with the start node."
 
 
-def test_invalid_parent():
-    grid = [[0, 0], [0, 0]]
-    start = Node(0, 0)
-    goal = Node(1, 1)
-    planner = Dijkstra(grid)
-
-    # Manually create a closed list with an invalid parent id
-    closed_list = {start, goal}
-    goal.pid = -1  # Invalid parent ID
-
-    # Call convert_closed_list_to_path directly with the manipulated closed list
+def test_goal_not_found():
+    planner = Dijkstra([[0]])
+    closed_list = set()
+    start = Node(0, 0, 0)
+    goal = Node(1, 1, 0)
     path = planner.convert_closed_list_to_path(closed_list, start, goal)
     assert path == []
+
+
+def test_node_repr():
+    node = Node(1, 2, 3, 4, 5)
+    expected_repr = "Node(x=1, y=2, cost=3, id=4, pid=5)"
+    assert repr(node) == expected_repr

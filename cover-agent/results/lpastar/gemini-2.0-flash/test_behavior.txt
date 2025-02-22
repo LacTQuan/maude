@@ -1,0 +1,80 @@
+Test Behavior: Test the LazyPQ class's top() method when the queue is empty. This should raise a KeyError.
+
+Test Behavior: Test the LazyPQ class's pop() method when the queue is empty. This should raise a KeyError.
+
+Test Behavior: Test LPAStar with dynamic obstacles discovered over time. This test covers the scenario where obstacles are added during the planning process, forcing the planner to adapt.
+
+Test Behavior: Test LPAStar when no valid predecessor is found during path retrieval. This can happen if the path is blocked or the goal is unreachable.
+
+Test Behavior: Test LPAStar with random obstacles enabled. This test checks if the planner can handle dynamically changing environments by creating random obstacles during the planning process.
+
+Test Behavior: Test LPAStar when C(s1, s2) returns infinity because s2 is an obstacle.
+
+Test Behavior: Test the edge case where no valid motion is found in the C(s1, s2) function.
+
+Test Behavior: Test LPAStar when no dynamic obstacles are provided.
+
+Test Behavior: Test LPAStar with a grid size of 1. This is an edge case that can expose issues with boundary conditions.
+
+Test Behavior: Test LPAStar when print_path is called with an empty path.
+
+Test Behavior: Test LPAStar when a node is reinserted into the LazyPQ.
+
+Test Behavior: Test LPAStar when clear_path_display encounters a discovered obstacle.
+
+Test Behavior: Test LPAStar when no valid predecessor is found during path retrieval. This can happen if the path is blocked or the goal is unreachable.
+
+Test Behavior: Test the edge case where no valid motion is found in the C(s1, s2) function.
+
+Test Behavior: Test LPAStar when clear_path_display encounters a discovered obstacle.
+
+Test Behavior: Test LPAStar with a grid size of 1. This is an edge case that can expose issues with boundary conditions.
+
+Test Behavior: Test LPAStar when no valid predecessor is found during path retrieval. This can happen if the path is blocked or the goal is unreachable.
+
+Test Behavior: Test the edge case where no valid motion is found in the C(s1, s2) function.
+
+Test Behavior: Test LPAStar when clear_path_display encounters a discovered obstacle.
+
+Test Behavior: Test LPAStar with a grid size of 1. This is an edge case that can expose issues with boundary conditions.
+
+Test Behavior: Test LPAStar when no valid predecessor is found during path retrieval. This can happen if the path is blocked or the goal is unreachable.
+
+Test Behavior: Test the edge case where no valid motion is found in the C(s1, s2) function.
+
+Test Behavior: Test LPAStar when clear_path_display encounters a discovered obstacle.
+
+Test Behavior: Test LPAStar with a grid size of 1. This is an edge case that can expose issues with boundary conditions.
+
+Test Behavior: Test LPAStar when C(s1, s2) returns infinity because s2 is an obstacle.
+
+Test Behavior: Test the edge case where no valid motion is found in the C(s1, s2) function.
+
+Test Behavior: Test LPAStar when clear_path_display encounters a discovered obstacle.
+
+Test Behavior: Test LPAStar with a grid size of 1. This is an edge case that can expose issues with boundary conditions.
+
+Test Behavior: Test the edge case where no valid motion is found in the C(s1, s2) function.
+
+Test Behavior: Test LPAStar when clear_path_display encounters a discovered obstacle.
+
+Test Behavior: Test LPAStar with a grid size of 1. This is an edge case that can expose issues with boundary conditions.
+
+Test Behavior: Test LPAStar when C(s1, s2) returns infinity because s2 is an obstacle.
+
+Test Behavior: Test LPAStar when C(s1, s2) returns infinity because s2 is an obstacle.
+
+Test Behavior: Test the edge case where no valid motion is found in the C(s1, s2) function.
+
+Test Behavior: Test LPAStar when clear_path_display encounters a discovered obstacle.
+
+Test Behavior: Test LPAStar with a grid size of 1. This is an edge case that can expose issues with boundary conditions.
+
+Test Behavior: Test LPAStar when no valid predecessor is found during path retrieval. This can happen if the path is blocked or the goal is unreachable.
+
+Test Behavior: Test the edge case where no valid motion is found in the C(s1, s2) function.
+
+Test Behavior: Test LPAStar when clear_path_display encounters a discovered obstacle.
+
+Test Behavior: Test LPAStar with a grid size of 1. This is an edge case that can expose issues with boundary conditions.
+

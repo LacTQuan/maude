@@ -1,0 +1,108 @@
+Test Behavior: Test that the make_grid function does not modify the input grid.
+
+Test Behavior: Test that the print_path function correctly prints the path.
+
+Test Behavior: Test that the LazyPQ remove function correctly removes nodes.
+
+Test Behavior: Test that the detect_changes function correctly adds dynamic obstacles.
+
+Test Behavior: Test that the C function returns infinite cost for obstacle nodes.
+
+Test Behavior: Test that the make_grid function does not modify the input grid.
+
+Test Behavior: Test that the print_path function correctly prints the path.
+
+Test Behavior: Test that the LazyPQ remove function correctly removes nodes.
+
+Test Behavior: Test that the detect_changes function correctly adds dynamic obstacles.
+
+Test Behavior: Test that the C function returns infinite cost for obstacle nodes.
+
+Test Behavior: Test that the make_grid function does not modify the input grid.
+
+Test Behavior: Test that the print_path function correctly prints the path.
+
+Test Behavior: Test that the LazyPQ remove function correctly removes nodes.
+
+Test Behavior: Test that the C function returns infinite cost for obstacle nodes.
+
+Test Behavior: Test that the detect_changes function correctly adds dynamic obstacles.
+
+Test Behavior: Test that the compute_shortest_path handles cases where g > rhs.
+
+Test Behavior: Test that the path is correctly reconstructed from the goal node.
+
+Test Behavior: Test that nodes are initialized correctly and their methods work.
+
+Test Behavior: Test that the make_grid function does not modify the input grid.
+
+Test Behavior: Test that the print_path function correctly prints the path.
+
+Test Behavior: Test that the LazyPQ remove function correctly removes nodes.
+
+Test Behavior: Test that the detect_changes function correctly adds dynamic obstacles.
+
+Test Behavior: Test that the C function returns infinite cost for obstacle nodes.
+
+Test Behavior: Test that the compute_shortest_path handles cases where g > rhs.
+
+Test Behavior: Test that nodes are initialized correctly and their methods work.
+
+Test Behavior: Test that the make_grid function does not modify the input grid.
+
+Test Behavior: Test that the C function returns infinite cost for obstacle nodes.
+
+Test Behavior: Test that the detect_changes function correctly adds dynamic obstacles.
+
+Test Behavior: Test that the compute_shortest_path handles cases where g > rhs.
+
+Test Behavior: Test that nodes are initialized correctly and their methods work.
+
+Test Behavior: Test that the make_grid function does not modify the input grid.
+
+Test Behavior: Test that the print_path function correctly prints the path.
+
+Test Behavior: Test that the LazyPQ remove function correctly removes nodes.
+
+Test Behavior: Test that the set_dynamic_obstacles function correctly sets dynamic obstacles.
+
+Test Behavior: Test that the detect_changes function correctly adds dynamic obstacles.
+
+Test Behavior: Test that the C function returns the correct cost for diagonal movement.
+
+Test Behavior: Test that the compute_shortest_path handles cases where g > rhs.
+
+Test Behavior: Test that the clear_path_display function clears the path correctly.
+
+Test Behavior: Test that the get_new_path function reconstructs the path correctly.
+
+Test Behavior: Test that the main block initializes and runs the planner correctly.
+
+Test Behavior: Test that the make_grid function does not modify the input grid.
+
+Test Behavior: Test that the H function returns the correct heuristic value.
+
+Test Behavior: Test that the get_neighbours function returns the correct list of neighboring nodes.
+
+Test Behavior: Test that the clear_path_display function clears the path correctly.
+
+Test Behavior: Test that the update_path_display function updates the path correctly.
+
+Test Behavior: Test that the make_grid function does not modify the input grid.
+
+Test Behavior: Test that the print_path function correctly prints the path.
+
+Test Behavior: Test that the get_neighbours function returns the correct list of neighboring nodes.
+
+Test Behavior: Test that the clear_path_display function clears the path correctly.
+
+Test Behavior: Test that the update_path_display function updates the path correctly.
+
+Test Behavior: Test that the H function returns the correct heuristic value.
+
+Test Behavior: Test that the make_grid function does not modify the input grid.
+
+Test Behavior: Test that the print_path function correctly prints the path when given a valid path, an empty path, and when no path is found.
+
+Test Behavior: Test that the LazyPQ remove function correctly removes nodes and raises KeyError when trying to access a removed node.
+

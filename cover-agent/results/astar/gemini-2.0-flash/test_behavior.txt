@@ -1,0 +1,68 @@
+Test Behavior: Test the Node class's inequality check.
+
+Test Behavior: Test the case where the goal node is not found in the closed list during path reconstruction. This simulates a scenario where the search might have terminated prematurely or an error occurred during the search.
+
+Test Behavior: Test the scenario where a parent node is not found in the closed list during path reconstruction. This can happen if the parent ID is corrupted or the closed list is incomplete.
+
+Test Behavior: Test a grid where the open list becomes empty before the goal is found. This can happen when the path is blocked by obstacles, but not completely blocked as in `test_no_path`.
+
+Test Behavior: Test the make_grid function. Currently, it does nothing, so this test primarily aims to achieve coverage of line 151.
+
+Test Behavior: Test the print_grid function. This test aims to cover lines 155 and 156. It captures the standard output and asserts that the grid is printed correctly.
+
+Test Behavior: Test the print_path function. This test aims to cover lines 163, 164, 165, 166 and 167. It captures the standard output and asserts that the grid with path is printed correctly.
+
+Test Behavior: Test the scenario where no path is found, covering lines 84 and 110.
+This happens when the open list is empty and the goal hasn't been reached.
+
+Test Behavior: Test the main execution block (`if __name__ == '__main__'`).
+This test aims to cover lines 171, 172, 173, 176, 177, 180, 181, 182, 183, 186, 187, 189, 190, 191, 192, 194, 195, 197, 198, 199, 200, 201, 202, 204.
+Since directly testing the main block is difficult, this test mocks the random number generator to ensure consistent start and goal positions, and then asserts that the A* algorithm either finds a path or doesn't, as expected.
+
+Test Behavior: Test the Node.__add__ function.
+
+Test Behavior: Test the scenario where no path is found because the open list becomes empty before reaching the goal.
+This test uses a grid with a partial blockage, ensuring the algorithm explores some nodes before failing.
+
+Test Behavior: Test the print_path function to ensure it correctly marks the path on the grid.
+This test checks if the grid is modified as expected, with the path cells marked with '8'.
+
+Test Behavior: Test the scenario where the goal is one of the neighbors of the start node.
+
+Test Behavior: Test the scenario where the A* algorithm explores all possible nodes without finding a path to the goal.
+This happens when the goal is unreachable but not directly blocked.
+
+Test Behavior: Test the convert_closed_list_to_path function when the start and goal are the same.
+
+Test Behavior: Test the scenario where the goal is surrounded by obstacles, ensuring that the algorithm correctly identifies that no path exists.
+
+Test Behavior: Test the main execution block (`if __name__ == '__main__'`).
+This test aims to cover lines 171, 172, 173, 176, 177, 180, 181, 182, 183, 186, 187, 189, 190, 191, 192, 194, 195, 197, 198, 199, 200, 201, 202, 204.
+Since directly testing the main block is difficult, this test mocks the random number generator to ensure consistent start and goal positions, and then asserts that the A* algorithm either finds a path or doesn't, as expected.
+
+Test Behavior: Test the scenario where the open list becomes empty before the goal is found. This can happen when the path is blocked by obstacles, but not completely blocked as in `test_no_path`.
+
+Test Behavior: Test the main execution block (`if __name__ == '__main__'`).
+This test aims to cover lines 171, 172, 173, 176, 177, 180, 181, 182, 183, 186, 187, 189, 190, 191, 192, 194, 195, 197, 198, 199, 200, 201, 202, 204.
+Since directly testing the main block is difficult, this test mocks the random number generator to ensure consistent start and goal positions, and then asserts that the A* algorithm either finds a path or doesn't, as expected.
+
+Test Behavior: Test the scenario where the open list becomes empty before the goal is found. This can happen when the path is blocked by obstacles, but not completely blocked as in `test_no_path`.
+
+Test Behavior: Test the main execution block (`if __name__ == '__main__'`).
+This test aims to cover lines 171, 172, 173, 176, 177, 180, 181, 182, 183, 186, 187, 189, 190, 191, 192, 194, 195, 197, 198, 199, 200, 201, 202, 204.
+Since directly testing the main block is difficult, this test mocks the random number generator to ensure consistent start and goal positions, and then asserts that the A* algorithm either finds a path or doesn't, as expected.
+
+Test Behavior: Test the scenario where the open list becomes empty before the goal is found. This can happen when the path is blocked by obstacles, but not completely blocked as in `test_no_path`.
+
+Test Behavior: Test the scenario where the open list becomes empty before the goal is found. This can happen when the path is blocked by obstacles, but not completely blocked as in `test_no_path`.
+
+Test Behavior: Test the main execution block (`if __name__ == '__main__'`).
+This test aims to cover lines 171, 172, 173, 176, 177, 180, 181, 182, 183, 186, 187, 189, 190, 191, 192, 194, 195, 197, 198, 199, 200, 201, 202, 204.
+Since directly testing the main block is difficult, this test mocks the random number generator to ensure consistent start and goal positions, and then asserts that the A* algorithm either finds a path or doesn't, as expected.
+
+Test Behavior: Test the main execution block (`if __name__ == '__main__'`).
+This test aims to cover lines 171, 172, 173, 176, 177, 180, 181, 182, 183, 186, 187, 189, 190, 191, 192, 194, 195, 197, 198, 199, 200, 201, 202, 204.
+Since directly testing the main block is difficult, this test mocks the random number generator to ensure consistent start and goal positions, and then asserts that the A* algorithm either finds a path or doesn't, as expected.
+
+Test Behavior: Test the scenario where the open list becomes empty before the goal is found. This can happen when the path is blocked by obstacles, but not completely blocked as in `test_no_path`.
+
