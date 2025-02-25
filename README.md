@@ -1,6 +1,8 @@
-# How to run cover-agent?
-1. Install the cover-agent through this [link](https://github.com/LacTQuan/cover-agent.git) by cloning it and using `pip install 'path_to_the_repo'`
-2. Navigate into a specific folder: astar/dijkstra/lpastar. Example:
+# How to run?
+1. Clone this repo to the local machine
+2. Clone the mcover-agent lib through this [link](https://github.com/LacTQuan/cover-agent.git)
+3. Install it by using `pip install 'path_to_the_cover_agent_repo'`
+4. Navigate into a specific folder: astar/dijkstra/lpastar. Example:
 ```
 cd cover-agent/astar & 
 cover-agent \
