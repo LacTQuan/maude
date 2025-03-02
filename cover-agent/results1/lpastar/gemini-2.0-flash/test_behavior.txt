@@ -1,0 +1,78 @@
+Test Behavior: Test the LazyPQ class's top() and pop() methods when the queue is empty.
+
+Test Behavior: Test LPAStar with dynamic obstacles discovered over time. This test covers the scenario where obstacles are added at specific time steps, influencing the path planning.
+
+Test Behavior: Test LPAStar when no valid predecessor is found in get_new_path, causing the path reconstruction to break.
+
+Test Behavior: Test the C function when either s1 or s2 is an obstacle.
+
+Test Behavior: Test the scenario where start and goal are the same. This should result in a trivial path.
+
+Test Behavior: Test LPAStar with a larger grid and verifies that the algorithm finds a path.
+
+Test Behavior: Test the LazyPQ class when an element is inserted, removed, and then the queue is cleared.
+
+Test Behavior: Test the print_path function to ensure it does not raise any exceptions.
+
+Test Behavior: Test the case when no valid predecessor is found in `get_new_path`, resulting in an incomplete path.
+
+Test Behavior: Test the `C` function when either `s1` or `s2` is an obstacle.
+
+Test Behavior: Test LPAStar with a larger grid and verifies that the algorithm finds a path.
+
+Test Behavior: Test the LazyPQ class when an element is inserted, removed, and then the queue is cleared.
+
+Test Behavior: Test the LazyPQ class when an element is inserted, removed, and then the queue is cleared.
+
+Test Behavior: Test LPAStar when no valid predecessor is found in get_new_path, causing the path reconstruction to break.
+
+Test Behavior: Test LPAStar with a larger grid and verifies that the algorithm finds a path.
+
+Test Behavior: Test that the dummy function make_grid does nothing.
+
+Test Behavior: Test LPAStar when no valid predecessor is found in get_new_path, causing the path reconstruction to break.
+
+Test Behavior: Test the scenario where start and goal are the same, ensuring the algorithm returns a path with only the start node.
+
+Test Behavior: Test LPAStar with dynamic obstacles that appear over time, verifying that the algorithm adapts to the changing environment.
+
+Test Behavior: Test the LazyPQ class when an element is inserted, removed, and then the queue is cleared.
+
+Test Behavior: Test the LazyPQ class when an element is inserted, removed, and then the queue is cleared.
+
+Test Behavior: Test LPAStar when no valid predecessor is found in get_new_path, causing the path reconstruction to break.
+
+Test Behavior: Test LPAStar with a larger grid and verifies that the algorithm finds a path.
+
+Test Behavior: Test the case when the grid is updated to mark explored nodes as '2' in clear_path_display, but an obstacle is discovered and should remain as '1'.
+
+Test Behavior: Test the LazyPQ class when an element is inserted, removed, and then the queue is cleared.
+
+Test Behavior: Test LPAStar when no valid predecessor is found in get_new_path, causing the path reconstruction to break.
+
+Test Behavior: Test LPAStar with a larger grid and verifies that the algorithm finds a path.
+
+Test Behavior: Test the C function when either s1 or s2 is an obstacle.
+
+Test Behavior: Test the scenario where no dynamic obstacles are set, ensuring the algorithm finds a path.
+
+Test Behavior: Test the scenario where create_random_obstacles is set to True.
+
+Test Behavior: Test the LazyPQ class when an element is inserted, removed, and then the queue is cleared.
+
+Test Behavior: Test LPAStar when no valid predecessor is found in get_new_path, causing the path reconstruction to break.
+
+Test Behavior: Test the case when the grid is updated to mark explored nodes as '2' in clear_path_display, but an obstacle is discovered and should remain as '1'.
+
+Test Behavior: Test LPAStar when no valid predecessor is found in get_new_path, causing the path reconstruction to break.
+
+Test Behavior: Test the LazyPQ class when an element is inserted, removed, and then the queue is cleared.
+
+Test Behavior: Test the scenario where no dynamic obstacles are set, ensuring the algorithm finds a path.
+
+Test Behavior: Test the scenario where create_random_obstacles is set to True.
+
+Test Behavior: Test the LazyPQ class when an element is inserted, removed, and then the queue is cleared.
+
+Test Behavior: Test the case when the grid is updated to mark explored nodes as '2' in clear_path_display, but an obstacle is discovered and should remain as '1'.
+

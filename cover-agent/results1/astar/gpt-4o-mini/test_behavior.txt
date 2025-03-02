@@ -1,0 +1,110 @@
+Test Behavior: Test the A* algorithm with a grid that has a single obstacle directly between the start and goal.
+This should ensure that the algorithm correctly identifies that no path exists.
+
+Test Behavior: Test the A* algorithm with a grid that has multiple obstacles, ensuring that it can find a path around them.
+
+Test Behavior: Test the A* algorithm with a grid that has no valid cells (all obstacles).
+This should ensure that the algorithm correctly identifies that no path exists.
+
+Test Behavior: Test the A* algorithm with a grid that has the start and goal in the same cell but marked as an obstacle.
+This should ensure that the algorithm correctly identifies that no path exists.
+
+Test Behavior: Test the A* algorithm with a grid that has the start and goal in the same cell marked as an obstacle.
+This should ensure that the algorithm correctly identifies that no path exists.
+
+Test Behavior: Test the A* algorithm with a grid that has no valid cells (all obstacles).
+This should ensure that the algorithm correctly identifies that no path exists.
+
+Test Behavior: Test the A* algorithm with a grid that has a single obstacle directly between the start and goal.
+This should ensure that the algorithm correctly identifies that no path exists.
+
+Test Behavior: Test the A* algorithm with a grid that has multiple obstacles, ensuring that it can find a path around them.
+
+Test Behavior: Test the A* algorithm with a grid that has the start and goal in the same cell marked as an obstacle.
+This should ensure that the algorithm correctly identifies that no path exists.
+
+Test Behavior: Test the A* algorithm with a grid that has no valid cells (all obstacles).
+This should ensure that the algorithm correctly identifies that no path exists.
+
+Test Behavior: Test the A* algorithm with a grid that has a single obstacle directly between the start and goal.
+This should ensure that the algorithm correctly identifies that no path exists.
+
+Test Behavior: Test the A* algorithm with a grid that has multiple obstacles, ensuring that it can find a path around them.
+
+Test Behavior: Test the A* algorithm with a grid that has the start and goal in the same cell marked as an obstacle.
+This should ensure that the algorithm correctly identifies that no path exists.
+
+Test Behavior: Test the A* algorithm with a grid that has no valid cells (all obstacles).
+This should ensure that the algorithm correctly identifies that no path exists.
+
+Test Behavior: Test the A* algorithm with a grid that has a single obstacle directly between the start and goal.
+This should ensure that the algorithm correctly identifies that no path exists.
+
+Test Behavior: Test the A* algorithm with a grid that has multiple obstacles, ensuring that it can find a path around them.
+
+Test Behavior: Test the A* algorithm with a grid that has the start and goal in the same cell marked as an obstacle.
+This should ensure that the algorithm correctly identifies that no path exists.
+
+Test Behavior: Test the A* algorithm with a grid that has no valid cells (all obstacles).
+This should ensure that the algorithm correctly identifies that no path exists.
+
+Test Behavior: Test the A* algorithm with a grid that has a single obstacle directly between the start and goal.
+This should ensure that the algorithm correctly identifies that no path exists.
+
+Test Behavior: Test the A* algorithm with a grid that has multiple obstacles, ensuring that it can find a path around them.
+
+Test Behavior: Test the A* algorithm with a grid that has the start and goal in the same cell marked as an obstacle.
+This should ensure that the algorithm correctly identifies that no path exists.
+
+Test Behavior: Test the A* algorithm with a grid that has no valid cells (all obstacles).
+This should ensure that the algorithm correctly identifies that no path exists.
+
+Test Behavior: Test the A* algorithm with a grid that has a single obstacle directly between the start and goal.
+This should ensure that the algorithm correctly identifies that no path exists.
+
+Test Behavior: Test the A* algorithm with a grid that has multiple obstacles, ensuring that it can find a path around them.
+
+Test Behavior: Test the A* algorithm with a grid that has the start and goal in the same cell marked as an obstacle.
+This should ensure that the algorithm correctly identifies that no path exists.
+
+Test Behavior: Test the A* algorithm with a grid that has no valid cells (all obstacles).
+This should ensure that the algorithm correctly identifies that no path exists.
+
+Test Behavior: Test the A* algorithm with a grid that has a single obstacle directly between the start and goal.
+This should ensure that the algorithm correctly identifies that no path exists.
+
+Test Behavior: Test the A* algorithm with a grid that has multiple obstacles, ensuring that it can find a path around them.
+
+Test Behavior: Test the A* algorithm with a grid that has the start and goal in the same cell marked as an obstacle.
+This should ensure that the algorithm correctly identifies that no path exists.
+
+Test Behavior: Test the A* algorithm with a grid that has no valid cells (all obstacles).
+This should ensure that the algorithm correctly identifies that no path exists.
+
+Test Behavior: Test the A* algorithm with a grid that has a single obstacle directly between the start and goal.
+This should ensure that the algorithm correctly identifies that no path exists.
+
+Test Behavior: Test the A* algorithm with a grid that has multiple obstacles, ensuring that it can find a path around them.
+
+Test Behavior: Test the A* algorithm with a grid that has the start and goal in the same cell marked as an obstacle.
+This should ensure that the algorithm correctly identifies that no path exists.
+
+Test Behavior: Test the A* algorithm with a grid that has no valid cells (all obstacles).
+This should ensure that the algorithm correctly identifies that no path exists.
+
+Test Behavior: Test the A* algorithm with a grid that has a single obstacle directly between the start and goal.
+This should ensure that the algorithm correctly identifies that no path exists.
+
+Test Behavior: Test the A* algorithm with a grid that has multiple obstacles, ensuring that it can find a path around them.
+
+Test Behavior: Test the A* algorithm with a grid that has the start and goal in the same cell marked as an obstacle.
+This should ensure that the algorithm correctly identifies that no path exists.
+
+Test Behavior: Test the A* algorithm with a grid that has no valid cells (all obstacles).
+This should ensure that the algorithm correctly identifies that no path exists.
+
+Test Behavior: Test the A* algorithm with a grid that has a single obstacle directly between the start and goal.
+This should ensure that the algorithm correctly identifies that no path exists.
+
+Test Behavior: Test the A* algorithm with a grid that has multiple obstacles, ensuring that it can find a path around them.
+

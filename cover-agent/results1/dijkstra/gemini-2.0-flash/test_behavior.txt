@@ -1,0 +1,74 @@
+Test Behavior: Test case where no path is found because the goal is unreachable.
+
+Test Behavior: Test case where convert_closed_list_to_path returns an empty path because parent node is None.
+
+Test Behavior: Test case where no path is found because the goal is unreachable.
+
+Test Behavior: Test case where convert_closed_list_to_path returns an empty path because parent node is None.
+
+Test Behavior: Test case to test the scenario where the start and goal nodes are the same.
+
+Test Behavior: Test case where no path is found because the goal is unreachable due to a full row of obstacles.
+
+Test Behavior: Test case where convert_closed_list_to_path returns an empty path because the goal node is not in the closed list.
+
+Test Behavior: Test case to test the scenario where the start and goal nodes are the same.
+
+Test Behavior: Test case to cover the scenario where the parent node is not found in the closed list during path reconstruction.
+
+Test Behavior: Test case where no path is found because the goal is unreachable due to a full row of obstacles.
+
+Test Behavior: Test case to test the scenario where the start and goal nodes are the same.
+
+Test Behavior: Test case where convert_closed_list_to_path returns an empty path because the goal node is not in the closed list.
+
+Test Behavior: Test case to cover the scenario where the parent node is not found in the closed list during path reconstruction.
+
+Test Behavior: Test case where the start and goal nodes are the same.
+
+Test Behavior: Test case where no path is found because the goal is unreachable due to a full row of obstacles.
+
+Test Behavior: Test case where convert_closed_list_to_path returns an empty path because the goal node is not in the closed list.
+
+Test Behavior: Test case to cover the scenario where the parent node is not found in the closed list during path reconstruction.
+
+Test Behavior: Test case where the start and goal nodes are the same.
+
+Test Behavior: Test case where no path is found because the goal is unreachable due to a full row of obstacles.
+
+Test Behavior: Test case where convert_closed_list_to_path returns an empty path because the goal node is not in the closed list.
+
+Test Behavior: Test case to cover the scenario where the parent node is not found in the closed list during path reconstruction.
+
+Test Behavior: Test case where the start and goal nodes are the same.
+
+Test Behavior: Test case where no path is found because the goal is unreachable due to a full row of obstacles.
+
+Test Behavior: Test case where convert_closed_list_to_path returns an empty path because the goal node is not in the closed list.
+
+Test Behavior: Test case to cover the scenario where the parent node is not found in the closed list during path reconstruction.
+
+Test Behavior: Test case to test the scenario where the start and goal nodes are the same.
+
+Test Behavior: Test case where no path is found because the goal is unreachable due to a full row of obstacles.
+
+Test Behavior: Test case where convert_closed_list_to_path returns an empty path because the goal node is not in the closed list.
+
+Test Behavior: Test case to cover the scenario where the parent node is not found in the closed list during path reconstruction.
+
+Test Behavior: Test case where the start and goal nodes are the same.
+
+Test Behavior: Test case where no path is found because the goal is unreachable due to a full row of obstacles.
+
+Test Behavior: Test case where convert_closed_list_to_path returns an empty path because the goal node is not in the closed list.
+
+Test Behavior: Test case to cover the scenario where the parent node is not found in the closed list during path reconstruction.
+
+Test Behavior: Test case where the start and goal nodes are the same.
+
+Test Behavior: Test case where no path is found because the goal is unreachable due to a full row of obstacles.
+
+Test Behavior: Test case where convert_closed_list_to_path returns an empty path because the goal node is not in the closed list.
+
+Test Behavior: Test case to cover the scenario where the parent node is not found in the closed list during path reconstruction.
+

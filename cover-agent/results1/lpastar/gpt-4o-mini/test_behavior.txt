@@ -1,0 +1,80 @@
+Test Behavior: Test that the path is correctly displayed when a valid path is found.
+
+Test Behavior: Test that the LazyPQ can handle removing an element correctly.
+
+Test Behavior: Test that the LPAStar detects dynamic obstacles correctly.
+
+Test Behavior: Test that the cost function returns infinity for obstacles.
+
+Test Behavior: Test that the LazyPQ can handle removing an element correctly.
+
+Test Behavior: Test that the cost function returns infinity for obstacles.
+
+Test Behavior: Test that the LPAStar detects dynamic obstacles correctly.
+
+Test Behavior: Test that the path is correctly displayed when a valid path is found.
+
+Test Behavior: Test that the path is correctly displayed when a valid path is found.
+
+Test Behavior: Test that the LazyPQ can handle removing an element correctly.
+
+Test Behavior: Test that the cost function returns infinity for obstacles.
+
+Test Behavior: Test that dynamic obstacles are detected correctly at the right time step.
+
+Test Behavior: Test that the path is correctly displayed when a valid path is found.
+
+Test Behavior: Test that the LazyPQ can handle removing an element correctly.
+
+Test Behavior: Test that the cost function returns infinity for obstacles.
+
+Test Behavior: Test that dynamic obstacles are detected correctly at the right time step.
+
+Test Behavior: Test that the path is correctly displayed when a valid path is found.
+
+Test Behavior: Test that the LazyPQ can handle removing an element correctly.
+
+Test Behavior: Test that the cost function returns infinity for obstacles.
+
+Test Behavior: Test that dynamic obstacles are detected correctly at the right time step.
+
+Test Behavior: Test that the path is correctly displayed when a valid path is found.
+
+Test Behavior: Test that the LazyPQ can handle removing an element correctly.
+
+Test Behavior: Test that the cost function returns infinity for obstacles.
+
+Test Behavior: Test that dynamic obstacles are detected correctly at the right time step.
+
+Test Behavior: Test that the path is correctly displayed when a valid path is found.
+
+Test Behavior: Test that the LazyPQ can handle removing an element correctly.
+
+Test Behavior: Test that the cost function returns infinity for obstacles.
+
+Test Behavior: Test that dynamic obstacles are detected correctly at the right time step.
+
+Test Behavior: Test that the path is correctly displayed when a valid path is found.
+
+Test Behavior: Test that the LazyPQ can handle removing an element correctly.
+
+Test Behavior: Test that the cost function returns infinity for obstacles.
+
+Test Behavior: Test that dynamic obstacles are detected correctly at the right time step.
+
+Test Behavior: Test that the path is correctly displayed when a valid path is found.
+
+Test Behavior: Test that the LazyPQ can handle removing an element correctly.
+
+Test Behavior: Test that the cost function returns infinity for obstacles.
+
+Test Behavior: Test that dynamic obstacles are detected correctly at the right time step.
+
+Test Behavior: Test that the path is correctly displayed when a valid path is found.
+
+Test Behavior: Test that the LazyPQ can handle removing an element correctly.
+
+Test Behavior: Test that the cost function returns infinity for obstacles.
+
+Test Behavior: Test that dynamic obstacles are detected correctly at the right time step.
+

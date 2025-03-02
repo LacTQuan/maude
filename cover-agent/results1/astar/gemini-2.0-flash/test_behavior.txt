@@ -1,0 +1,80 @@
+Test Behavior: Test case where no path exists due to a completely blocked grid.
+
+Test Behavior: Test the scenario where the goal is surrounded by obstacles, but is still reachable.
+
+Test Behavior: Test the case where the goal is not found in the closed list during path reconstruction.
+
+Test Behavior: Test the case where the parent node is not found in the closed list during path reconstruction.
+
+Test Behavior: Test case where A* fails to find the goal, and the open list becomes empty.
+
+Test Behavior: Test case where the goal is not found in the closed list, resulting in an empty path.
+
+Test Behavior: Test the scenario where the grid is a single cell, start and goal are the same.
+
+Test Behavior: Test the scenario where the grid is a single row, and the goal is at the end of the row.
+
+Test Behavior: Test the `Node.__eq__` method when comparing a Node to a non-Node object.
+
+Test Behavior: Test the scenario where the grid has a single column, and the goal is at the bottom of the column.
+
+Test Behavior: Test the scenario where the A* algorithm explores all possible nodes without finding the goal.
+
+Test Behavior: Test the scenario where the goal is unreachable, but the start and goal are on opposite sides of a wall.
+
+Test Behavior: Test the scenario where the A* algorithm explores all possible nodes without finding the goal, due to obstacles.
+
+Test Behavior: Test the scenario where the grid has a single column, and the goal is at the bottom of the column, ensuring no index out of bounds error.
+
+Test Behavior: Test the scenario where the goal is unreachable, with a wall separating start and goal.
+
+Test Behavior: Test the scenario where the parent node is not found in the closed list during path reconstruction.
+
+Test Behavior: Test the scenario where the grid is initialized with different values and make_grid is called.
+This test aims to cover the lines related to grid initialization and the make_grid function.
+
+Test Behavior: Test the scenario where a path is found and print_path is called to visualize the path on the grid.
+This aims to cover the print_grid and print_path functions.
+
+Test Behavior: Test the scenario where no path is found, covering the else branch after the plan function is called.
+
+Test Behavior: Test the scenario where no path is found, covering the else branch after the plan function is called in the main block.
+
+Test Behavior: Test the scenario where the goal is unreachable due to a wall, ensuring no path is found.
+
+Test Behavior: Test the scenario where the parent node is not found in the closed list during path reconstruction, resulting in an empty path.
+
+Test Behavior: Test case where the A* algorithm explores all possible nodes without finding the goal.
+
+Test Behavior: Test the scenario where the goal is unreachable due to a wall, ensuring no path is found.
+
+Test Behavior: Test the scenario where the parent node is not found in the closed list during path reconstruction.
+
+Test Behavior: Test case where the A* algorithm explores all possible nodes without finding the goal.
+
+Test Behavior: Test the scenario where no path is found, covering the else branch after the plan function is called in the main block.
+
+Test Behavior: Test the scenario where the goal is unreachable due to a wall, ensuring no path is found.
+
+Test Behavior: Test the scenario where the parent node is not found in the closed list during path reconstruction.
+
+Test Behavior: Test case where the A* algorithm explores all possible nodes without finding the goal.
+
+Test Behavior: Test the scenario where no path is found, covering the else branch after the plan function is called in the main block.
+
+Test Behavior: Test the scenario where the parent node is not found in the closed list during path reconstruction.
+
+Test Behavior: Test case where A* fails to find the goal, and the open list becomes empty.
+
+Test Behavior: Test the scenario where no path is found, covering the else branch after the plan function is called in the main block.
+
+Test Behavior: Test case where the A* algorithm explores all possible nodes without finding the goal.
+
+Test Behavior: Test the scenario where the goal is unreachable due to a wall, ensuring no path is found.
+
+Test Behavior: Test case where A* fails to find the goal, and the open list becomes empty.
+
+Test Behavior: Test the scenario where the parent node is not found in the closed list during path reconstruction.
+
+Test Behavior: Test the scenario where no path is found, covering the else branch after the plan function is called in the main block.
+

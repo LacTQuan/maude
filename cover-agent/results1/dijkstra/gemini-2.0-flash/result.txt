@@ -1,0 +1,859 @@
+```yaml
+language: python
+testing_framework: pytest
+number_of_tests: 5
+test_headers_indentation: 0
+```
+```yaml
+language: python
+testing_framework: pytest
+number_of_tests: 6
+relevant_line_number_to_insert_tests_after: 84
+relevant_line_number_to_insert_imports_after: 2
+```
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test case where no path is found because the goal is unreachable.
+  lines_to_cover: |
+    [161, 162, 166, 167, 170, 171, 172, 175, 176, 178, 179, 181, 182, 183, 184]
+  test_name: |
+    test_goal_unreachable
+  test_code: |
+    def test_goal_unreachable():
+        n = 3
+        grid = [
+            [0, 1, 0],
+            [0, 1, 0],
+            [0, 1, 0]
+        ]
+        start = Node(0, 0, 0)
+        goal = Node(2, 0, 0)
+        start.id = start.x * n + start.y
+        start.pid = start.id
+        goal.id = goal.x * n + goal.y
+        grid[start.x][start.y] = 0
+        grid[goal.x][goal.y] = 0
+
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test case where convert_closed_list_to_path returns an empty path because parent node is None.
+  lines_to_cover: |
+    [152, 153]
+  test_name: |
+    test_convert_closed_list_no_parent
+  test_code: |
+    def test_convert_closed_list_no_parent():
+        planner = Dijkstra([[0]])
+        closed_list = {Node(0, 0), Node(0, 1)}
+        start = Node(0, 0, 0)
+        goal = Node(0, 1, 0)
+        goal.pid = 5  # Invalid pid
+        path = planner.convert_closed_list_to_path(closed_list, start, goal)
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+```
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test case where no path is found because the goal is unreachable.
+  lines_to_cover: |
+    [161, 162, 166, 167, 170, 171, 172, 175, 176, 178, 179, 181, 182, 183, 184]
+  test_name: |
+    test_goal_unreachable
+  test_code: |
+    def test_goal_unreachable():
+        n = 3
+        grid = [
+            [0, 1, 0],
+            [0, 1, 0],
+            [0, 1, 0]
+        ]
+        start = Node(0, 0, 0)
+        goal = Node(2, 0, 0)
+        start.id = start.x * n + start.y
+        start.pid = start.id
+        goal.id = goal.x * n + goal.y
+        grid[start.x][start.y] = 0
+        grid[goal.x][goal.y] = 0
+
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test case where convert_closed_list_to_path returns an empty path because parent node is None.
+  lines_to_cover: |
+    [152, 153]
+  test_name: |
+    test_convert_closed_list_no_parent
+  test_code: |
+    def test_convert_closed_list_no_parent():
+        planner = Dijkstra([[0]])
+        closed_list = {Node(0, 0), Node(0, 1)}
+        start = Node(0, 0, 0)
+        goal = Node(0, 1, 0)
+        goal.pid = None  # Invalid pid
+        path = planner.convert_closed_list_to_path(closed_list, start, goal)
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test case to test the scenario where the start and goal nodes are the same.
+  lines_to_cover: |
+    [89, 90, 91, 92]
+  test_name: |
+    test_start_equals_goal
+  test_code: |
+    def test_start_equals_goal():
+        grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+        start = Node(1, 1, 0)
+        goal = Node(1, 1, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+        assert found is True
+        assert path[0] == goal
+        assert path[-1] == start
+  new_imports_code: |
+    ""
+  test_tags: happy path
+```
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test case where no path is found because the goal is unreachable due to a full row of obstacles.
+  lines_to_cover: |
+    [161, 162, 166, 167, 170, 171, 172, 175, 176, 178, 179, 181, 182, 183, 184]
+  test_name: |
+    test_goal_unreachable_row_obstacle
+  test_code: |
+    def test_goal_unreachable_row_obstacle():
+        n = 3
+        grid = [
+            [0, 0, 0],
+            [1, 1, 1],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0, 0)
+        goal = Node(2, 2, 0)
+        start.id = start.x * n + start.y
+        start.pid = start.id
+        goal.id = goal.x * n + goal.y
+        grid[start.x][start.y] = 0
+        grid[goal.x][goal.y] = 0
+
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test case where convert_closed_list_to_path returns an empty path because the goal node is not in the closed list.
+  lines_to_cover: |
+    [136, 137, 138]
+  test_name: |
+    test_convert_closed_list_goal_not_in_closed_list
+  test_code: |
+    def test_convert_closed_list_goal_not_in_closed_list():
+        planner = Dijkstra([[0]])
+        closed_list = {Node(0, 0)}
+        start = Node(0, 0, 0)
+        goal = Node(0, 1, 0)
+        path = planner.convert_closed_list_to_path(closed_list, start, goal)
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test case to test the scenario where the start and goal nodes are the same.
+  lines_to_cover: |
+    [89, 90, 91, 92]
+  test_name: |
+    test_start_equals_goal
+  test_code: |
+    def test_start_equals_goal():
+        grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+        start = Node(1, 1, 0)
+        goal = Node(1, 1, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+        assert found is True
+        assert path[0] == goal
+        assert path[-1] == start
+  new_imports_code: |
+    ""
+  test_tags: happy path
+- test_behavior: |
+    Test case to cover the scenario where the parent node is not found in the closed list during path reconstruction.
+  lines_to_cover: |
+    [152, 153]
+  test_name: |
+    test_convert_closed_list_parent_not_found
+  test_code: |
+    def test_convert_closed_list_parent_not_found():
+        planner = Dijkstra([[0, 0], [0, 0]])
+        closed_list = {Node(0, 0), Node(1, 0)}
+        start = Node(0, 0, 0)
+        goal = Node(1, 0, 0)
+        goal.pid = 5
+        path = planner.convert_closed_list_to_path(closed_list, start, goal)
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+```
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test case where no path is found because the goal is unreachable due to a full row of obstacles.
+  lines_to_cover: |
+    [161, 162, 166, 167, 170, 171, 172, 175, 176, 178, 179, 181, 182, 183, 184]
+  test_name: |
+    test_goal_unreachable_row_obstacle
+  test_code: |
+    def test_goal_unreachable_row_obstacle():
+        n = 3
+        grid = [
+            [0, 0, 0],
+            [1, 1, 1],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0, 0)
+        goal = Node(2, 2, 0)
+        start.id = start.x * n + start.y
+        start.pid = start.id
+        goal.id = goal.x * n + goal.y
+        grid[start.x][start.y] = 0
+        grid[goal.x][goal.y] = 0
+
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test case to test the scenario where the start and goal nodes are the same.
+  lines_to_cover: |
+    [89, 90, 91, 92]
+  test_name: |
+    test_start_equals_goal
+  test_code: |
+    def test_start_equals_goal():
+        grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+        start = Node(1, 1, 0)
+        goal = Node(1, 1, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+        assert found is True
+        assert path[0] == goal
+        assert path[-1] == start
+  new_imports_code: |
+    ""
+  test_tags: happy path
+- test_behavior: |
+    Test case where convert_closed_list_to_path returns an empty path because the goal node is not in the closed list.
+  lines_to_cover: |
+    [136, 137, 138]
+  test_name: |
+    test_convert_closed_list_goal_not_in_closed_list
+  test_code: |
+    def test_convert_closed_list_goal_not_in_closed_list():
+        planner = Dijkstra([[0]])
+        closed_list = {Node(0, 0)}
+        start = Node(0, 0, 0)
+        goal = Node(0, 1, 0)
+        path = planner.convert_closed_list_to_path(closed_list, start, goal)
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test case to cover the scenario where the parent node is not found in the closed list during path reconstruction.
+  lines_to_cover: |
+    [152, 153]
+  test_name: |
+    test_convert_closed_list_parent_not_found
+  test_code: |
+    def test_convert_closed_list_parent_not_found():
+        planner = Dijkstra([[0, 0], [0, 0]])
+        closed_list = {Node(0, 0), Node(1, 0)}
+        start = Node(0, 0, 0)
+        goal = Node(1, 0, 0)
+        goal.pid = 0
+        path = planner.convert_closed_list_to_path(closed_list, start, goal)
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+```
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test case where the start and goal nodes are the same.
+  lines_to_cover: |
+    [89, 90, 91, 92]
+  test_name: |
+    test_start_equals_goal
+  test_code: |
+    def test_start_equals_goal():
+        grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+        start = Node(1, 1, 0)
+        goal = Node(1, 1, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+        assert found is True
+        assert path[0] == goal
+        assert path[-1] == start
+  new_imports_code: |
+    ""
+  test_tags: happy path
+- test_behavior: |
+    Test case where no path is found because the goal is unreachable due to a full row of obstacles.
+  lines_to_cover: |
+    [161, 162, 166, 167, 170, 171, 172, 175, 176, 178, 179, 181, 182, 183, 184]
+  test_name: |
+    test_goal_unreachable_row_obstacle
+  test_code: |
+    def test_goal_unreachable_row_obstacle():
+        n = 3
+        grid = [
+            [0, 0, 0],
+            [1, 1, 1],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0, 0)
+        goal = Node(2, 2, 0)
+        start.id = start.x * n + start.y
+        start.pid = start.id
+        goal.id = goal.x * n + goal.y
+        grid[start.x][start.y] = 0
+        grid[goal.x][goal.y] = 0
+
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test case where convert_closed_list_to_path returns an empty path because the goal node is not in the closed list.
+  lines_to_cover: |
+    [136, 137, 138]
+  test_name: |
+    test_convert_closed_list_goal_not_in_closed_list
+  test_code: |
+    def test_convert_closed_list_goal_not_in_closed_list():
+        planner = Dijkstra([[0]])
+        closed_list = {Node(0, 0)}
+        start = Node(0, 0, 0)
+        goal = Node(0, 1, 0)
+        path = planner.convert_closed_list_to_path(closed_list, start, goal)
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test case to cover the scenario where the parent node is not found in the closed list during path reconstruction.
+  lines_to_cover: |
+    [152, 153]
+  test_name: |
+    test_convert_closed_list_parent_not_found
+  test_code: |
+    def test_convert_closed_list_parent_not_found():
+        planner = Dijkstra([[0, 0], [0, 0]])
+        start = Node(0, 0, 0)
+        goal = Node(1, 0, 0)
+        closed_list = {start, goal}
+        goal.pid = 0
+
+        planner = Dijkstra([[0, 0], [0, 0]])
+        found, path = planner.plan(start, goal)
+        closed_list = planner.closed_list
+        path = planner.convert_closed_list_to_path(closed_list, start, goal)
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+```
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test case where the start and goal nodes are the same.
+  lines_to_cover: |
+    [89, 90, 91, 92]
+  test_name: |
+    test_start_equals_goal
+  test_code: |
+    def test_start_equals_goal():
+        grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+        start = Node(1, 1, 0)
+        goal = Node(1, 1, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+        assert found is True
+        assert path[0] == goal
+        assert path[-1] == start
+  new_imports_code: |
+    ""
+  test_tags: happy path
+- test_behavior: |
+    Test case where no path is found because the goal is unreachable due to a full row of obstacles.
+  lines_to_cover: |
+    [161, 162, 166, 167, 170, 171, 172, 175, 176, 178, 179, 181, 182, 183, 184]
+  test_name: |
+    test_goal_unreachable_row_obstacle
+  test_code: |
+    def test_goal_unreachable_row_obstacle():
+        n = 3
+        grid = [
+            [0, 0, 0],
+            [1, 1, 1],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0, 0)
+        goal = Node(2, 2, 0)
+        start.id = start.x * n + start.y
+        start.pid = start.id
+        goal.id = goal.x * n + goal.y
+        grid[start.x][start.y] = 0
+        grid[goal.x][goal.y] = 0
+
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test case where convert_closed_list_to_path returns an empty path because the goal node is not in the closed list.
+  lines_to_cover: |
+    [136, 137, 138]
+  test_name: |
+    test_convert_closed_list_goal_not_in_closed_list
+  test_code: |
+    def test_convert_closed_list_goal_not_in_closed_list():
+        planner = Dijkstra([[0]])
+        closed_list = {Node(0, 0)}
+        start = Node(0, 0, 0)
+        goal = Node(0, 1, 0)
+        path = planner.convert_closed_list_to_path(closed_list, start, goal)
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test case to cover the scenario where the parent node is not found in the closed list during path reconstruction.
+  lines_to_cover: |
+    [152, 153]
+  test_name: |
+    test_convert_closed_list_parent_not_found
+  test_code: |
+    def test_convert_closed_list_parent_not_found():
+        planner = Dijkstra([[0, 0], [0, 0]])
+        start = Node(0, 0, 0)
+        goal = Node(1, 0, 0)
+        closed_list = {start, goal}
+        goal.pid = None
+
+        path = planner.convert_closed_list_to_path(closed_list, start, goal)
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test case where the start and goal nodes are the same.
+  lines_to_cover: |
+    [89, 90, 91, 92]
+  test_name: |
+    test_start_equals_goal
+  test_code: |
+    def test_start_equals_goal():
+        grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+        start = Node(1, 1, 0)
+        goal = Node(1, 1, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+        assert found is True
+        assert path[0] == goal
+        assert path[-1] == start
+  new_imports_code: |
+    ""
+  test_tags: happy path
+- test_behavior: |
+    Test case where no path is found because the goal is unreachable due to a full row of obstacles.
+  lines_to_cover: |
+    [161, 162, 166, 167, 170, 171, 172, 175, 176, 178, 179, 181, 182, 183, 184]
+  test_name: |
+    test_goal_unreachable_row_obstacle
+  test_code: |
+    def test_goal_unreachable_row_obstacle():
+        n = 3
+        grid = [
+            [0, 0, 0],
+            [1, 1, 1],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0, 0)
+        goal = Node(2, 2, 0)
+        start.id = start.x * n + start.y
+        start.pid = start.id
+        goal.id = goal.x * n + goal.y
+        grid[start.x][start.y] = 0
+        grid[goal.x][goal.y] = 0
+
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test case where convert_closed_list_to_path returns an empty path because the goal node is not in the closed list.
+  lines_to_cover: |
+    [136, 137, 138]
+  test_name: |
+    test_convert_closed_list_goal_not_in_closed_list
+  test_code: |
+    def test_convert_closed_list_goal_not_in_closed_list():
+        planner = Dijkstra([[0]])
+        closed_list = {Node(0, 0)}
+        start = Node(0, 0, 0)
+        goal = Node(0, 1, 0)
+        path = planner.convert_closed_list_to_path(closed_list, start, goal)
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test case to cover the scenario where the parent node is not found in the closed list during path reconstruction.
+  lines_to_cover: |
+    [152, 153]
+  test_name: |
+    test_convert_closed_list_parent_not_found
+  test_code: |
+    def test_convert_closed_list_parent_not_found():
+        planner = Dijkstra([[0, 0], [0, 0]])
+        start = Node(0, 0, 0)
+        goal = Node(1, 0, 0)
+        closed_list = {start, goal}
+        goal.pid = None
+
+        path = planner.convert_closed_list_to_path(closed_list, start, goal)
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+```
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test case to test the scenario where the start and goal nodes are the same.
+  lines_to_cover: |
+    [89, 90, 91, 92]
+  test_name: |
+    test_start_equals_goal
+  test_code: |
+    def test_start_equals_goal():
+        grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+        start = Node(1, 1, 0)
+        goal = Node(1, 1, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+        assert found is True
+        assert path[0] == goal
+        assert path[-1] == start
+  new_imports_code: |
+    ""
+  test_tags: happy path
+- test_behavior: |
+    Test case where no path is found because the goal is unreachable due to a full row of obstacles.
+  lines_to_cover: |
+    [161, 162, 166, 167, 170, 171, 172, 175, 176, 178, 179, 181, 182, 183, 184]
+  test_name: |
+    test_goal_unreachable_row_obstacle
+  test_code: |
+    def test_goal_unreachable_row_obstacle():
+        n = 3
+        grid = [
+            [0, 0, 0],
+            [1, 1, 1],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0, 0)
+        goal = Node(2, 2, 0)
+        start.id = start.x * n + start.y
+        start.pid = start.id
+        goal.id = goal.x * n + goal.y
+        grid[start.x][start.y] = 0
+        grid[goal.x][goal.y] = 0
+
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test case where convert_closed_list_to_path returns an empty path because the goal node is not in the closed list.
+  lines_to_cover: |
+    [136, 137, 138]
+  test_name: |
+    test_convert_closed_list_goal_not_in_closed_list
+  test_code: |
+    def test_convert_closed_list_goal_not_in_closed_list():
+        planner = Dijkstra([[0]])
+        closed_list = {Node(0, 0)}
+        start = Node(0, 0, 0)
+        goal = Node(0, 1, 0)
+        path = planner.convert_closed_list_to_path(closed_list, start, goal)
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test case to cover the scenario where the parent node is not found in the closed list during path reconstruction.
+  lines_to_cover: |
+    [152, 153]
+  test_name: |
+    test_convert_closed_list_parent_not_found
+  test_code: |
+    def test_convert_closed_list_parent_not_found():
+        planner = Dijkstra([[0, 0], [0, 0]])
+        start = Node(0, 0, 0)
+        goal = Node(1, 0, 0)
+        closed_list = {start, goal}
+        goal.pid = None
+
+        path = planner.convert_closed_list_to_path(closed_list, start, goal)
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+```
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test case where the start and goal nodes are the same.
+  lines_to_cover: |
+    [89, 90, 91, 92]
+  test_name: |
+    test_start_equals_goal
+  test_code: |
+    def test_start_equals_goal():
+        grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+        start = Node(1, 1, 0)
+        goal = Node(1, 1, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+        assert found is True
+        assert path[0] == goal
+        assert path[-1] == start
+  new_imports_code: |
+    ""
+  test_tags: happy path
+- test_behavior: |
+    Test case where no path is found because the goal is unreachable due to a full row of obstacles.
+  lines_to_cover: |
+    [161, 162, 166, 167, 170, 171, 172, 175, 176, 178, 179, 181, 182, 183, 184]
+  test_name: |
+    test_goal_unreachable_row_obstacle
+  test_code: |
+    def test_goal_unreachable_row_obstacle():
+        n = 3
+        grid = [
+            [0, 0, 0],
+            [1, 1, 1],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0, 0)
+        goal = Node(2, 2, 0)
+        start.id = start.x * n + start.y
+        start.pid = start.id
+        goal.id = goal.x * n + goal.y
+        grid[start.x][start.y] = 0
+        grid[goal.x][goal.y] = 0
+
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test case where convert_closed_list_to_path returns an empty path because the goal node is not in the closed list.
+  lines_to_cover: |
+    [136, 137, 138]
+  test_name: |
+    test_convert_closed_list_goal_not_in_closed_list
+  test_code: |
+    def test_convert_closed_list_goal_not_in_closed_list():
+        planner = Dijkstra([[0]])
+        closed_list = {Node(0, 0)}
+        start = Node(0, 0, 0)
+        goal = Node(0, 1, 0)
+        path = planner.convert_closed_list_to_path(closed_list, start, goal)
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test case to cover the scenario where the parent node is not found in the closed list during path reconstruction.
+  lines_to_cover: |
+    [152, 153]
+  test_name: |
+    test_convert_closed_list_parent_not_found
+  test_code: |
+    def test_convert_closed_list_parent_not_found():
+        planner = Dijkstra([[0, 0], [0, 0]])
+        start = Node(0, 0, 0)
+        goal = Node(1, 0, 0)
+        closed_list = {start, goal}
+        goal.pid = None
+
+        path = planner.convert_closed_list_to_path(closed_list, start, goal)
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+```
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test case where the start and goal nodes are the same.
+  lines_to_cover: |
+    [89, 90, 91, 92]
+  test_name: |
+    test_start_equals_goal
+  test_code: |
+    def test_start_equals_goal():
+        grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+        start = Node(1, 1, 0)
+        goal = Node(1, 1, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+        assert found is True
+        assert path[0] == goal
+        assert path[-1] == start
+  new_imports_code: |
+    ""
+  test_tags: happy path
+- test_behavior: |
+    Test case where no path is found because the goal is unreachable due to a full row of obstacles.
+  lines_to_cover: |
+    [161, 162, 166, 167, 170, 171, 172, 175, 176, 178, 179, 181, 182, 183, 184]
+  test_name: |
+    test_goal_unreachable_row_obstacle
+  test_code: |
+    def test_goal_unreachable_row_obstacle():
+        n = 3
+        grid = [
+            [0, 0, 0],
+            [1, 1, 1],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0, 0)
+        goal = Node(2, 2, 0)
+        start.id = start.x * n + start.y
+        start.pid = start.id
+        goal.id = goal.x * n + goal.y
+        grid[start.x][start.y] = 0
+        grid[goal.x][goal.y] = 0
+
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test case where convert_closed_list_to_path returns an empty path because the goal node is not in the closed list.
+  lines_to_cover: |
+    [136, 137, 138]
+  test_name: |
+    test_convert_closed_list_goal_not_in_closed_list
+  test_code: |
+    def test_convert_closed_list_goal_not_in_closed_list():
+        planner = Dijkstra([[0]])
+        closed_list = {Node(0, 0)}
+        start = Node(0, 0, 0)
+        goal = Node(0, 1, 0)
+        path = planner.convert_closed_list_to_path(closed_list, start, goal)
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test case to cover the scenario where the parent node is not found in the closed list during path reconstruction.
+  lines_to_cover: |
+    [152, 153]
+  test_name: |
+    test_convert_closed_list_parent_not_found
+  test_code: |
+    def test_convert_closed_list_parent_not_found():
+        planner = Dijkstra([[0, 0], [0, 0]])
+        start = Node(0, 0, 0)
+        goal = Node(1, 0, 0)
+        closed_list = {start, goal}
+        goal.pid = None
+
+        path = planner.convert_closed_list_to_path(closed_list, start, goal)
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+```

@@ -1,0 +1,117 @@
+Test Behavior: Test that the path is correctly calculated when the start and goal are the same.
+This should cover the case where no movement is needed.
+
+Test Behavior: Test that the Dijkstra planner correctly handles a grid where the start is outside the boundary.
+This should cover the boundary check logic.
+
+Test Behavior: Test that the Dijkstra planner correctly handles a grid where the goal is outside the boundary.
+This should cover the boundary check logic.
+
+Test Behavior: Test that the Dijkstra planner correctly handles a grid with all obstacles except the start and goal.
+This should cover the logic for handling obstacles.
+
+Test Behavior: Test that the Dijkstra planner correctly handles a grid where the start and goal are the same.
+This should cover the case where no movement is needed.
+
+Test Behavior: Test that the Dijkstra planner correctly handles a grid where the goal is outside the boundary.
+This should cover the boundary check logic.
+
+Test Behavior: Test that the Dijkstra planner correctly handles a grid with all obstacles except the start and goal.
+This should cover the logic for handling obstacles.
+
+Test Behavior: Test that the Dijkstra planner correctly handles a grid where the start and goal are the same.
+This should cover the case where no movement is needed.
+
+Test Behavior: Test that the Dijkstra planner correctly handles a grid where the start is outside the boundary.
+This should cover the boundary check logic.
+
+Test Behavior: Test that the Dijkstra planner correctly handles a grid where the goal is outside the boundary.
+This should cover the boundary check logic.
+
+Test Behavior: Test that the Dijkstra planner correctly handles a grid with all obstacles except the start and goal.
+This should cover the logic for handling obstacles.
+
+Test Behavior: Test that the Dijkstra planner correctly handles a grid where the start and goal are the same.
+This should cover the case where no movement is needed.
+
+Test Behavior: Test that the Dijkstra planner correctly handles a grid where the start is outside the boundary.
+This should cover the boundary check logic.
+
+Test Behavior: Test that the Dijkstra planner correctly handles a grid where the goal is outside the boundary.
+This should cover the boundary check logic.
+
+Test Behavior: Test that the Dijkstra planner correctly handles a grid with all obstacles except the start and goal.
+This should cover the logic for handling obstacles.
+
+Test Behavior: Test that the Dijkstra planner correctly handles a grid where the start and goal are the same.
+This should cover the case where no movement is needed.
+
+Test Behavior: Test that the Dijkstra planner correctly handles a grid where the start is outside the boundary.
+This should cover the boundary check logic.
+
+Test Behavior: Test that the Dijkstra planner correctly handles a grid where the goal is outside the boundary.
+This should cover the boundary check logic.
+
+Test Behavior: Test that the Dijkstra planner correctly handles a grid with all obstacles except the start and goal.
+This should cover the logic for handling obstacles.
+
+Test Behavior: Test that the Dijkstra planner correctly handles a grid where the start and goal are the same.
+This should cover the case where no movement is needed.
+
+Test Behavior: Test that the Dijkstra planner correctly handles a grid where the start is outside the boundary.
+This should cover the boundary check logic.
+
+Test Behavior: Test that the Dijkstra planner correctly handles a grid where the goal is outside the boundary.
+This should cover the boundary check logic.
+
+Test Behavior: Test that the Dijkstra planner correctly handles a grid with all obstacles except the start and goal.
+This should cover the logic for handling obstacles.
+
+Test Behavior: Test that the Dijkstra planner correctly handles a grid where the start and goal are the same.
+This should cover the case where no movement is needed.
+
+Test Behavior: Test that the Dijkstra planner correctly handles a grid where the start is outside the boundary.
+This should cover the boundary check logic.
+
+Test Behavior: Test that the Dijkstra planner correctly handles a grid where the goal is outside the boundary.
+This should cover the boundary check logic.
+
+Test Behavior: Test that the Dijkstra planner correctly handles a grid with all obstacles except the start and goal.
+This should cover the logic for handling obstacles.
+
+Test Behavior: Test that the Dijkstra planner correctly handles a grid where the start and goal are the same.
+This should cover the case where no movement is needed.
+
+Test Behavior: Test that the Dijkstra planner correctly handles a grid where the start is outside the boundary.
+This should cover the boundary check logic.
+
+Test Behavior: Test that the Dijkstra planner correctly handles a grid where the goal is outside the boundary.
+This should cover the boundary check logic.
+
+Test Behavior: Test that the Dijkstra planner correctly handles a grid with all obstacles except the start and goal.
+This should cover the logic for handling obstacles.
+
+Test Behavior: Test that the Dijkstra planner correctly handles a grid where the start and goal are the same.
+This should cover the case where no movement is needed.
+
+Test Behavior: Test that the Dijkstra planner correctly handles a grid where the start is outside the boundary.
+This should cover the boundary check logic.
+
+Test Behavior: Test that the Dijkstra planner correctly handles a grid where the goal is outside the boundary.
+This should cover the boundary check logic.
+
+Test Behavior: Test that the Dijkstra planner correctly handles a grid with all obstacles except the start and goal.
+This should cover the logic for handling obstacles.
+
+Test Behavior: Test that the Dijkstra planner correctly handles a grid where the start and goal are the same.
+This should cover the case where no movement is needed.
+
+Test Behavior: Test that the Dijkstra planner correctly handles a grid where the start is outside the boundary.
+This should cover the boundary check logic.
+
+Test Behavior: Test that the Dijkstra planner correctly handles a grid where the goal is outside the boundary.
+This should cover the boundary check logic.
+
+Test Behavior: Test that the Dijkstra planner correctly handles a grid with all obstacles except the start and goal.
+This should cover the logic for handling obstacles.
+

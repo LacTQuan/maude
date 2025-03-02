@@ -1,0 +1,1074 @@
+```yaml
+language: python
+testing_framework: pytest
+number_of_tests: 3
+test_headers_indentation: 0
+```
+```yaml
+language: python
+testing_framework: pytest
+number_of_tests: 3
+relevant_line_number_to_insert_tests_after: 72
+relevant_line_number_to_insert_imports_after: 12
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_no_path(self):
+new_tests:
+- test_behavior: |
+    Test the A* algorithm with a grid that has a single obstacle directly between the start and goal.
+    This should ensure that the algorithm correctly identifies that no path exists.
+  lines_to_cover: |
+    [84, 110]
+  test_name: |
+    test_single_obstacle_blocking_path
+  test_code: |
+    def test_single_obstacle_blocking_path(self):
+        grid = [
+            [0, 0, 0],
+            [1, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(2, 2)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found when a single obstacle blocks the way"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test the A* algorithm with a grid that has multiple obstacles, ensuring that it can find a path around them.
+  lines_to_cover: |
+    [84, 110]
+  test_name: |
+    test_multiple_obstacles_path_found
+  test_code: |
+    def test_multiple_obstacles_path_found(self):
+        grid = [
+            [0, 1, 0, 0],
+            [0, 1, 0, 1],
+            [0, 0, 0, 0],
+            [1, 1, 1, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(2, 3)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is True, "A path should be found around multiple obstacles"
+        assert len(path) > 0, "The path should not be empty when a path exists"
+  new_imports_code: |
+    ""
+  test_tags: happy path
+
+- test_behavior: |
+    Test the A* algorithm with a grid that has no valid cells (all obstacles).
+    This should ensure that the algorithm correctly identifies that no path exists.
+  lines_to_cover: |
+    [84, 110]
+  test_name: |
+    test_no_valid_cells
+  test_code: |
+    def test_no_valid_cells(self):
+        grid = [
+            [1, 1],
+            [1, 1]
+        ]
+        start = Node(0, 0)
+        goal = Node(1, 1)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found when there are no valid cells"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test the A* algorithm with a grid that has the start and goal in the same cell but marked as an obstacle.
+    This should ensure that the algorithm correctly identifies that no path exists.
+  lines_to_cover: |
+    [84, 110]
+  test_name: |
+    test_start_goal_obstacle
+  test_code: |
+    def test_start_goal_obstacle(self):
+        grid = [
+            [1, 0],
+            [0, 1]
+        ]
+        start = Node(0, 0)
+        goal = Node(0, 0)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found when start and goal are obstacles"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test the A* algorithm with a grid that has the start and goal in the same cell marked as an obstacle.
+    This should ensure that the algorithm correctly identifies that no path exists.
+  lines_to_cover: |
+    [84, 110]
+  test_name: |
+    test_start_goal_obstacle
+  test_code: |
+    def test_start_goal_obstacle():
+        grid = [
+            [1, 0],
+            [0, 1]
+        ]
+        start = Node(0, 0)
+        goal = Node(0, 0)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found when start and goal are obstacles"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test the A* algorithm with a grid that has no valid cells (all obstacles).
+    This should ensure that the algorithm correctly identifies that no path exists.
+  lines_to_cover: |
+    [84, 110]
+  test_name: |
+    test_no_valid_cells
+  test_code: |
+    def test_no_valid_cells():
+        grid = [
+            [1, 1],
+            [1, 1]
+        ]
+        start = Node(0, 0)
+        goal = Node(1, 1)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found when there are no valid cells"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test the A* algorithm with a grid that has a single obstacle directly between the start and goal.
+    This should ensure that the algorithm correctly identifies that no path exists.
+  lines_to_cover: |
+    [84, 110]
+  test_name: |
+    test_single_obstacle_blocking_path
+  test_code: |
+    def test_single_obstacle_blocking_path():
+        grid = [
+            [0, 0, 0],
+            [1, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(2, 2)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found when a single obstacle blocks the way"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test the A* algorithm with a grid that has multiple obstacles, ensuring that it can find a path around them.
+  lines_to_cover: |
+    [84, 110]
+  test_name: |
+    test_multiple_obstacles_path_found
+  test_code: |
+    def test_multiple_obstacles_path_found():
+        grid = [
+            [0, 1, 0, 0],
+            [0, 1, 0, 1],
+            [0, 0, 0, 0],
+            [1, 1, 1, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(2, 3)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is True, "A path should be found around multiple obstacles"
+        assert len(path) > 0, "The path should not be empty when a path exists"
+  new_imports_code: |
+    ""
+  test_tags: happy path
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test the A* algorithm with a grid that has the start and goal in the same cell marked as an obstacle.
+    This should ensure that the algorithm correctly identifies that no path exists.
+  lines_to_cover: |
+    [84, 110]
+  test_name: |
+    test_start_goal_obstacle
+  test_code: |
+    def test_start_goal_obstacle():
+        grid = [
+            [1, 0],
+            [0, 1]
+        ]
+        start = Node(0, 0)
+        goal = Node(0, 0)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found when start and goal are obstacles"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test the A* algorithm with a grid that has no valid cells (all obstacles).
+    This should ensure that the algorithm correctly identifies that no path exists.
+  lines_to_cover: |
+    [84, 110]
+  test_name: |
+    test_no_valid_cells
+  test_code: |
+    def test_no_valid_cells():
+        grid = [
+            [1, 1],
+            [1, 1]
+        ]
+        start = Node(0, 0)
+        goal = Node(1, 1)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found when there are no valid cells"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test the A* algorithm with a grid that has a single obstacle directly between the start and goal.
+    This should ensure that the algorithm correctly identifies that no path exists.
+  lines_to_cover: |
+    [84, 110]
+  test_name: |
+    test_single_obstacle_blocking_path
+  test_code: |
+    def test_single_obstacle_blocking_path():
+        grid = [
+            [0, 0, 0],
+            [1, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(2, 2)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found when a single obstacle blocks the way"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test the A* algorithm with a grid that has multiple obstacles, ensuring that it can find a path around them.
+  lines_to_cover: |
+    [84, 110]
+  test_name: |
+    test_multiple_obstacles_path_found
+  test_code: |
+    def test_multiple_obstacles_path_found():
+        grid = [
+            [0, 1, 0, 0],
+            [0, 1, 0, 1],
+            [0, 0, 0, 0],
+            [1, 1, 1, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(2, 3)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is True, "A path should be found around multiple obstacles"
+        assert len(path) > 0, "The path should not be empty when a path exists"
+  new_imports_code: |
+    ""
+  test_tags: happy path
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test the A* algorithm with a grid that has the start and goal in the same cell marked as an obstacle.
+    This should ensure that the algorithm correctly identifies that no path exists.
+  lines_to_cover: |
+    [84, 110]
+  test_name: |
+    test_start_goal_obstacle
+  test_code: |
+    def test_start_goal_obstacle():
+        grid = [
+            [1, 0],
+            [0, 1]
+        ]
+        start = Node(0, 0)
+        goal = Node(0, 0)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the A* algorithm with a grid that has no valid cells (all obstacles).
+    This should ensure that the algorithm correctly identifies that no path exists.
+  lines_to_cover: |
+    [84, 110]
+  test_name: |
+    test_no_valid_cells
+  test_code: |
+    def test_no_valid_cells():
+        grid = [
+            [1, 1],
+            [1, 1]
+        ]
+        start = Node(0, 0)
+        goal = Node(1, 1)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the A* algorithm with a grid that has a single obstacle directly between the start and goal.
+    This should ensure that the algorithm correctly identifies that no path exists.
+  lines_to_cover: |
+    [84, 110]
+  test_name: |
+    test_single_obstacle_blocking_path
+  test_code: |
+    def test_single_obstacle_blocking_path():
+        grid = [
+            [0, 0, 0],
+            [1, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(2, 2)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the A* algorithm with a grid that has multiple obstacles, ensuring that it can find a path around them.
+  lines_to_cover: |
+    [84, 110]
+  test_name: |
+    test_multiple_obstacles_path_found
+  test_code: |
+    def test_multiple_obstacles_path_found():
+        grid = [
+            [0, 1, 0, 0],
+            [0, 1, 0, 1],
+            [0, 0, 0, 0],
+            [1, 1, 1, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(2, 3)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is True
+        assert len(path) > 0
+  new_imports_code: |
+    ""
+  test_tags: happy path
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test the A* algorithm with a grid that has the start and goal in the same cell marked as an obstacle.
+    This should ensure that the algorithm correctly identifies that no path exists.
+  lines_to_cover: |
+    [84, 110]
+  test_name: |
+    test_start_goal_obstacle
+  test_code: |
+    def test_start_goal_obstacle():
+        grid = [
+            [1, 0],
+            [0, 1]
+        ]
+        start = Node(0, 0)
+        goal = Node(0, 0)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test the A* algorithm with a grid that has no valid cells (all obstacles).
+    This should ensure that the algorithm correctly identifies that no path exists.
+  lines_to_cover: |
+    [84, 110]
+  test_name: |
+    test_no_valid_cells
+  test_code: |
+    def test_no_valid_cells():
+        grid = [
+            [1, 1],
+            [1, 1]
+        ]
+        start = Node(0, 0)
+        goal = Node(1, 1)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test the A* algorithm with a grid that has a single obstacle directly between the start and goal.
+    This should ensure that the algorithm correctly identifies that no path exists.
+  lines_to_cover: |
+    [84, 110]
+  test_name: |
+    test_single_obstacle_blocking_path
+  test_code: |
+    def test_single_obstacle_blocking_path():
+        grid = [
+            [0, 0, 0],
+            [1, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(2, 2)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test the A* algorithm with a grid that has multiple obstacles, ensuring that it can find a path around them.
+  lines_to_cover: |
+    [84, 110]
+  test_name: |
+    test_multiple_obstacles_path_found
+  test_code: |
+    def test_multiple_obstacles_path_found():
+        grid = [
+            [0, 1, 0, 0],
+            [0, 1, 0, 1],
+            [0, 0, 0, 0],
+            [1, 1, 1, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(2, 3)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is True
+        assert len(path) > 0
+  new_imports_code: |
+    ""
+  test_tags: happy path
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test the A* algorithm with a grid that has the start and goal in the same cell marked as an obstacle.
+    This should ensure that the algorithm correctly identifies that no path exists.
+  lines_to_cover: |
+    [84, 110]
+  test_name: |
+    test_start_goal_obstacle
+  test_code: |
+    def test_start_goal_obstacle():
+        grid = [
+            [1, 0],
+            [0, 1]
+        ]
+        start = Node(0, 0)
+        goal = Node(0, 0)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found when start and goal are obstacles"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test the A* algorithm with a grid that has no valid cells (all obstacles).
+    This should ensure that the algorithm correctly identifies that no path exists.
+  lines_to_cover: |
+    [84, 110]
+  test_name: |
+    test_no_valid_cells
+  test_code: |
+    def test_no_valid_cells():
+        grid = [
+            [1, 1],
+            [1, 1]
+        ]
+        start = Node(0, 0)
+        goal = Node(1, 1)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found when there are no valid cells"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test the A* algorithm with a grid that has a single obstacle directly between the start and goal.
+    This should ensure that the algorithm correctly identifies that no path exists.
+  lines_to_cover: |
+    [84, 110]
+  test_name: |
+    test_single_obstacle_blocking_path
+  test_code: |
+    def test_single_obstacle_blocking_path():
+        grid = [
+            [0, 0, 0],
+            [1, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(2, 2)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found when a single obstacle blocks the way"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test the A* algorithm with a grid that has multiple obstacles, ensuring that it can find a path around them.
+  lines_to_cover: |
+    [84, 110]
+  test_name: |
+    test_multiple_obstacles_path_found
+  test_code: |
+    def test_multiple_obstacles_path_found():
+        grid = [
+            [0, 1, 0, 0],
+            [0, 1, 0, 1],
+            [0, 0, 0, 0],
+            [1, 1, 1, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(2, 3)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is True, "A path should be found around multiple obstacles"
+        assert len(path) > 0, "The path should not be empty when a path exists"
+  new_imports_code: |
+    ""
+  test_tags: happy path
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test the A* algorithm with a grid that has the start and goal in the same cell marked as an obstacle.
+    This should ensure that the algorithm correctly identifies that no path exists.
+  lines_to_cover: |
+    [84, 110]
+  test_name: |
+    test_start_goal_obstacle
+  test_code: |
+    def test_start_goal_obstacle():
+        grid = [
+            [1, 0],
+            [0, 1]
+        ]
+        start = Node(0, 0)
+        goal = Node(0, 0)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found when start and goal are obstacles"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test the A* algorithm with a grid that has no valid cells (all obstacles).
+    This should ensure that the algorithm correctly identifies that no path exists.
+  lines_to_cover: |
+    [84, 110]
+  test_name: |
+    test_no_valid_cells
+  test_code: |
+    def test_no_valid_cells():
+        grid = [
+            [1, 1],
+            [1, 1]
+        ]
+        start = Node(0, 0)
+        goal = Node(1, 1)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found when there are no valid cells"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test the A* algorithm with a grid that has a single obstacle directly between the start and goal.
+    This should ensure that the algorithm correctly identifies that no path exists.
+  lines_to_cover: |
+    [84, 110]
+  test_name: |
+    test_single_obstacle_blocking_path
+  test_code: |
+    def test_single_obstacle_blocking_path():
+        grid = [
+            [0, 0, 0],
+            [1, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(2, 2)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found when a single obstacle blocks the way"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test the A* algorithm with a grid that has multiple obstacles, ensuring that it can find a path around them.
+  lines_to_cover: |
+    [84, 110]
+  test_name: |
+    test_multiple_obstacles_path_found
+  test_code: |
+    def test_multiple_obstacles_path_found():
+        grid = [
+            [0, 1, 0, 0],
+            [0, 1, 0, 1],
+            [0, 0, 0, 0],
+            [1, 1, 1, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(2, 3)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is True, "A path should be found around multiple obstacles"
+        assert len(path) > 0, "The path should not be empty when a path exists"
+  new_imports_code: |
+    ""
+  test_tags: happy path
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test the A* algorithm with a grid that has the start and goal in the same cell marked as an obstacle.
+    This should ensure that the algorithm correctly identifies that no path exists.
+  lines_to_cover: |
+    [84, 110]
+  test_name: |
+    test_start_goal_obstacle
+  test_code: |
+    def test_start_goal_obstacle():
+        grid = [
+            [1, 0],
+            [0, 1]
+        ]
+        start = Node(0, 0)
+        goal = Node(0, 0)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found when start and goal are obstacles"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the A* algorithm with a grid that has no valid cells (all obstacles).
+    This should ensure that the algorithm correctly identifies that no path exists.
+  lines_to_cover: |
+    [84, 110]
+  test_name: |
+    test_no_valid_cells
+  test_code: |
+    def test_no_valid_cells():
+        grid = [
+            [1, 1],
+            [1, 1]
+        ]
+        start = Node(0, 0)
+        goal = Node(1, 1)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found when there are no valid cells"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the A* algorithm with a grid that has a single obstacle directly between the start and goal.
+    This should ensure that the algorithm correctly identifies that no path exists.
+  lines_to_cover: |
+    [84, 110]
+  test_name: |
+    test_single_obstacle_blocking_path
+  test_code: |
+    def test_single_obstacle_blocking_path():
+        grid = [
+            [0, 0, 0],
+            [1, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(2, 2)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found when a single obstacle blocks the way"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the A* algorithm with a grid that has multiple obstacles, ensuring that it can find a path around them.
+  lines_to_cover: |
+    [84, 110]
+  test_name: |
+    test_multiple_obstacles_path_found
+  test_code: |
+    def test_multiple_obstacles_path_found():
+        grid = [
+            [0, 1, 0, 0],
+            [0, 1, 0, 1],
+            [0, 0, 0, 0],
+            [1, 1, 1, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(2, 3)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is True, "A path should be found around multiple obstacles"
+        assert len(path) > 0, "The path should not be empty when a path exists"
+  new_imports_code: |
+    ""
+  test_tags: happy path
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test the A* algorithm with a grid that has the start and goal in the same cell marked as an obstacle.
+    This should ensure that the algorithm correctly identifies that no path exists.
+  lines_to_cover: |
+    [84, 110]
+  test_name: |
+    test_start_goal_obstacle
+  test_code: |
+    def test_start_goal_obstacle():
+        grid = [
+            [1, 0],
+            [0, 1]
+        ]
+        start = Node(0, 0)
+        goal = Node(0, 0)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found when start and goal are obstacles"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test the A* algorithm with a grid that has no valid cells (all obstacles).
+    This should ensure that the algorithm correctly identifies that no path exists.
+  lines_to_cover: |
+    [84, 110]
+  test_name: |
+    test_no_valid_cells
+  test_code: |
+    def test_no_valid_cells():
+        grid = [
+            [1, 1],
+            [1, 1]
+        ]
+        start = Node(0, 0)
+        goal = Node(1, 1)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found when there are no valid cells"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test the A* algorithm with a grid that has a single obstacle directly between the start and goal.
+    This should ensure that the algorithm correctly identifies that no path exists.
+  lines_to_cover: |
+    [84, 110]
+  test_name: |
+    test_single_obstacle_blocking_path
+  test_code: |
+    def test_single_obstacle_blocking_path():
+        grid = [
+            [0, 0, 0],
+            [1, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(2, 2)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found when a single obstacle blocks the way"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test the A* algorithm with a grid that has multiple obstacles, ensuring that it can find a path around them.
+  lines_to_cover: |
+    [84, 110]
+  test_name: |
+    test_multiple_obstacles_path_found
+  test_code: |
+    def test_multiple_obstacles_path_found():
+        grid = [
+            [0, 1, 0, 0],
+            [0, 1, 0, 1],
+            [0, 0, 0, 0],
+            [1, 1, 1, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(2, 3)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is True, "A path should be found around multiple obstacles"
+        assert len(path) > 0, "The path should not be empty when a path exists"
+  new_imports_code: |
+    ""
+  test_tags: happy path
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test the A* algorithm with a grid that has the start and goal in the same cell marked as an obstacle.
+    This should ensure that the algorithm correctly identifies that no path exists.
+  lines_to_cover: |
+    [84, 110]
+  test_name: |
+    test_start_goal_obstacle
+  test_code: |
+    def test_start_goal_obstacle():
+        grid = [
+            [1, 0],
+            [0, 1]
+        ]
+        start = Node(0, 0)
+        goal = Node(0, 0)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found when start and goal are obstacles"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the A* algorithm with a grid that has no valid cells (all obstacles).
+    This should ensure that the algorithm correctly identifies that no path exists.
+  lines_to_cover: |
+    [84, 110]
+  test_name: |
+    test_no_valid_cells
+  test_code: |
+    def test_no_valid_cells():
+        grid = [
+            [1, 1],
+            [1, 1]
+        ]
+        start = Node(0, 0)
+        goal = Node(1, 1)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found when there are no valid cells"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the A* algorithm with a grid that has a single obstacle directly between the start and goal.
+    This should ensure that the algorithm correctly identifies that no path exists.
+  lines_to_cover: |
+    [84, 110]
+  test_name: |
+    test_single_obstacle_blocking_path
+  test_code: |
+    def test_single_obstacle_blocking_path():
+        grid = [
+            [0, 0, 0],
+            [1, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(2, 2)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found when a single obstacle blocks the way"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the A* algorithm with a grid that has multiple obstacles, ensuring that it can find a path around them.
+  lines_to_cover: |
+    [84, 110]
+  test_name: |
+    test_multiple_obstacles_path_found
+  test_code: |
+    def test_multiple_obstacles_path_found():
+        grid = [
+            [0, 1, 0, 0],
+            [0, 1, 0, 1],
+            [0, 0, 0, 0],
+            [1, 1, 1, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(2, 3)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is True, "A path should be found around multiple obstacles"
+        assert len(path) > 0, "The path should not be empty when a path exists"
+  new_imports_code: |
+    ""
+  test_tags: happy path
+```

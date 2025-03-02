@@ -1,0 +1,1104 @@
+```yaml
+language: python
+testing_framework: pytest
+number_of_tests: 3
+test_headers_indentation: 0
+```
+```yaml
+language: python
+testing_framework: pytest
+number_of_tests: 3
+relevant_line_number_to_insert_tests_after: 72
+relevant_line_number_to_insert_imports_after: 13
+```
+language: python
+existing_test_function_signature: |
+  def test_start_equals_goal():
+new_tests:
+- test_behavior: |
+    Test case where no path exists due to a completely blocked grid.
+  lines_to_cover: |
+    [84]
+  test_name: |
+    test_no_path_completely_blocked
+  test_code: |
+    def test_no_path_completely_blocked():
+        """
+        Test a grid where the entire grid is blocked, except for start, making it impossible to reach the goal.
+        """
+        grid = [
+            [0, 1, 1],
+            [1, 1, 1],
+            [1, 1, 1]
+        ]
+        start = Node(0, 0)
+        goal = Node(2, 2)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found when the grid is completely blocked"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the scenario where the goal is surrounded by obstacles, but is still reachable.
+  lines_to_cover: |
+    [105, 106]
+  test_name: |
+    test_goal_surrounded_by_obstacles
+  test_code: |
+    def test_goal_surrounded_by_obstacles():
+        """
+        Test a grid where the goal is surrounded by obstacles, but is still reachable.
+        """
+        grid = [
+            [0, 1, 0],
+            [1, 0, 1],
+            [0, 1, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(2, 2)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is True, "A path should be found even when the goal is surrounded by obstacles"
+        assert compare_coordinates(path[0], goal), "The first node in the path should be the goal"
+        assert compare_coordinates(path[-1], start), "The last node in the path should be the start"
+  new_imports_code: |
+    ""
+  test_tags: happy path
+- test_behavior: |
+    Test the case where the goal is not found in the closed list during path reconstruction.
+  lines_to_cover: |
+    [124, 125]
+  test_name: |
+    test_goal_not_in_closed_list
+  test_code: |
+    def test_goal_not_in_closed_list():
+        """
+        Test the scenario where the goal is not in the closed list during path reconstruction.
+        This is simulated by providing a closed list without the goal node.
+        """
+        grid = [
+            [0, 0],
+            [0, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(1, 1)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        closed_list = {Node(0,0)}
+        path = astar.convert_closed_list_to_path(closed_list, start, goal)
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the case where the parent node is not found in the closed list during path reconstruction.
+  lines_to_cover: |
+    [139, 140]
+  test_name: |
+    test_parent_not_in_closed_list
+  test_code: |
+    def test_parent_not_in_closed_list():
+        """
+        Test the scenario where the parent node is not found in the closed list during path reconstruction.
+        This is simulated by providing a closed list where a parent node is missing.
+        """
+        grid = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(2, 2)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        # Create a closed list with start and goal, but missing the intermediate node.
+        closed_list = {Node(0, 0), Node(2, 2)}
+        # Manually set the goal's pid to point to a missing parent.
+        goal.pid = 1 * len(grid) + 1  # Parent would be at (1, 1)
+        path = astar.convert_closed_list_to_path(closed_list, start, goal)
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+```
+language: python
+existing_test_function_signature: |
+  def test_start_equals_goal():
+new_tests:
+- test_behavior: |
+    Test case where A* fails to find the goal, and the open list becomes empty.
+  lines_to_cover: |
+    [84]
+  test_name: |
+    test_no_path_open_list_empty
+  test_code: |
+    def test_no_path_open_list_empty():
+        """
+        Test a grid where no path exists and the open list becomes empty.
+        """
+        grid = [
+            [0, 1, 0],
+            [1, 1, 1],
+            [0, 1, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(2, 0)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found when no path exists"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test case where the goal is not found in the closed list, resulting in an empty path.
+  lines_to_cover: |
+    [123, 124, 125]
+  test_name: |
+    test_goal_not_found_in_closed_list
+  test_code: |
+    def test_goal_not_found_in_closed_list():
+        """
+        Test the scenario where the goal is not in the closed list during path reconstruction.
+        """
+        grid = [
+            [0, 0],
+            [0, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(1, 1)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        closed_list = {Node(0, 0)}
+        path = astar.convert_closed_list_to_path(closed_list, start, goal)
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the scenario where the grid is a single cell, start and goal are the same.
+  lines_to_cover: |
+    [84]
+  test_name: |
+    test_single_cell_grid
+  test_code: |
+    def test_single_cell_grid():
+        """
+        Test the scenario where the grid is a single cell, start and goal are the same.
+        """
+        grid = [[0]]
+        start = Node(0, 0)
+        goal = Node(0, 0)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is True, "Path should be found when start equals goal in a single cell grid"
+        assert len(path) == 1
+        assert compare_coordinates(path[0], start), "The only node in the path should be the start"
+  new_imports_code: |
+    ""
+  test_tags: happy path
+- test_behavior: |
+    Test the scenario where the grid is a single row, and the goal is at the end of the row.
+  lines_to_cover: |
+    [84]
+  test_name: |
+    test_single_row_grid
+  test_code: |
+    def test_single_row_grid():
+        """
+        Test the scenario where the grid is a single row, and the goal is at the end of the row.
+        """
+        grid = [[0, 0, 0, 0, 0]]
+        start = Node(0, 0)
+        goal = Node(0, 4)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is True, "Path should be found in a single row grid"
+        assert compare_coordinates(path[0], goal), "The first node in the path should be the goal"
+        assert compare_coordinates(path[-1], start), "The last node in the path should be the start"
+  new_imports_code: |
+    ""
+  test_tags: happy path
+```
+language: python
+existing_test_function_signature: |
+  def test_start_equals_goal():
+new_tests:
+- test_behavior: |
+    Test the `Node.__eq__` method when comparing a Node to a non-Node object.
+  lines_to_cover: |
+    [26]
+  test_name: |
+    test_node_eq_non_node
+  test_code: |
+    def test_node_eq_non_node():
+        """
+        Test the Node.__eq__ method when comparing a Node to a non-Node object.
+        """
+        node = Node(1, 2)
+        assert (node == 1) is False
+- test_behavior: |
+    Test the scenario where the grid has a single column, and the goal is at the bottom of the column.
+  lines_to_cover: |
+    [84]
+  test_name: |
+    test_single_column_grid
+  test_code: |
+    def test_single_column_grid():
+        """
+        Test the scenario where the grid is a single column, and the goal is at the bottom of the column.
+        """
+        grid = [[0], [0], [0], [0], [0]]
+        start = Node(0, 0)
+        goal = Node(4, 0)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is True, "Path should be found in a single column grid"
+        assert compare_coordinates(path[0], goal), "The first node in the path should be the goal"
+        assert compare_coordinates(path[-1], start), "The last node in the path should be the start"
+- test_behavior: |
+    Test the scenario where the A* algorithm explores all possible nodes without finding the goal.
+  lines_to_cover: |
+    [84]
+  test_name: |
+    test_all_nodes_explored_no_goal
+  test_code: |
+    def test_all_nodes_explored_no_goal():
+        """
+        Test the scenario where the A* algorithm explores all possible nodes without finding the goal.
+        """
+        grid = [
+            [0, 1, 0],
+            [0, 1, 0],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(0, 2)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found when all nodes are explored without finding the goal"
+        assert path == [], "The path should be empty when no path exists"
+- test_behavior: |
+    Test the scenario where the goal is unreachable, but the start and goal are on opposite sides of a wall.
+  lines_to_cover: |
+    [84]
+  test_name: |
+    test_unreachable_goal_opposite_sides
+  test_code: |
+    def test_unreachable_goal_opposite_sides():
+        """
+        Test the scenario where the goal is unreachable, but the start and goal are on opposite sides of a wall.
+        """
+        grid = [
+            [0, 0, 0],
+            [1, 1, 1],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(2, 2)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found when the goal is unreachable"
+        assert path == [], "The path should be empty when no path exists"
+```
+language: python
+existing_test_function_signature: |
+  def test_start_equals_goal():
+new_tests:
+- test_behavior: |
+    Test the scenario where the A* algorithm explores all possible nodes without finding the goal, due to obstacles.
+  lines_to_cover: |
+    [84]
+  test_name: |
+    test_all_nodes_explored_no_goal_obstacles
+  test_code: |
+    def test_all_nodes_explored_no_goal_obstacles():
+        """
+        Test the scenario where the A* algorithm explores all possible nodes without finding the goal, due to obstacles.
+        """
+        grid = [
+            [0, 1, 0],
+            [0, 1, 0],
+            [0, 1, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(2, 0)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found when all nodes are explored without finding the goal"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the scenario where the grid has a single column, and the goal is at the bottom of the column, ensuring no index out of bounds error.
+  lines_to_cover: |
+    [84]
+  test_name: |
+    test_single_column_grid_no_error
+  test_code: |
+    def test_single_column_grid_no_error():
+        """
+        Test the scenario where the grid is a single column, and the goal is at the bottom of the column.
+        """
+        grid = [[0], [0], [0], [0], [0]]
+        start = Node(0, 0)
+        goal = Node(4, 0)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found in a single column grid with obstacles"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the scenario where the goal is unreachable, with a wall separating start and goal.
+  lines_to_cover: |
+    [84]
+  test_name: |
+    test_unreachable_goal_with_wall
+  test_code: |
+    def test_unreachable_goal_with_wall():
+        """
+        Test the scenario where the goal is unreachable, with a wall separating start and goal.
+        """
+        grid = [
+            [0, 0, 0],
+            [1, 1, 1],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(2, 2)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False, "No path should be found when the goal is unreachable"
+        assert path == [], "The path should be empty when no path exists"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the scenario where the parent node is not found in the closed list during path reconstruction.
+  lines_to_cover: |
+    [139, 140]
+  test_name: |
+    test_parent_node_missing_closed_list
+  test_code: |
+    def test_parent_node_missing_closed_list():
+        """
+        Test the scenario where the parent node is not found in the closed list during path reconstruction.
+        """
+        grid = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(2, 2)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        closed_list = {Node(0, 0), Node(2, 2)}
+        goal.pid = 1
+        path = astar.convert_closed_list_to_path(closed_list, start, goal)
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+```
+language: python
+existing_test_function_signature: |
+  def test_start_equals_goal():
+new_tests:
+- test_behavior: |
+    Test the scenario where the grid is initialized with different values and make_grid is called.
+    This test aims to cover the lines related to grid initialization and the make_grid function.
+  lines_to_cover: |
+    [151, 171, 172, 173, 176, 177, 180, 181, 182, 183, 186, 187, 189, 190, 191, 192, 194, 195, 197, 198, 199, 200, 201, 202, 204]
+  test_name: |
+    test_grid_initialization_and_make_grid
+  test_code: |
+    def test_grid_initialization_and_make_grid():
+        """
+        Test the scenario where the grid is initialized and make_grid is called.
+        """
+        n = 5
+        grid = [[1 for _ in range(n)] for _ in range(n)]
+        make_grid(grid)  # Call make_grid (currently does nothing)
+        start = Node(0, 0)
+        goal = Node(n - 1, n - 1)
+        start.id = start.x * n + start.y
+        start.pid = start.id
+        goal.id = goal.x * n + goal.y
+        start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)
+        grid[start.x][start.y] = 0
+        grid[goal.x][goal.y] = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        if found:
+            assert compare_coordinates(path[0], goal), "The first node in the path should be the goal"
+            assert compare_coordinates(path[-1], start), "The last node in the path should be the start"
+        else:
+            assert not found
+  new_imports_code: |
+    ""
+  test_tags: happy path
+- test_behavior: |
+    Test the scenario where a path is found and print_path is called to visualize the path on the grid.
+    This aims to cover the print_grid and print_path functions.
+  lines_to_cover: |
+    [155, 156, 163, 164, 165, 166, 167, 197, 198, 199, 200, 201, 202]
+  test_name: |
+    test_path_found_and_print_path
+  test_code: |
+    def test_path_found_and_print_path():
+        """
+        Test the scenario where a path is found and print_path is called.
+        """
+        n = 3
+        grid = [[0 for _ in range(n)] for _ in range(n)]
+        start = Node(0, 0)
+        goal = Node(n - 1, n - 1)
+        start.id = start.x * n + start.y
+        start.pid = start.id
+        goal.id = goal.x * n + goal.y
+        start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)
+        grid[start.x][start.y] = 0
+        grid[goal.x][goal.y] = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        if found:
+            print_path(path, start, goal, grid)
+            assert True  # Just to ensure the test doesn't fail if print_path executes
+        else:
+            assert False, "Path should be found"
+  new_imports_code: |
+    ""
+  test_tags: happy path
+- test_behavior: |
+    Test the scenario where no path is found, covering the else branch after the plan function is called.
+  lines_to_cover: |
+    [204]
+  test_name: |
+    test_no_path_found_main
+  test_code: |
+    def test_no_path_found_main():
+        """
+        Test the scenario where no path is found.
+        """
+        n = 3
+        grid = [[1 for _ in range(n)] for _ in range(n)]
+        start = Node(0, 0)
+        goal = Node(n - 1, n - 1)
+        start.id = start.x * n + start.y
+        start.pid = start.id
+        goal.id = goal.x * n + goal.y
+        start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)
+        grid[start.x][start.y] = 1
+        grid[goal.x][goal.y] = 1
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        if not found:
+            assert True
+        else:
+            assert False, "No path should be found"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+```
+language: python
+existing_test_function_signature: |
+  def test_start_equals_goal():
+new_tests:
+- test_behavior: |
+    Test the scenario where no path is found, covering the else branch after the plan function is called in the main block.
+  lines_to_cover: |
+    [171, 172, 173, 176, 177, 180, 181, 182, 183, 186, 187, 189, 190, 191, 192, 194, 195, 197, 198, 199, 200, 201, 202, 204]
+  test_name: |
+    test_no_path_found_main
+  test_code: |
+    def test_no_path_found_main():
+        """
+        Test the scenario where no path is found, covering the else branch in the main block.
+        """
+        n = 3
+        grid = [[1 for _ in range(n)] for _ in range(n)]
+        start = Node(0, 0)
+        goal = Node(n - 1, n - 1)
+        start.id = start.x * n + start.y
+        start.pid = start.id
+        goal.id = goal.x * n + goal.y
+        start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)
+        grid[start.x][start.y] = 1
+        grid[goal.x][goal.y] = 1
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the scenario where the goal is unreachable due to a wall, ensuring no path is found.
+  lines_to_cover: |
+    [84]
+  test_name: |
+    test_unreachable_goal_wall
+  test_code: |
+    def test_unreachable_goal_wall():
+        """
+        Test the scenario where the goal is unreachable due to a wall.
+        """
+        grid = [
+            [0, 0, 0],
+            [1, 1, 1],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(2, 2)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the scenario where the parent node is not found in the closed list during path reconstruction, resulting in an empty path.
+  lines_to_cover: |
+    [139, 140]
+  test_name: |
+    test_parent_missing_closed_list
+  test_code: |
+    def test_parent_missing_closed_list():
+        """
+        Test the scenario where the parent node is not found in the closed list during path reconstruction.
+        """
+        grid = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(2, 2)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        closed_list = {Node(0, 0), Node(2, 2)}
+        goal.pid = 1
+        path = astar.convert_closed_list_to_path(closed_list, start, goal)
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test case where the A* algorithm explores all possible nodes without finding the goal.
+  lines_to_cover: |
+    [84]
+  test_name: |
+    test_all_nodes_explored_no_goal
+  test_code: |
+    def test_all_nodes_explored_no_goal():
+        """
+        Test the scenario where the A* algorithm explores all possible nodes without finding the goal.
+        """
+        grid = [
+            [0, 1, 0],
+            [0, 1, 0],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(0, 2)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+```
+language: python
+existing_test_function_signature: |
+  def test_start_equals_goal():
+new_tests:
+- test_behavior: |
+    Test the scenario where the goal is unreachable due to a wall, ensuring no path is found.
+  lines_to_cover: |
+    [84]
+  test_name: |
+    test_unreachable_goal_wall
+  test_code: |
+    def test_unreachable_goal_wall():
+        """
+        Test the scenario where the goal is unreachable due to a wall.
+        """
+        grid = [
+            [0, 0, 0],
+            [1, 1, 1],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(2, 2)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the scenario where the parent node is not found in the closed list during path reconstruction.
+  lines_to_cover: |
+    [139, 140]
+  test_name: |
+    test_parent_missing_closed_list
+  test_code: |
+    def test_parent_missing_closed_list():
+        """
+        Test the scenario where the parent node is not found in the closed list during path reconstruction.
+        """
+        grid = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(2, 2)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        closed_list = {Node(0, 0), Node(2, 2)}
+        goal.pid = 1
+        path = astar.convert_closed_list_to_path(closed_list, start, goal)
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test case where the A* algorithm explores all possible nodes without finding the goal.
+  lines_to_cover: |
+    [84]
+  test_name: |
+    test_all_nodes_explored_no_goal
+  test_code: |
+    def test_all_nodes_explored_no_goal():
+        """
+        Test the scenario where the A* algorithm explores all possible nodes without finding the goal.
+        """
+        grid = [
+            [0, 1, 0],
+            [0, 1, 0],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(0, 2)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the scenario where no path is found, covering the else branch after the plan function is called in the main block.
+  lines_to_cover: |
+    [171, 172, 173, 176, 177, 180, 181, 182, 183, 186, 187, 189, 190, 191, 192, 194, 195, 197, 198, 199, 200, 201, 202, 204]
+  test_name: |
+    test_no_path_found_main
+  test_code: |
+    def test_no_path_found_main():
+        """
+        Test the scenario where no path is found, covering the else branch in the main block.
+        """
+        n = 3
+        grid = [[1 for _ in range(n)] for _ in range(n)]
+        start = Node(0, 0)
+        goal = Node(n - 1, n - 1)
+        start.id = start.x * n + start.y
+        start.pid = start.id
+        goal.id = goal.x * n + goal.y
+        start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)
+        grid[start.x][start.y] = 1
+        grid[goal.x][goal.y] = 1
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False
+  new_imports_code: |
+    ""
+  test_tags: edge case
+```
+language: python
+existing_test_function_signature: |
+  def test_start_equals_goal():
+new_tests:
+- test_behavior: |
+    Test the scenario where the goal is unreachable due to a wall, ensuring no path is found.
+  lines_to_cover: |
+    [84]
+  test_name: |
+    test_unreachable_goal_wall_2
+  test_code: |
+    def test_unreachable_goal_wall_2():
+        """
+        Test the scenario where the goal is unreachable due to a wall.
+        """
+        grid = [
+            [0, 0, 0],
+            [1, 1, 1],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(2, 2)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the scenario where the parent node is not found in the closed list during path reconstruction.
+  lines_to_cover: |
+    [139, 140]
+  test_name: |
+    test_parent_missing_closed_list_2
+  test_code: |
+    def test_parent_missing_closed_list_2():
+        """
+        Test the scenario where the parent node is not found in the closed list during path reconstruction.
+        """
+        grid = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(2, 2)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        closed_list = {Node(0, 0), Node(2, 2)}
+        goal.pid = 1
+        path = astar.convert_closed_list_to_path(closed_list, start, goal)
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test case where the A* algorithm explores all possible nodes without finding the goal.
+  lines_to_cover: |
+    [84]
+  test_name: |
+    test_all_nodes_explored_no_goal_2
+  test_code: |
+    def test_all_nodes_explored_no_goal_2():
+        """
+        Test the scenario where the A* algorithm explores all possible nodes without finding the goal.
+        """
+        grid = [
+            [0, 1, 0],
+            [0, 1, 0],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(0, 2)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the scenario where no path is found, covering the else branch after the plan function is called in the main block.
+  lines_to_cover: |
+    [171, 172, 173, 176, 177, 180, 181, 182, 183, 186, 187, 189, 190, 191, 192, 194, 195, 197, 198, 199, 200, 201, 202, 204]
+  test_name: |
+    test_no_path_found_main_2
+  test_code: |
+    def test_no_path_found_main_2():
+        """
+        Test the scenario where no path is found, covering the else branch in the main block.
+        """
+        n = 3
+        grid = [[1 for _ in range(n)] for _ in range(n)]
+        start = Node(0, 0)
+        goal = Node(n - 1, n - 1)
+        start.id = start.x * n + start.y
+        start.pid = start.id
+        goal.id = goal.x * n + goal.y
+        start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)
+        grid[start.x][start.y] = 1
+        grid[goal.x][goal.y] = 1
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False
+  new_imports_code: |
+    ""
+  test_tags: edge case
+```
+language: python
+existing_test_function_signature: |
+  def test_start_equals_goal():
+new_tests:
+- test_behavior: |
+    Test the scenario where the parent node is not found in the closed list during path reconstruction.
+  lines_to_cover: |
+    [139, 140]
+  test_name: |
+    test_parent_missing_closed_list
+  test_code: |
+    def test_parent_missing_closed_list():
+        """
+        Test the scenario where the parent node is not found in the closed list during path reconstruction.
+        """
+        grid = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(2, 2)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        closed_list = {Node(0, 0), Node(2, 2)}
+        goal.pid = 1
+        path = astar.convert_closed_list_to_path(closed_list, start, goal)
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test case where A* fails to find the goal, and the open list becomes empty.
+  lines_to_cover: |
+    [84]
+  test_name: |
+    test_no_path_open_list_empty
+  test_code: |
+    def test_no_path_open_list_empty():
+        """
+        Test a grid where no path exists and the open list becomes empty.
+        """
+        grid = [
+            [0, 1, 0],
+            [1, 1, 1],
+            [0, 1, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(2, 0)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the scenario where no path is found, covering the else branch after the plan function is called in the main block.
+  lines_to_cover: |
+    [171, 172, 173, 176, 177, 180, 181, 182, 183, 186, 187, 189, 190, 191, 192, 194, 195, 197, 198, 199, 200, 201, 202, 204]
+  test_name: |
+    test_no_path_found_main
+  test_code: |
+    def test_no_path_found_main():
+        """
+        Test the scenario where no path is found, covering the else branch in the main block.
+        """
+        n = 3
+        grid = [[1 for _ in range(n)] for _ in range(n)]
+        start = Node(0, 0)
+        goal = Node(n - 1, n - 1)
+        start.id = start.x * n + start.y
+        start.pid = start.id
+        goal.id = goal.x * n + goal.y
+        start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)
+        grid[start.x][start.y] = 1
+        grid[goal.x][goal.y] = 1
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test case where the A* algorithm explores all possible nodes without finding the goal.
+  lines_to_cover: |
+    [84]
+  test_name: |
+    test_all_nodes_explored_no_goal
+  test_code: |
+    def test_all_nodes_explored_no_goal():
+        """
+        Test the scenario where the A* algorithm explores all possible nodes without finding the goal.
+        """
+        grid = [
+            [0, 1, 0],
+            [0, 1, 0],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(0, 2)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+```
+language: python
+existing_test_function_signature: |
+  def test_start_equals_goal():
+new_tests:
+- test_behavior: |
+    Test the scenario where the goal is unreachable due to a wall, ensuring no path is found.
+  lines_to_cover: |
+    [84]
+  test_name: |
+    test_unreachable_goal_wall
+  test_code: |
+    def test_unreachable_goal_wall():
+        """
+        Test the scenario where the goal is unreachable due to a wall.
+        """
+        grid = [
+            [0, 0, 0],
+            [1, 1, 1],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(2, 2)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test case where A* fails to find the goal, and the open list becomes empty.
+  lines_to_cover: |
+    [84]
+  test_name: |
+    test_no_path_open_list_empty
+  test_code: |
+    def test_no_path_open_list_empty():
+        """
+        Test a grid where no path exists and the open list becomes empty.
+        """
+        grid = [
+            [0, 1, 0],
+            [1, 1, 1],
+            [0, 1, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(2, 0)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the scenario where the parent node is not found in the closed list during path reconstruction.
+  lines_to_cover: |
+    [139, 140]
+  test_name: |
+    test_parent_missing_closed_list
+  test_code: |
+    def test_parent_missing_closed_list():
+        """
+        Test the scenario where the parent node is not found in the closed list during path reconstruction.
+        """
+        grid = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(0, 0)
+        goal = Node(2, 2)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        closed_list = {Node(0, 0), Node(2, 2)}
+        goal.pid = 1
+        path = astar.convert_closed_list_to_path(closed_list, start, goal)
+        assert path == []
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the scenario where no path is found, covering the else branch after the plan function is called in the main block.
+  lines_to_cover: |
+    [171, 172, 173, 176, 177, 180, 181, 182, 183, 186, 187, 189, 190, 191, 192, 194, 195, 197, 198, 199, 200, 201, 202, 204]
+  test_name: |
+    test_no_path_found_main
+  test_code: |
+    def test_no_path_found_main():
+        """
+        Test the scenario where no path is found, covering the else branch in the main block.
+        """
+        n = 3
+        grid = [[1 for _ in range(n)] for _ in range(n)]
+        start = Node(0, 0)
+        goal = Node(n - 1, n - 1)
+        start.id = start.x * n + start.y
+        start.pid = start.id
+        goal.id = goal.x * n + goal.y
+        start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)
+        grid[start.x][start.y] = 1
+        grid[goal.x][goal.y] = 1
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is False
+  new_imports_code: |
+    ""
+  test_tags: edge case
+```

@@ -1,0 +1,914 @@
+```yaml
+language: python
+testing_framework: pytest
+number_of_tests: 2
+test_headers_indentation: 0
+```
+```yaml
+language: python
+testing_framework: pytest
+number_of_tests: 2
+relevant_line_number_to_insert_tests_after: 43
+relevant_line_number_to_insert_imports_after: 12
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_path_found():
+new_tests:
+- test_behavior: |
+    Test that the path is correctly displayed when a valid path is found.
+  lines_to_cover: |
+    [90, 91, 92, 93]
+  test_name: |
+    test_path_display
+  test_code: |
+    def test_path_display():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        start = Node(0, 0)
+        goal = Node(4, 4)
+        planner = LPAStar(grid)
+        planner.max_time_step = 1
+        found, path = planner.plan(start, goal)
+        assert found is True
+        assert len(path) > 0
+        assert compare_coordinates(path[-1], goal)
+        assert path[0] == start
+        assert path[-1] == goal
+        # Check if the path is displayed correctly
+        assert all(node.grid[node.x][node.y] == 3 for node in path)
+  new_imports_code: |
+    ""
+  test_tags: happy path
+- test_behavior: |
+    Test that the LazyPQ can handle removing an element correctly.
+  lines_to_cover: |
+    [122]
+  test_name: |
+    test_lazy_priority_queue_remove
+  test_code: |
+    def test_lazy_priority_queue_remove():
+        pq = LazyPQ()
+        node1 = Node(0, 0)
+        node2 = Node(1, 1)
+        pq.insert(node1, 1)
+        pq.insert(node2, 2)
+        assert pq.is_element_in_struct(node1) is True
+        pq.remove(node1)
+        assert pq.is_element_in_struct(node1) is False
+        assert pq.is_element_in_struct(node2) is True
+  new_imports_code: |
+    ""
+  test_tags: other
+- test_behavior: |
+    Test that the LPAStar detects dynamic obstacles correctly.
+  lines_to_cover: |
+    [177, 178, 259, 260, 261, 262, 263]
+  test_name: |
+    test_dynamic_obstacles_detection
+  test_code: |
+    def test_dynamic_obstacles_detection():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        start = Node(0, 0)
+        goal = Node(4, 4)
+        time_discovered_obstacles = {
+            1: [Node(1, 1)],
+            2: [Node(2, 2)],
+        }
+        planner = LPAStar(grid)
+        planner.set_dynamic_obstacles(True, time_discovered_obstacles)
+        planner.plan(start, goal)
+        assert grid[1][1] == 1  # Check if obstacle is set
+        assert grid[2][2] == 0  # Check if obstacle is not set yet
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test that the cost function returns infinity for obstacles.
+  lines_to_cover: |
+    [209]
+  test_name: |
+    test_cost_function_with_obstacles
+  test_code: |
+    def test_cost_function_with_obstacles():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        grid[1][1] = 1  # Set an obstacle
+        planner = LPAStar(grid)
+        node1 = Node(0, 0)
+        node2 = Node(1, 1)
+        cost = planner.C(node1, node2)
+        assert cost == math.inf  # Cost should be infinity due to obstacle
+  new_imports_code: |
+    ""
+  test_tags: edge case
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_path_found():
+new_tests:
+- test_behavior: |
+    Test that the LazyPQ can handle removing an element correctly.
+  lines_to_cover: |
+    [122]
+  test_name: |
+    test_lazy_priority_queue_remove
+  test_code: |
+    def test_lazy_priority_queue_remove():
+        pq = LazyPQ()
+        node1 = Node(0, 0)
+        node2 = Node(1, 1)
+        pq.insert(node1, 1)
+        pq.insert(node2, 2)
+        assert pq.is_element_in_struct(node1) is True
+        pq.remove(node1)
+        assert pq.is_element_in_struct(node1) is False
+        assert pq.is_element_in_struct(node2) is True
+  new_imports_code: |
+    ""
+  test_tags: other
+
+- test_behavior: |
+    Test that the cost function returns infinity for obstacles.
+  lines_to_cover: |
+    [209]
+  test_name: |
+    test_cost_function_with_obstacles
+  test_code: |
+    def test_cost_function_with_obstacles():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        grid[1][1] = 1  # Set an obstacle
+        planner = LPAStar(grid)
+        node1 = Node(0, 0)
+        node2 = Node(1, 1)
+        cost = planner.C(node1, node2)
+        assert cost == math.inf  # Cost should be infinity due to obstacle
+  new_imports_code: |
+    import math
+  test_tags: edge case
+
+- test_behavior: |
+    Test that the LPAStar detects dynamic obstacles correctly.
+  lines_to_cover: |
+    [177, 178, 259, 260, 261, 262, 263]
+  test_name: |
+    test_dynamic_obstacles_detection
+  test_code: |
+    def test_dynamic_obstacles_detection():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        start = Node(0, 0)
+        goal = Node(4, 4)
+        time_discovered_obstacles = {
+            1: [Node(1, 1)],
+            2: [Node(2, 2)],
+        }
+        planner = LPAStar(grid)
+        planner.set_dynamic_obstacles(True, time_discovered_obstacles)
+        planner.plan(start, goal)
+        assert grid[1][1] == 1  # Check if obstacle is set
+        assert grid[2][2] == 0  # Check if obstacle is not set yet
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test that the path is correctly displayed when a valid path is found.
+  lines_to_cover: |
+    [90, 91, 92, 93]
+  test_name: |
+    test_path_display
+  test_code: |
+    def test_path_display():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        start = Node(0, 0)
+        goal = Node(4, 4)
+        planner = LPAStar(grid)
+        planner.max_time_step = 1
+        found, path = planner.plan(start, goal)
+        assert found is True
+        assert len(path) > 0
+        assert compare_coordinates(path[-1], goal)
+        assert path[0] == start
+        assert all(node.grid[node.x][node.y] == 3 for node in path)
+  new_imports_code: |
+    ""
+  test_tags: happy path
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_path_found():
+new_tests:
+- test_behavior: |
+    Test that the path is correctly displayed when a valid path is found.
+  lines_to_cover: |
+    [90, 91, 92, 93]
+  test_name: |
+    test_path_display_correctness
+  test_code: |
+    def test_path_display_correctness():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        start = Node(0, 0)
+        goal = Node(4, 4)
+        planner = LPAStar(grid)
+        planner.max_time_step = 1
+        found, path = planner.plan(start, goal)
+        assert found is True
+        assert len(path) > 0
+        assert compare_coordinates(path[-1], goal)
+        assert path[0] == start
+        assert all(node.grid[node.x][node.y] == 3 for node in path)
+  new_imports_code: |
+    ""
+  test_tags: happy path
+- test_behavior: |
+    Test that the LazyPQ can handle removing an element correctly.
+  lines_to_cover: |
+    [122]
+  test_name: |
+    test_lazy_priority_queue_remove_correctness
+  test_code: |
+    def test_lazy_priority_queue_remove_correctness():
+        pq = LazyPQ()
+        node1 = Node(0, 0)
+        node2 = Node(1, 1)
+        pq.insert(node1, 1)
+        pq.insert(node2, 2)
+        assert pq.is_element_in_struct(node1) is True
+        pq.remove(node1)
+        assert pq.is_element_in_struct(node1) is False
+        assert pq.is_element_in_struct(node2) is True
+  new_imports_code: |
+    ""
+  test_tags: other
+- test_behavior: |
+    Test that the cost function returns infinity for obstacles.
+  lines_to_cover: |
+    [209]
+  test_name: |
+    test_cost_function_with_obstacles_correctness
+  test_code: |
+    def test_cost_function_with_obstacles_correctness():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        grid[1][1] = 1  # Set an obstacle
+        planner = LPAStar(grid)
+        node1 = Node(0, 0)
+        node2 = Node(1, 1)
+        cost = planner.C(node1, node2)
+        assert cost == math.inf  # Cost should be infinity due to obstacle
+  new_imports_code: |
+    import math
+  test_tags: edge case
+- test_behavior: |
+    Test that dynamic obstacles are detected correctly at the right time step.
+  lines_to_cover: |
+    [177, 178, 259, 260, 261, 262, 263]
+  test_name: |
+    test_dynamic_obstacles_detection_correctness
+  test_code: |
+    def test_dynamic_obstacles_detection_correctness():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        start = Node(0, 0)
+        goal = Node(4, 4)
+        time_discovered_obstacles = {
+            1: [Node(1, 1)],
+            2: [Node(2, 2)],
+        }
+        planner = LPAStar(grid)
+        planner.set_dynamic_obstacles(True, time_discovered_obstacles)
+        planner.plan(start, goal)
+        assert grid[1][1] == 1  # Check if obstacle is set
+        assert grid[2][2] == 0  # Check if obstacle is not set yet
+  new_imports_code: |
+    ""
+  test_tags: edge case
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_path_found():
+new_tests:
+- test_behavior: |
+    Test that the path is correctly displayed when a valid path is found.
+  lines_to_cover: |
+    [90, 91, 92, 93]
+  test_name: |
+    test_path_display_correctness
+  test_code: |
+    def test_path_display_correctness():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        start = Node(0, 0)
+        goal = Node(4, 4)
+        planner = LPAStar(grid)
+        planner.max_time_step = 1
+        found, path = planner.plan(start, goal)
+        assert found is True
+        assert len(path) > 0
+        assert compare_coordinates(path[-1], goal)
+        assert path[0] == start
+        assert all(node.grid[node.x][node.y] == 3 for node in path)
+  new_imports_code: |
+    ""
+  test_tags: happy path
+
+- test_behavior: |
+    Test that the LazyPQ can handle removing an element correctly.
+  lines_to_cover: |
+    [122]
+  test_name: |
+    test_lazy_priority_queue_remove_correctness
+  test_code: |
+    def test_lazy_priority_queue_remove_correctness():
+        pq = LazyPQ()
+        node1 = Node(0, 0)
+        node2 = Node(1, 1)
+        pq.insert(node1, 1)
+        pq.insert(node2, 2)
+        assert pq.is_element_in_struct(node1) is True
+        pq.remove(node1)
+        assert pq.is_element_in_struct(node1) is False
+        assert pq.is_element_in_struct(node2) is True
+  new_imports_code: |
+    ""
+  test_tags: other
+
+- test_behavior: |
+    Test that the cost function returns infinity for obstacles.
+  lines_to_cover: |
+    [209]
+  test_name: |
+    test_cost_function_with_obstacles_correctness
+  test_code: |
+    def test_cost_function_with_obstacles_correctness():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        grid[1][1] = 1  # Set an obstacle
+        planner = LPAStar(grid)
+        node1 = Node(0, 0)
+        node2 = Node(1, 1)
+        cost = planner.C(node1, node2)
+        assert cost == math.inf  # Cost should be infinity due to obstacle
+  new_imports_code: |
+    import math
+  test_tags: edge case
+
+- test_behavior: |
+    Test that dynamic obstacles are detected correctly at the right time step.
+  lines_to_cover: |
+    [177, 178, 259, 260, 261, 262, 263]
+  test_name: |
+    test_dynamic_obstacles_detection_correctness
+  test_code: |
+    def test_dynamic_obstacles_detection_correctness():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        start = Node(0, 0)
+        goal = Node(4, 4)
+        time_discovered_obstacles = {
+            1: [Node(1, 1)],
+            2: [Node(2, 2)],
+        }
+        planner = LPAStar(grid)
+        planner.set_dynamic_obstacles(True, time_discovered_obstacles)
+        planner.plan(start, goal)
+        assert grid[1][1] == 1  # Check if obstacle is set
+        assert grid[2][2] == 0  # Check if obstacle is not set yet
+  new_imports_code: |
+    ""
+  test_tags: edge case
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_path_found():
+new_tests:
+- test_behavior: |
+    Test that the path is correctly displayed when a valid path is found.
+  lines_to_cover: |
+    [90, 91, 92, 93]
+  test_name: |
+    test_path_display_correctness
+  test_code: |
+    def test_path_display_correctness():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        start = Node(0, 0)
+        goal = Node(4, 4)
+        planner = LPAStar(grid)
+        planner.max_time_step = 1
+        found, path = planner.plan(start, goal)
+        assert found is True
+        assert len(path) > 0
+        assert compare_coordinates(path[-1], goal)
+        assert path[0] == start
+        assert all(planner.grid[node.x][node.y] == 3 for node in path)
+  new_imports_code: |
+    ""
+  test_tags: happy path
+- test_behavior: |
+    Test that the LazyPQ can handle removing an element correctly.
+  lines_to_cover: |
+    [122]
+  test_name: |
+    test_lazy_priority_queue_remove_correctness
+  test_code: |
+    def test_lazy_priority_queue_remove_correctness():
+        pq = LazyPQ()
+        node1 = Node(0, 0)
+        node2 = Node(1, 1)
+        pq.insert(node1, 1)
+        pq.insert(node2, 2)
+        assert pq.is_element_in_struct(node1) is True
+        pq.remove(node1)
+        assert pq.is_element_in_struct(node1) is False
+        assert pq.is_element_in_struct(node2) is True
+  new_imports_code: |
+    ""
+  test_tags: other
+- test_behavior: |
+    Test that the cost function returns infinity for obstacles.
+  lines_to_cover: |
+    [209]
+  test_name: |
+    test_cost_function_with_obstacles_correctness
+  test_code: |
+    def test_cost_function_with_obstacles_correctness():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        grid[1][1] = 1  # Set an obstacle
+        planner = LPAStar(grid)
+        node1 = Node(0, 0)
+        node2 = Node(1, 1)
+        cost = planner.C(node1, node2)
+        assert cost == math.inf  # Cost should be infinity due to obstacle
+  new_imports_code: |
+    import math
+  test_tags: edge case
+- test_behavior: |
+    Test that dynamic obstacles are detected correctly at the right time step.
+  lines_to_cover: |
+    [177, 178, 259, 260, 261, 262, 263]
+  test_name: |
+    test_dynamic_obstacles_detection_correctness
+  test_code: |
+    def test_dynamic_obstacles_detection_correctness():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        start = Node(0, 0)
+        goal = Node(4, 4)
+        time_discovered_obstacles = {
+            1: [Node(1, 1)],
+            2: [Node(2, 2)],
+        }
+        planner = LPAStar(grid)
+        planner.set_dynamic_obstacles(True, time_discovered_obstacles)
+        planner.plan(start, goal)
+        assert grid[1][1] == 1  # Check if obstacle is set
+        assert grid[2][2] == 0  # Check if obstacle is not set yet
+  new_imports_code: |
+    ""
+  test_tags: edge case
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_path_found():
+new_tests:
+- test_behavior: |
+    Test that the path is correctly displayed when a valid path is found.
+  lines_to_cover: |
+    [90, 91, 92, 93]
+  test_name: |
+    test_path_display_correctness
+  test_code: |
+    def test_path_display_correctness():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        start = Node(0, 0)
+        goal = Node(4, 4)
+        planner = LPAStar(grid)
+        planner.max_time_step = 1
+        found, path = planner.plan(start, goal)
+        assert found is True
+        assert len(path) > 0
+        assert compare_coordinates(path[-1], goal)
+        assert path[0] == start
+        assert all(planner.grid[node.x][node.y] == 3 for node in path)
+  new_imports_code: |
+    ""
+  test_tags: happy path
+- test_behavior: |
+    Test that the LazyPQ can handle removing an element correctly.
+  lines_to_cover: |
+    [122]
+  test_name: |
+    test_lazy_priority_queue_remove_correctness
+  test_code: |
+    def test_lazy_priority_queue_remove_correctness():
+        pq = LazyPQ()
+        node1 = Node(0, 0)
+        node2 = Node(1, 1)
+        pq.insert(node1, 1)
+        pq.insert(node2, 2)
+        assert pq.is_element_in_struct(node1) is True
+        pq.remove(node1)
+        assert pq.is_element_in_struct(node1) is False
+        assert pq.is_element_in_struct(node2) is True
+  new_imports_code: |
+    ""
+  test_tags: other
+- test_behavior: |
+    Test that the cost function returns infinity for obstacles.
+  lines_to_cover: |
+    [209]
+  test_name: |
+    test_cost_function_with_obstacles_correctness
+  test_code: |
+    def test_cost_function_with_obstacles_correctness():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        grid[1][1] = 1  # Set an obstacle
+        planner = LPAStar(grid)
+        node1 = Node(0, 0)
+        node2 = Node(1, 1)
+        cost = planner.C(node1, node2)
+        assert cost == math.inf  # Cost should be infinity due to obstacle
+  new_imports_code: |
+    import math
+  test_tags: edge case
+- test_behavior: |
+    Test that dynamic obstacles are detected correctly at the right time step.
+  lines_to_cover: |
+    [177, 178, 259, 260, 261, 262, 263]
+  test_name: |
+    test_dynamic_obstacles_detection_correctness
+  test_code: |
+    def test_dynamic_obstacles_detection_correctness():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        start = Node(0, 0)
+        goal = Node(4, 4)
+        time_discovered_obstacles = {
+            1: [Node(1, 1)],
+            2: [Node(2, 2)],
+        }
+        planner = LPAStar(grid)
+        planner.set_dynamic_obstacles(True, time_discovered_obstacles)
+        planner.plan(start, goal)
+        assert grid[1][1] == 1  # Check if obstacle is set
+        assert grid[2][2] == 0  # Check if obstacle is not set yet
+  new_imports_code: |
+    ""
+  test_tags: edge case
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_path_found():
+new_tests:
+- test_behavior: |
+    Test that the path is correctly displayed when a valid path is found.
+  lines_to_cover: |
+    [90, 91, 92, 93]
+  test_name: |
+    test_path_display_correctness
+  test_code: |
+    def test_path_display_correctness():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        start = Node(0, 0)
+        goal = Node(4, 4)
+        planner = LPAStar(grid)
+        planner.max_time_step = 10  # Allow more time for pathfinding
+        found, path = planner.plan(start, goal)
+        assert found is True
+        assert len(path) > 0
+        assert compare_coordinates(path[-1], goal)
+        assert path[0] == start
+        assert all(planner.grid[node.x][node.y] == 3 for node in path)
+  new_imports_code: |
+    ""
+  test_tags: happy path
+
+- test_behavior: |
+    Test that the LazyPQ can handle removing an element correctly.
+  lines_to_cover: |
+    [122]
+  test_name: |
+    test_lazy_priority_queue_remove_correctness
+  test_code: |
+    def test_lazy_priority_queue_remove_correctness():
+        pq = LazyPQ()
+        node1 = Node(0, 0)
+        node2 = Node(1, 1)
+        pq.insert(node1, 1)
+        pq.insert(node2, 2)
+        assert pq.is_element_in_struct(node1) is True
+        pq.remove(node1)
+        assert pq.is_element_in_struct(node1) is False
+        assert pq.is_element_in_struct(node2) is True
+  new_imports_code: |
+    ""
+  test_tags: other
+
+- test_behavior: |
+    Test that the cost function returns infinity for obstacles.
+  lines_to_cover: |
+    [209]
+  test_name: |
+    test_cost_function_with_obstacles_correctness
+  test_code: |
+    def test_cost_function_with_obstacles_correctness():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        grid[1][1] = 1  # Set an obstacle
+        planner = LPAStar(grid)
+        node1 = Node(0, 0)
+        node2 = Node(1, 1)
+        cost = planner.C(node1, node2)
+        assert cost == math.inf  # Cost should be infinity due to obstacle
+  new_imports_code: |
+    import math
+  test_tags: edge case
+
+- test_behavior: |
+    Test that dynamic obstacles are detected correctly at the right time step.
+  lines_to_cover: |
+    [177, 178, 259, 260, 261, 262, 263]
+  test_name: |
+    test_dynamic_obstacles_detection_correctness
+  test_code: |
+    def test_dynamic_obstacles_detection_correctness():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        start = Node(0, 0)
+        goal = Node(4, 4)
+        time_discovered_obstacles = {
+            1: [Node(1, 1)],
+            2: [Node(2, 2)],
+        }
+        planner = LPAStar(grid)
+        planner.set_dynamic_obstacles(True, time_discovered_obstacles)
+        planner.plan(start, goal)
+        assert grid[1][1] == 1  # Check if obstacle is set
+        assert grid[2][2] == 0  # Check if obstacle is not set yet
+  new_imports_code: |
+    ""
+  test_tags: edge case
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_path_found():
+new_tests:
+- test_behavior: |
+    Test that the path is correctly displayed when a valid path is found.
+  lines_to_cover: |
+    [90, 91, 92, 93]
+  test_name: |
+    test_path_display_correctness
+  test_code: |
+    def test_path_display_correctness():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        start = Node(0, 0)
+        goal = Node(4, 4)
+        planner = LPAStar(grid)
+        planner.max_time_step = 10  # Allow more time for pathfinding
+        found, path = planner.plan(start, goal)
+        assert found is True
+        assert len(path) > 0
+        assert compare_coordinates(path[-1], goal)
+        assert path[0] == start
+        assert all(planner.grid[node.x][node.y] == 3 for node in path)
+  new_imports_code: |
+    ""
+  test_tags: happy path
+- test_behavior: |
+    Test that the LazyPQ can handle removing an element correctly.
+  lines_to_cover: |
+    [122]
+  test_name: |
+    test_lazy_priority_queue_remove_correctness
+  test_code: |
+    def test_lazy_priority_queue_remove_correctness():
+        pq = LazyPQ()
+        node1 = Node(0, 0)
+        node2 = Node(1, 1)
+        pq.insert(node1, 1)
+        pq.insert(node2, 2)
+        assert pq.is_element_in_struct(node1) is True
+        pq.remove(node1)
+        assert pq.is_element_in_struct(node1) is False
+        assert pq.is_element_in_struct(node2) is True
+  new_imports_code: |
+    ""
+  test_tags: other
+- test_behavior: |
+    Test that the cost function returns infinity for obstacles.
+  lines_to_cover: |
+    [209]
+  test_name: |
+    test_cost_function_with_obstacles_correctness
+  test_code: |
+    def test_cost_function_with_obstacles_correctness():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        grid[1][1] = 1  # Set an obstacle
+        planner = LPAStar(grid)
+        node1 = Node(0, 0)
+        node2 = Node(1, 1)
+        cost = planner.C(node1, node2)
+        assert cost == math.inf  # Cost should be infinity due to obstacle
+  new_imports_code: |
+    import math
+  test_tags: edge case
+- test_behavior: |
+    Test that dynamic obstacles are detected correctly at the right time step.
+  lines_to_cover: |
+    [177, 178, 259, 260, 261, 262, 263]
+  test_name: |
+    test_dynamic_obstacles_detection_correctness
+  test_code: |
+    def test_dynamic_obstacles_detection_correctness():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        start = Node(0, 0)
+        goal = Node(4, 4)
+        time_discovered_obstacles = {
+            1: [Node(1, 1)],
+            2: [Node(2, 2)],
+        }
+        planner = LPAStar(grid)
+        planner.set_dynamic_obstacles(True, time_discovered_obstacles)
+        planner.plan(start, goal)
+        assert grid[1][1] == 1  # Check if obstacle is set
+        assert grid[2][2] == 0  # Check if obstacle is not set yet
+  new_imports_code: |
+    ""
+  test_tags: edge case
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_path_found():
+new_tests:
+- test_behavior: |
+    Test that the path is correctly displayed when a valid path is found.
+  lines_to_cover: |
+    [90, 91, 92, 93]
+  test_name: |
+    test_path_display_correctness
+  test_code: |
+    def test_path_display_correctness():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        start = Node(0, 0)
+        goal = Node(4, 4)
+        planner = LPAStar(grid)
+        planner.max_time_step = 10  # Allow more time for pathfinding
+        found, path = planner.plan(start, goal)
+        assert found is True
+        assert len(path) > 0
+        assert compare_coordinates(path[-1], goal)
+        assert path[0] == start
+        assert all(planner.grid[node.x][node.y] == 3 for node in path)
+  new_imports_code: |
+    ""
+  test_tags: happy path
+- test_behavior: |
+    Test that the LazyPQ can handle removing an element correctly.
+  lines_to_cover: |
+    [122]
+  test_name: |
+    test_lazy_priority_queue_remove_correctness
+  test_code: |
+    def test_lazy_priority_queue_remove_correctness():
+        pq = LazyPQ()
+        node1 = Node(0, 0)
+        node2 = Node(1, 1)
+        pq.insert(node1, 1)
+        pq.insert(node2, 2)
+        assert pq.is_element_in_struct(node1) is True
+        pq.remove(node1)
+        assert pq.is_element_in_struct(node1) is False
+        assert pq.is_element_in_struct(node2) is True
+  new_imports_code: |
+    from app import LazyPQ
+  test_tags: other
+- test_behavior: |
+    Test that the cost function returns infinity for obstacles.
+  lines_to_cover: |
+    [209]
+  test_name: |
+    test_cost_function_with_obstacles_correctness
+  test_code: |
+    def test_cost_function_with_obstacles_correctness():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        grid[1][1] = 1  # Set an obstacle
+        planner = LPAStar(grid)
+        node1 = Node(0, 0)
+        node2 = Node(1, 1)
+        cost = planner.C(node1, node2)
+        assert cost == math.inf  # Cost should be infinity due to obstacle
+  new_imports_code: |
+    import math
+  test_tags: edge case
+- test_behavior: |
+    Test that dynamic obstacles are detected correctly at the right time step.
+  lines_to_cover: |
+    [177, 178, 259, 260, 261, 262, 263]
+  test_name: |
+    test_dynamic_obstacles_detection_correctness
+  test_code: |
+    def test_dynamic_obstacles_detection_correctness():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        start = Node(0, 0)
+        goal = Node(4, 4)
+        time_discovered_obstacles = {
+            1: [Node(1, 1)],
+            2: [Node(2, 2)],
+        }
+        planner = LPAStar(grid)
+        planner.set_dynamic_obstacles(True, time_discovered_obstacles)
+        planner.plan(start, goal)
+        assert grid[1][1] == 1  # Check if obstacle is set
+        assert grid[2][2] == 0  # Check if obstacle is not set yet
+  new_imports_code: |
+    ""
+  test_tags: edge case
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_path_found():
+new_tests:
+- test_behavior: |
+    Test that the path is correctly displayed when a valid path is found.
+  lines_to_cover: |
+    [90, 91, 92, 93]
+  test_name: |
+    test_path_display_correctness
+  test_code: |
+    def test_path_display_correctness():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        start = Node(0, 0)
+        goal = Node(4, 4)
+        planner = LPAStar(grid)
+        planner.max_time_step = 10  # Allow more time for pathfinding
+        found, path = planner.plan(start, goal)
+        assert found is True
+        assert len(path) > 0
+        assert compare_coordinates(path[-1], goal)
+        assert path[0] == start
+        assert all(planner.grid[node.x][node.y] == 3 for node in path)
+  new_imports_code: |
+    ""
+  test_tags: happy path
+- test_behavior: |
+    Test that the LazyPQ can handle removing an element correctly.
+  lines_to_cover: |
+    [122]
+  test_name: |
+    test_lazy_priority_queue_remove_correctness
+  test_code: |
+    def test_lazy_priority_queue_remove_correctness():
+        pq = LazyPQ()
+        node1 = Node(0, 0)
+        node2 = Node(1, 1)
+        pq.insert(node1, 1)
+        pq.insert(node2, 2)
+        assert pq.is_element_in_struct(node1) is True
+        pq.remove(node1)
+        assert pq.is_element_in_struct(node1) is False
+        assert pq.is_element_in_struct(node2) is True
+  new_imports_code: |
+    from app import LazyPQ
+  test_tags: other
+- test_behavior: |
+    Test that the cost function returns infinity for obstacles.
+  lines_to_cover: |
+    [209]
+  test_name: |
+    test_cost_function_with_obstacles_correctness
+  test_code: |
+    def test_cost_function_with_obstacles_correctness():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        grid[1][1] = 1  # Set an obstacle
+        planner = LPAStar(grid)
+        node1 = Node(0, 0)
+        node2 = Node(1, 1)
+        cost = planner.C(node1, node2)
+        assert cost == math.inf  # Cost should be infinity due to obstacle
+  new_imports_code: |
+    import math
+  test_tags: edge case
+- test_behavior: |
+    Test that dynamic obstacles are detected correctly at the right time step.
+  lines_to_cover: |
+    [177, 178, 259, 260, 261, 262, 263]
+  test_name: |
+    test_dynamic_obstacles_detection_correctness
+  test_code: |
+    def test_dynamic_obstacles_detection_correctness():
+        grid = [[0 for _ in range(5)] for _ in range(5)]
+        start = Node(0, 0)
+        goal = Node(4, 4)
+        time_discovered_obstacles = {
+            1: [Node(1, 1)],
+            2: [Node(2, 2)],
+        }
+        planner = LPAStar(grid)
+        planner.set_dynamic_obstacles(True, time_discovered_obstacles)
+        planner.plan(start, goal)
+        assert grid[1][1] == 1  # Check if obstacle is set
+        assert grid[2][2] == 0  # Check if obstacle is not set yet
+  new_imports_code: |
+    ""
+  test_tags: edge case
+```

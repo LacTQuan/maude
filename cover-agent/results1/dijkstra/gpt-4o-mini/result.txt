@@ -1,0 +1,1038 @@
+```yaml
+language: python
+testing_framework: pytest
+number_of_tests: 5
+test_headers_indentation: 0
+```
+```yaml
+language: python
+testing_framework: pytest
+number_of_tests: 7
+relevant_line_number_to_insert_tests_after: 84
+relevant_line_number_to_insert_imports_after: 2
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_simple_path(self):
+new_tests:
+- test_behavior: |
+    Test that the path is correctly calculated when the start and goal are the same.
+    This should cover the case where no movement is needed.
+  lines_to_cover: |
+    [152, 153]
+  test_name: |
+    test_same_start_goal
+  test_code: |
+    def test_same_start_goal(self):
+        grid = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(1, 1, 0)
+        goal = Node(1, 1, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is True, "Path should be found when start and goal are the same."
+        assert path == [goal, start], "Path should contain the same node twice."
+  new_imports_code: |
+    ""
+  test_tags: happy path
+
+- test_behavior: |
+    Test that the Dijkstra planner correctly handles a grid where the start is outside the boundary.
+    This should cover the boundary check logic.
+  lines_to_cover: |
+    [8, 10, 111, 112]
+  test_name: |
+    test_start_outside_boundary
+  test_code: |
+    def test_start_outside_boundary(self):
+        grid = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(-1, -1, 0)  # Outside boundary
+        goal = Node(2, 2, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False, "No path should be found if the start is outside the grid."
+        assert path == [], "Path should be empty when no path is found."
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test that the Dijkstra planner correctly handles a grid where the goal is outside the boundary.
+    This should cover the boundary check logic.
+  lines_to_cover: |
+    [8, 10, 111, 112]
+  test_name: |
+    test_goal_outside_boundary
+  test_code: |
+    def test_goal_outside_boundary(self):
+        grid = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(1, 1, 0)
+        goal = Node(3, 3, 0)  # Outside boundary
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False, "No path should be found if the goal is outside the grid."
+        assert path == [], "Path should be empty when no path is found."
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test that the Dijkstra planner correctly handles a grid with all obstacles except the start and goal.
+    This should cover the logic for handling obstacles.
+  lines_to_cover: |
+    [114, 115]
+  test_name: |
+    test_all_obstacles_except_start_goal
+  test_code: |
+    def test_all_obstacles_except_start_goal(self):
+        grid = [
+            [1, 1, 1],
+            [1, 0, 1],
+            [1, 1, 1]
+        ]
+        start = Node(1, 1, 0)
+        goal = Node(1, 1, 0)  # Same as start
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is True, "Path should be found when start and goal are the same."
+        assert path == [goal, start], "Path should contain the same node twice."
+  new_imports_code: |
+    ""
+  test_tags: happy path
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test that the Dijkstra planner correctly handles a grid where the start and goal are the same.
+    This should cover the case where no movement is needed.
+  lines_to_cover: |
+    [152, 153]
+  test_name: |
+    test_same_start_goal
+  test_code: |
+    def test_same_start_goal():
+        grid = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(1, 1, 0)
+        goal = Node(1, 1, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is True, "Path should be found when start and goal are the same."
+        assert path == [goal, start], "Path should contain the same node twice."
+  new_imports_code: |
+    ""
+  test_tags: happy path
+
+- test_behavior: |
+    Test that the Dijkstra planner correctly handles a grid where the goal is outside the boundary.
+    This should cover the boundary check logic.
+  lines_to_cover: |
+    [8, 10, 111, 112]
+  test_name: |
+    test_goal_outside_boundary
+  test_code: |
+    def test_goal_outside_boundary():
+        grid = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(1, 1, 0)
+        goal = Node(3, 3, 0)  # Outside boundary
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False, "No path should be found if the goal is outside the grid."
+        assert path == [], "Path should be empty when no path is found."
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test that the Dijkstra planner correctly handles a grid with all obstacles except the start and goal.
+    This should cover the logic for handling obstacles.
+  lines_to_cover: |
+    [114, 115]
+  test_name: |
+    test_all_obstacles_except_start_goal
+  test_code: |
+    def test_all_obstacles_except_start_goal():
+        grid = [
+            [1, 1, 1],
+            [1, 0, 1],
+            [1, 1, 1]
+        ]
+        start = Node(1, 1, 0)
+        goal = Node(1, 1, 0)  # Same as start
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is True, "Path should be found when start and goal are the same."
+        assert path == [goal, start], "Path should contain the same node twice."
+  new_imports_code: |
+    ""
+  test_tags: happy path
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test that the Dijkstra planner correctly handles a grid where the start and goal are the same.
+    This should cover the case where no movement is needed.
+  lines_to_cover: |
+    [152, 153]
+  test_name: |
+    test_same_start_goal
+  test_code: |
+    def test_same_start_goal():
+        grid = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(1, 1, 0)
+        goal = Node(1, 1, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is True, "Path should be found when start and goal are the same."
+        assert path == [goal, start], "Path should contain the same node twice."
+  new_imports_code: |
+    ""
+  test_tags: happy path
+
+- test_behavior: |
+    Test that the Dijkstra planner correctly handles a grid where the start is outside the boundary.
+    This should cover the boundary check logic.
+  lines_to_cover: |
+    [8, 10, 111, 112]
+  test_name: |
+    test_start_outside_boundary
+  test_code: |
+    def test_start_outside_boundary():
+        grid = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(-1, -1, 0)  # Outside boundary
+        goal = Node(2, 2, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False, "No path should be found if the start is outside the grid."
+        assert path == [], "Path should be empty when no path is found."
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test that the Dijkstra planner correctly handles a grid where the goal is outside the boundary.
+    This should cover the boundary check logic.
+  lines_to_cover: |
+    [8, 10, 111, 112]
+  test_name: |
+    test_goal_outside_boundary
+  test_code: |
+    def test_goal_outside_boundary():
+        grid = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(1, 1, 0)
+        goal = Node(3, 3, 0)  # Outside boundary
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False, "No path should be found if the goal is outside the grid."
+        assert path == [], "Path should be empty when no path is found."
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test that the Dijkstra planner correctly handles a grid with all obstacles except the start and goal.
+    This should cover the logic for handling obstacles.
+  lines_to_cover: |
+    [114, 115]
+  test_name: |
+    test_all_obstacles_except_start_goal
+  test_code: |
+    def test_all_obstacles_except_start_goal():
+        grid = [
+            [1, 1, 1],
+            [1, 0, 1],
+            [1, 1, 1]
+        ]
+        start = Node(1, 1, 0)
+        goal = Node(1, 1, 0)  # Same as start
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is True, "Path should be found when start and goal are the same."
+        assert path == [goal, start], "Path should contain the same node twice."
+  new_imports_code: |
+    ""
+  test_tags: happy path
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test that the Dijkstra planner correctly handles a grid where the start and goal are the same.
+    This should cover the case where no movement is needed.
+  lines_to_cover: |
+    [152, 153]
+  test_name: |
+    test_same_start_goal
+  test_code: |
+    def test_same_start_goal():
+        grid = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(1, 1, 0)
+        goal = Node(1, 1, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is True, "Path should be found when start and goal are the same."
+        assert path == [start, start], "Path should contain the same node twice."
+  new_imports_code: |
+    ""
+  test_tags: happy path
+
+- test_behavior: |
+    Test that the Dijkstra planner correctly handles a grid where the start is outside the boundary.
+    This should cover the boundary check logic.
+  lines_to_cover: |
+    [8, 10, 111, 112]
+  test_name: |
+    test_start_outside_boundary
+  test_code: |
+    def test_start_outside_boundary():
+        grid = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(-1, -1, 0)  # Outside boundary
+        goal = Node(2, 2, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False, "No path should be found if the start is outside the grid."
+        assert path == [], "Path should be empty when no path is found."
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test that the Dijkstra planner correctly handles a grid where the goal is outside the boundary.
+    This should cover the boundary check logic.
+  lines_to_cover: |
+    [8, 10, 111, 112]
+  test_name: |
+    test_goal_outside_boundary
+  test_code: |
+    def test_goal_outside_boundary():
+        grid = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(1, 1, 0)
+        goal = Node(3, 3, 0)  # Outside boundary
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False, "No path should be found if the goal is outside the grid."
+        assert path == [], "Path should be empty when no path is found."
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test that the Dijkstra planner correctly handles a grid with all obstacles except the start and goal.
+    This should cover the logic for handling obstacles.
+  lines_to_cover: |
+    [114, 115]
+  test_name: |
+    test_all_obstacles_except_start_goal
+  test_code: |
+    def test_all_obstacles_except_start_goal():
+        grid = [
+            [1, 1, 1],
+            [1, 0, 1],
+            [1, 1, 1]
+        ]
+        start = Node(1, 1, 0)
+        goal = Node(1, 1, 0)  # Same as start
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is True, "Path should be found when start and goal are the same."
+        assert path == [start, start], "Path should contain the same node twice."
+  new_imports_code: |
+    ""
+  test_tags: happy path
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test that the Dijkstra planner correctly handles a grid where the start and goal are the same.
+    This should cover the case where no movement is needed.
+  lines_to_cover: |
+    [152, 153]
+  test_name: |
+    test_same_start_goal
+  test_code: |
+    def test_same_start_goal():
+        grid = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(1, 1, 0)
+        goal = Node(1, 1, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is True, "Path should be found when start and goal are the same."
+        assert path == [start, start], "Path should contain the same node twice."
+  new_imports_code: |
+    ""
+  test_tags: happy path
+
+- test_behavior: |
+    Test that the Dijkstra planner correctly handles a grid where the start is outside the boundary.
+    This should cover the boundary check logic.
+  lines_to_cover: |
+    [8, 10, 111, 112]
+  test_name: |
+    test_start_outside_boundary
+  test_code: |
+    def test_start_outside_boundary():
+        grid = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(-1, -1, 0)  # Outside boundary
+        goal = Node(2, 2, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False, "No path should be found if the start is outside the grid."
+        assert path == [], "Path should be empty when no path is found."
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test that the Dijkstra planner correctly handles a grid where the goal is outside the boundary.
+    This should cover the boundary check logic.
+  lines_to_cover: |
+    [8, 10, 111, 112]
+  test_name: |
+    test_goal_outside_boundary
+  test_code: |
+    def test_goal_outside_boundary():
+        grid = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(1, 1, 0)
+        goal = Node(3, 3, 0)  # Outside boundary
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False, "No path should be found if the goal is outside the grid."
+        assert path == [], "Path should be empty when no path is found."
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test that the Dijkstra planner correctly handles a grid with all obstacles except the start and goal.
+    This should cover the logic for handling obstacles.
+  lines_to_cover: |
+    [114, 115]
+  test_name: |
+    test_all_obstacles_except_start_goal
+  test_code: |
+    def test_all_obstacles_except_start_goal():
+        grid = [
+            [1, 1, 1],
+            [1, 0, 1],
+            [1, 1, 1]
+        ]
+        start = Node(1, 1, 0)
+        goal = Node(1, 1, 0)  # Same as start
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is True, "Path should be found when start and goal are the same."
+        assert path == [start, start], "Path should contain the same node twice."
+  new_imports_code: |
+    ""
+  test_tags: happy path
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test that the Dijkstra planner correctly handles a grid where the start and goal are the same.
+    This should cover the case where no movement is needed.
+  lines_to_cover: |
+    [152, 153]
+  test_name: |
+    test_same_start_goal
+  test_code: |
+    def test_same_start_goal():
+        grid = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(1, 1, 0)
+        goal = Node(1, 1, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is True, "Path should be found when start and goal are the same."
+        assert path == [start, start], "Path should contain the same node twice."
+  new_imports_code: |
+    ""
+  test_tags: happy path
+
+- test_behavior: |
+    Test that the Dijkstra planner correctly handles a grid where the start is outside the boundary.
+    This should cover the boundary check logic.
+  lines_to_cover: |
+    [8, 10, 111, 112]
+  test_name: |
+    test_start_outside_boundary
+  test_code: |
+    def test_start_outside_boundary():
+        grid = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(-1, -1, 0)  # Outside boundary
+        goal = Node(2, 2, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False, "No path should be found if the start is outside the grid."
+        assert path == [], "Path should be empty when no path is found."
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test that the Dijkstra planner correctly handles a grid where the goal is outside the boundary.
+    This should cover the boundary check logic.
+  lines_to_cover: |
+    [8, 10, 111, 112]
+  test_name: |
+    test_goal_outside_boundary
+  test_code: |
+    def test_goal_outside_boundary():
+        grid = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(1, 1, 0)
+        goal = Node(3, 3, 0)  # Outside boundary
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False, "No path should be found if the goal is outside the grid."
+        assert path == [], "Path should be empty when no path is found."
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test that the Dijkstra planner correctly handles a grid with all obstacles except the start and goal.
+    This should cover the logic for handling obstacles.
+  lines_to_cover: |
+    [114, 115]
+  test_name: |
+    test_all_obstacles_except_start_goal
+  test_code: |
+    def test_all_obstacles_except_start_goal():
+        grid = [
+            [1, 1, 1],
+            [1, 0, 1],
+            [1, 1, 1]
+        ]
+        start = Node(1, 1, 0)
+        goal = Node(1, 1, 0)  # Same as start
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is True, "Path should be found when start and goal are the same."
+        assert path == [start, start], "Path should contain the same node twice."
+  new_imports_code: |
+    ""
+  test_tags: happy path
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test that the Dijkstra planner correctly handles a grid where the start and goal are the same.
+    This should cover the case where no movement is needed.
+  lines_to_cover: |
+    [152, 153]
+  test_name: |
+    test_same_start_goal
+  test_code: |
+    def test_same_start_goal():
+        grid = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(1, 1, 0)
+        goal = Node(1, 1, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is True, "Path should be found when start and goal are the same."
+        assert path == [start, start], "Path should contain the same node twice."
+  new_imports_code: |
+    ""
+  test_tags: happy path
+
+- test_behavior: |
+    Test that the Dijkstra planner correctly handles a grid where the start is outside the boundary.
+    This should cover the boundary check logic.
+  lines_to_cover: |
+    [8, 10, 111, 112]
+  test_name: |
+    test_start_outside_boundary
+  test_code: |
+    def test_start_outside_boundary():
+        grid = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(-1, -1, 0)  # Outside boundary
+        goal = Node(2, 2, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False, "No path should be found if the start is outside the grid."
+        assert path == [], "Path should be empty when no path is found."
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test that the Dijkstra planner correctly handles a grid where the goal is outside the boundary.
+    This should cover the boundary check logic.
+  lines_to_cover: |
+    [8, 10, 111, 112]
+  test_name: |
+    test_goal_outside_boundary
+  test_code: |
+    def test_goal_outside_boundary():
+        grid = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(1, 1, 0)
+        goal = Node(3, 3, 0)  # Outside boundary
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False, "No path should be found if the goal is outside the grid."
+        assert path == [], "Path should be empty when no path is found."
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test that the Dijkstra planner correctly handles a grid with all obstacles except the start and goal.
+    This should cover the logic for handling obstacles.
+  lines_to_cover: |
+    [114, 115]
+  test_name: |
+    test_all_obstacles_except_start_goal
+  test_code: |
+    def test_all_obstacles_except_start_goal():
+        grid = [
+            [1, 1, 1],
+            [1, 0, 1],
+            [1, 1, 1]
+        ]
+        start = Node(1, 1, 0)
+        goal = Node(1, 1, 0)  # Same as start
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is True, "Path should be found when start and goal are the same."
+        assert path == [start, start], "Path should contain the same node twice."
+  new_imports_code: |
+    ""
+  test_tags: happy path
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test that the Dijkstra planner correctly handles a grid where the start and goal are the same.
+    This should cover the case where no movement is needed.
+  lines_to_cover: |
+    [152, 153]
+  test_name: |
+    test_same_start_goal
+  test_code: |
+    def test_same_start_goal():
+        grid = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(1, 1, 0)
+        goal = Node(1, 1, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is True, "Path should be found when start and goal are the same."
+        assert path == [start, start], "Path should contain the same node twice."
+  new_imports_code: |
+    ""
+  test_tags: happy path
+
+- test_behavior: |
+    Test that the Dijkstra planner correctly handles a grid where the start is outside the boundary.
+    This should cover the boundary check logic.
+  lines_to_cover: |
+    [8, 10, 111, 112]
+  test_name: |
+    test_start_outside_boundary
+  test_code: |
+    def test_start_outside_boundary():
+        grid = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(-1, -1, 0)  # Outside boundary
+        goal = Node(2, 2, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False, "No path should be found if the start is outside the grid."
+        assert path == [], "Path should be empty when no path is found."
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test that the Dijkstra planner correctly handles a grid where the goal is outside the boundary.
+    This should cover the boundary check logic.
+  lines_to_cover: |
+    [8, 10, 111, 112]
+  test_name: |
+    test_goal_outside_boundary
+  test_code: |
+    def test_goal_outside_boundary():
+        grid = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(1, 1, 0)
+        goal = Node(3, 3, 0)  # Outside boundary
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False, "No path should be found if the goal is outside the grid."
+        assert path == [], "Path should be empty when no path is found."
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test that the Dijkstra planner correctly handles a grid with all obstacles except the start and goal.
+    This should cover the logic for handling obstacles.
+  lines_to_cover: |
+    [114, 115]
+  test_name: |
+    test_all_obstacles_except_start_goal
+  test_code: |
+    def test_all_obstacles_except_start_goal():
+        grid = [
+            [1, 1, 1],
+            [1, 0, 1],
+            [1, 1, 1]
+        ]
+        start = Node(1, 1, 0)
+        goal = Node(1, 1, 0)  # Same as start
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is True, "Path should be found when start and goal are the same."
+        assert path == [start, start], "Path should contain the same node twice."
+  new_imports_code: |
+    ""
+  test_tags: happy path
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test that the Dijkstra planner correctly handles a grid where the start and goal are the same.
+    This should cover the case where no movement is needed.
+  lines_to_cover: |
+    [152, 153]
+  test_name: |
+    test_same_start_goal
+  test_code: |
+    def test_same_start_goal():
+        grid = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(1, 1, 0)
+        goal = Node(1, 1, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is True, "Path should be found when start and goal are the same."
+        assert path == [start, start], "Path should contain the same node twice."
+  new_imports_code: |
+    ""
+  test_tags: happy path
+
+- test_behavior: |
+    Test that the Dijkstra planner correctly handles a grid where the start is outside the boundary.
+    This should cover the boundary check logic.
+  lines_to_cover: |
+    [8, 10, 111, 112]
+  test_name: |
+    test_start_outside_boundary
+  test_code: |
+    def test_start_outside_boundary():
+        grid = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(-1, -1, 0)  # Outside boundary
+        goal = Node(2, 2, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False, "No path should be found if the start is outside the grid."
+        assert path == [], "Path should be empty when no path is found."
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test that the Dijkstra planner correctly handles a grid where the goal is outside the boundary.
+    This should cover the boundary check logic.
+  lines_to_cover: |
+    [8, 10, 111, 112]
+  test_name: |
+    test_goal_outside_boundary
+  test_code: |
+    def test_goal_outside_boundary():
+        grid = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(1, 1, 0)
+        goal = Node(3, 3, 0)  # Outside boundary
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False, "No path should be found if the goal is outside the grid."
+        assert path == [], "Path should be empty when no path is found."
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test that the Dijkstra planner correctly handles a grid with all obstacles except the start and goal.
+    This should cover the logic for handling obstacles.
+  lines_to_cover: |
+    [114, 115]
+  test_name: |
+    test_all_obstacles_except_start_goal
+  test_code: |
+    def test_all_obstacles_except_start_goal():
+        grid = [
+            [1, 1, 1],
+            [1, 0, 1],
+            [1, 1, 1]
+        ]
+        start = Node(1, 1, 0)
+        goal = Node(1, 1, 0)  # Same as start
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is True, "Path should be found when start and goal are the same."
+        assert path == [start, start], "Path should contain the same node twice."
+  new_imports_code: |
+    ""
+  test_tags: happy path
+```
+```yaml
+language: python
+existing_test_function_signature: |
+  def test_simple_path():
+new_tests:
+- test_behavior: |
+    Test that the Dijkstra planner correctly handles a grid where the start and goal are the same.
+    This should cover the case where no movement is needed.
+  lines_to_cover: |
+    [152, 153]
+  test_name: |
+    test_same_start_goal
+  test_code: |
+    def test_same_start_goal():
+        grid = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(1, 1, 0)
+        goal = Node(1, 1, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is True, "Path should be found when start and goal are the same."
+        assert path == [start, start], "Path should contain the same node twice."
+  new_imports_code: |
+    ""
+  test_tags: happy path
+
+- test_behavior: |
+    Test that the Dijkstra planner correctly handles a grid where the start is outside the boundary.
+    This should cover the boundary check logic.
+  lines_to_cover: |
+    [8, 10, 111, 112]
+  test_name: |
+    test_start_outside_boundary
+  test_code: |
+    def test_start_outside_boundary():
+        grid = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(-1, -1, 0)  # Outside boundary
+        goal = Node(2, 2, 0)
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False, "No path should be found if the start is outside the grid."
+        assert path == [], "Path should be empty when no path is found."
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test that the Dijkstra planner correctly handles a grid where the goal is outside the boundary.
+    This should cover the boundary check logic.
+  lines_to_cover: |
+    [8, 10, 111, 112]
+  test_name: |
+    test_goal_outside_boundary
+  test_code: |
+    def test_goal_outside_boundary():
+        grid = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        start = Node(1, 1, 0)
+        goal = Node(3, 3, 0)  # Outside boundary
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is False, "No path should be found if the goal is outside the grid."
+        assert path == [], "Path should be empty when no path is found."
+  new_imports_code: |
+    ""
+  test_tags: edge case
+
+- test_behavior: |
+    Test that the Dijkstra planner correctly handles a grid with all obstacles except the start and goal.
+    This should cover the logic for handling obstacles.
+  lines_to_cover: |
+    [114, 115]
+  test_name: |
+    test_all_obstacles_except_start_goal
+  test_code: |
+    def test_all_obstacles_except_start_goal():
+        grid = [
+            [1, 1, 1],
+            [1, 0, 1],
+            [1, 1, 1]
+        ]
+        start = Node(1, 1, 0)
+        goal = Node(1, 1, 0)  # Same as start
+        planner = Dijkstra(grid)
+        found, path = planner.plan(start, goal)
+
+        assert found is True, "Path should be found when start and goal are the same."
+        assert path == [start, start], "Path should contain the same node twice."
+  new_imports_code: |
+    ""
+  test_tags: happy path
+```
