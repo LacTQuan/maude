@@ -1,0 +1,131 @@
+coverage:
+  all_nodes: 0
+  covered_nodes: 0
+mutation_score: 33.33333333333333
+mutations:
+- exception_traceback: null
+  killer: null
+  module: &id001 !!python/module:app ''
+  mutations:
+  - lineno: 50
+    operator: AOD
+  number: 1
+  status: survived
+  tests_run: 16
+  time: 0.04840970039367676
+- exception_traceback: "def test_simple_path():\n        \"\"\"\n        Test a simple\
+    \ 5x5 grid with no obstacles.\n        The start is at the top\u2010left and the\
+    \ goal at the bottom\u2010right.\n        The algorithm should find a path.\n\
+    \        \"\"\"\n        n = 5\n        grid = [[0 for _ in range(n)] for _ in\
+    \ range(n)]\n        start = Node(0, 0)\n        goal = Node(4, 4)\n        start.id\
+    \ = 0\n        start.pid = 0\n        astar = AStar(grid)\n        found, path\
+    \ = astar.plan(start, goal)\n        assert found is True, \"A path should be\
+    \ found in an open grid\"\n        # According to our conversion, the returned\
+    \ path is from goal to start.\n>       assert compare_coordinates(path[0], goal),\
+    \ \"The first node in the path should be the goal\"\nE       IndexError: list\
+    \ index out of range\n\ntest/test_app.py:51: IndexError"
+  killer: test/test_app.py::test_simple_path
+  module: *id001
+  mutations:
+  - lineno: 81
+    operator: AOR
+  number: 2
+  status: killed
+  tests_run: 2
+  time: 0.06317591667175293
+- exception_traceback: null
+  killer: null
+  module: *id001
+  mutations:
+  - lineno: 99
+    operator: AOR
+  number: 3
+  status: survived
+  tests_run: 16
+  time: 0.05758786201477051
+- exception_traceback: null
+  killer: null
+  module: *id001
+  mutations:
+  - lineno: 84
+    operator: BCR
+  number: 4
+  status: survived
+  tests_run: 16
+  time: 0.06447815895080566
+- exception_traceback: null
+  killer: null
+  module: *id001
+  mutations:
+  - lineno: 102
+    operator: BCR
+  number: 5
+  status: survived
+  tests_run: 16
+  time: 0.059218406677246094
+- exception_traceback: null
+  killer: null
+  module: *id001
+  mutations:
+  - lineno: 122
+    operator: BCR
+  number: 6
+  status: survived
+  tests_run: 16
+  time: 0.05082201957702637
+- exception_traceback: null
+  killer: null
+  module: *id001
+  mutations:
+  - lineno: 129
+    operator: COI
+  number: 7
+  status: timeout
+  tests_run: null
+  time: 5.0078206062316895
+- exception_traceback: "def test_simple_path():\n        \"\"\"\n        Test a simple\
+    \ 5x5 grid with no obstacles.\n        The start is at the top\u2010left and the\
+    \ goal at the bottom\u2010right.\n        The algorithm should find a path.\n\
+    \        \"\"\"\n        n = 5\n        grid = [[0 for _ in range(n)] for _ in\
+    \ range(n)]\n        start = Node(0, 0)\n        goal = Node(4, 4)\n        start.id\
+    \ = 0\n        start.pid = 0\n        astar = AStar(grid)\n        found, path\
+    \ = astar.plan(start, goal)\n        assert found is True, \"A path should be\
+    \ found in an open grid\"\n        # According to our conversion, the returned\
+    \ path is from goal to start.\n>       assert compare_coordinates(path[0], goal),\
+    \ \"The first node in the path should be the goal\"\nE       AssertionError: The\
+    \ first node in the path should be the goal\n\ntest/test_app.py:51: AssertionError"
+  killer: test/test_app.py::test_simple_path
+  module: *id001
+  mutations:
+  - lineno: 58
+    operator: LCR
+  number: 8
+  status: killed
+  tests_run: 2
+  time: 0.06687259674072266
+- exception_traceback: null
+  killer: null
+  module: *id001
+  mutations:
+  - lineno: 169
+    operator: ROR
+  number: 9
+  status: survived
+  tests_run: 16
+  time: 0.05634474754333496
+number_of_tests: 16
+targets:
+- src
+tests:
+- name: test_app
+  target: null
+  time: 0.10364842414855957
+- name: conftest
+  target: null
+  time: 0.02978348731994629
+time_stats:
+  create_mutant_module: 0.013730525970458984
+  create_target_ast: 0.005068302154541016
+  mutate_module: 6.864254951477051
+  run_tests_with_mutant: 5.478205680847168
+total_time: 7.001880884170532

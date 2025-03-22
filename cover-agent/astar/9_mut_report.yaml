@@ -1,0 +1,103 @@
+coverage:
+  all_nodes: 0
+  covered_nodes: 0
+mutation_score: 33.33333333333333
+mutations:
+- exception_traceback: null
+  killer: null
+  module: &id001 !!python/module:app ''
+  mutations:
+  - lineno: 50
+    operator: AOD
+  number: 1
+  status: survived
+  tests_run: 16
+  time: 0.054049015045166016
+- exception_traceback: null
+  killer: null
+  module: *id001
+  mutations:
+  - lineno: 97
+    operator: AOR
+  number: 2
+  status: survived
+  tests_run: 16
+  time: 0.0538785457611084
+- exception_traceback: null
+  killer: null
+  module: *id001
+  mutations:
+  - lineno: 177
+    operator: AOR
+  number: 3
+  status: survived
+  tests_run: 16
+  time: 0.05329585075378418
+- exception_traceback: null
+  killer: null
+  module: *id001
+  mutations:
+  - lineno: 122
+    operator: BCR
+  number: 4
+  status: survived
+  tests_run: 16
+  time: 0.05823206901550293
+- exception_traceback: "def test_start_equals_goal():\n        \"\"\"\n        Test\
+    \ the trivial case where the start and goal are the same.\n        The expected\
+    \ result is an immediate success with a path containing only the start.\n    \
+    \    \"\"\"\n        grid = [\n            [0, 0],\n            [0, 0]\n     \
+    \   ]\n        start = Node(0, 0)\n        goal = Node(0, 0)\n        # Set the\
+    \ start node's id and parent id.\n        start.id = 0\n        start.pid = 0\n\
+    \        astar = AStar(grid)\n        found, path = astar.plan(start, goal)\n\
+    \        assert found is True, \"Path should be found when start equals goal\"\
+    \n        # The path should consist of only one node (start).\n        assert\
+    \ len(path) == 1\n>       assert compare_coordinates(path[0], start), \"The only\
+    \ node in the path should be the start\"\nE       AssertionError: The only node\
+    \ in the path should be the start\n\ntest/test_app.py:33: AssertionError"
+  killer: test/test_app.py::test_start_equals_goal
+  module: *id001
+  mutations:
+  - lineno: 58
+    operator: ROR
+  number: 5
+  status: killed
+  tests_run: 1
+  time: 0.07960319519042969
+- exception_traceback: "def test_start_equals_goal():\n        \"\"\"\n        Test\
+    \ the trivial case where the start and goal are the same.\n        The expected\
+    \ result is an immediate success with a path containing only the start.\n    \
+    \    \"\"\"\n        grid = [\n            [0, 0],\n            [0, 0]\n     \
+    \   ]\n        start = Node(0, 0)\n        goal = Node(0, 0)\n        # Set the\
+    \ start node's id and parent id.\n        start.id = 0\n        start.pid = 0\n\
+    \        astar = AStar(grid)\n>       found, path = astar.plan(start, goal)\n\n\
+    test/test_app.py:29: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\
+    \ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <app.AStar object at 0x7fd9a220be20>\nstart\
+    \ = Node(x=0, y=0, id=0, pid=0, h_cost=0)\ngoal = Node(x=0, y=0, id=0, pid=0,\
+    \ h_cost=0)\n\n>   ???\nE   AttributeError: 'AStar' object has no attribute 'original_grid'\n\
+    \napp:71: AttributeError"
+  killer: test/test_app.py::test_start_equals_goal
+  module: *id001
+  mutations:
+  - lineno: 61
+    operator: SCD
+  number: 6
+  status: killed
+  tests_run: 1
+  time: 0.06808352470397949
+number_of_tests: 16
+targets:
+- src
+tests:
+- name: test_app
+  target: null
+  time: 0.1083221435546875
+- name: conftest
+  target: null
+  time: 0.03206777572631836
+time_stats:
+  create_mutant_module: 0.011769771575927734
+  create_target_ast: 0.006203174591064453
+  mutate_module: 1.4567062854766846
+  run_tests_with_mutant: 0.3698995113372803
+total_time: 1.6012439727783203

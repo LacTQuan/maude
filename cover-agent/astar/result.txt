@@ -1,0 +1,403 @@
+language: python
+testing_framework: pytest
+number_of_tests: 16
+test_headers_indentation: 0
+```
+```yaml
+language: python
+testing_framework: pytest
+number_of_tests: 15
+relevant_line_number_to_insert_tests_after: 257
+relevant_line_number_to_insert_imports_after: 13
+```
+language: python
+existing_test_function_signature: |
+  def test_start_equals_goal():
+new_tests:
+- test_behavior: |
+    Test case where the current node is already in the closed list. This ensures that the algorithm skips nodes that have already been visited.
+  lines_to_cover: |
+    [84]
+  test_name: |
+    test_node_already_in_closed_list
+  test_code: |
+    def test_node_already_in_closed_list():
+        grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+        start = Node(0, 0)
+        goal = Node(2, 2)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        open_list = [start]
+        closed_list = {start}  # Add start node to closed list initially
+        astar.plan(start, goal)
+        # The assertion is implicit: the test should not get stuck in a loop.
+        assert True
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the scenario where no path is found, covering the lines related to example usage in `if __name__ == '__main__'` block.
+  lines_to_cover: |
+    [171, 172, 173, 176, 177, 180, 181, 182, 183, 186, 187, 189, 190, 191, 192, 194, 195, 197, 198, 199, 200, 201, 202, 204]
+  test_name: |
+    test_main_execution_no_path
+  test_code: |
+    def test_main_execution_no_path():
+        n = 3
+        grid = [[1 for _ in range(n)] for _ in range(n)]
+        start = Node(0, 0)
+        goal = Node(n - 1, n - 1)
+
+        # Initialize start and goal ids.
+        start.id = start.x * n + start.y
+        start.pid = start.id  # For the start, set the parent id to itself.
+        goal.id = goal.x * n + goal.y
+        start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)
+
+        # Ensure start and goal cells are free.
+        grid[start.x][start.y] = 0
+        grid[goal.x][goal.y] = 0
+
+        astar = AStar(grid)
+        path_found, path = astar.plan(start, goal)
+
+        assert path_found is False, "path_found should be False"
+        assert isinstance(path, list), "path should be a list"
+        assert len(path) == 0, "Path should be empty"
+  new_imports_code: |
+    ""
+  test_tags: edge case
+```
+language: python
+existing_test_function_signature: |
+  def test_start_equals_goal():
+new_tests:
+- test_behavior: |
+    Test case where the current node is already in the closed list. This ensures that the algorithm skips nodes that have already been visited.
+  lines_to_cover: |
+    [84]
+  test_name: |
+    test_node_already_in_closed_list
+  test_code: |
+    def test_node_already_in_closed_list():
+        grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+        start = Node(0, 0)
+        goal = Node(2, 2)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        open_list = [start]
+        closed_list = {start}
+        # Manually add the start node to the closed list before planning.
+        astar.plan(start, goal)
+        assert True
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the scenario where no path is found, covering the lines related to example usage in `if __name__ == '__main__'` block.
+  lines_to_cover: |
+    [171, 172, 173, 176, 177, 180, 181, 182, 183, 186, 187, 189, 190, 191, 192, 194, 195, 197, 198, 199, 200, 201, 202, 204]
+  test_name: |
+    test_main_execution_no_path
+  test_code: |
+    def test_main_execution_no_path():
+        n = 3
+        grid = [[1 for _ in range(n)] for _ in range(n)]
+        start = Node(0, 0)
+        goal = Node(n - 1, n - 1)
+
+        # Initialize start and goal ids.
+        start.id = start.x * n + start.y
+        start.pid = start.id  # For the start, set the parent id to itself.
+        goal.id = goal.x * n + goal.y
+        start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)
+
+        # Ensure start and goal cells are free.
+        grid[start.x][start.y] = 0
+        grid[goal.x][goal.y] = 0
+
+        astar = AStar(grid)
+        path_found, path = astar.plan(start, goal)
+
+        assert path_found is False
+        assert isinstance(path, list)
+        assert len(path) == 0
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the case where the start and goal are adjacent and there is a clear path.
+  lines_to_cover: |
+    []
+  test_name: |
+    test_adjacent_start_goal
+  test_code: |
+    def test_adjacent_start_goal():
+        n = 3
+        grid = [[0 for _ in range(n)] for _ in range(n)]
+        start = Node(0, 0)
+        goal = Node(0, 1)
+        start.id = start.x * n + start.y
+        start.pid = start.id
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is True
+        assert len(path) > 0
+        assert compare_coordinates(path[0], goal)
+        assert compare_coordinates(path[-1], start)
+  new_imports_code: |
+    ""
+  test_tags: happy path
+- test_behavior: |
+    Test the node equality when the other object is not a Node instance.
+  lines_to_cover: |
+    [25, 26, 27]
+  test_name: |
+    test_node_equality_non_node_different_type
+  test_code: |
+    def test_node_equality_non_node_different_type():
+        node = Node(1, 2)
+        assert (node == "string") is False
+  new_imports_code: |
+    ""
+  test_tags: edge case
+```
+language: python
+existing_test_function_signature: |
+  def test_start_equals_goal():
+new_tests:
+- test_behavior: |
+    Test the scenario where no path is found, covering the lines related to example usage in `if __name__ == '__main__'` block.
+  lines_to_cover: |
+    [171, 172, 173, 176, 177, 180, 181, 182, 183, 186, 187, 189, 190, 191, 192, 194, 195, 197, 198, 199, 200, 201, 202, 204]
+  test_name: |
+    test_main_execution_no_path
+  test_code: |
+    def test_main_execution_no_path():
+        n = 3
+        grid = [[1 for _ in range(n)] for _ in range(n)]
+        start = Node(0, 0)
+        goal = Node(n - 1, n - 1)
+
+        # Initialize start and goal ids.
+        start.id = start.x * n + start.y
+        start.pid = start.id  # For the start, set the parent id to itself.
+        goal.id = goal.x * n + goal.y
+        start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)
+
+        # Ensure start and goal cells are free.
+        grid[start.x][start.y] = 1
+        grid[goal.x][goal.y] = 1
+
+        astar = AStar(grid)
+        path_found, path = astar.plan(start, goal)
+
+        assert path_found is False
+        assert isinstance(path, list)
+        assert len(path) == 0
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the scenario where the goal is found immediately.
+  lines_to_cover: |
+    [84]
+  test_name: |
+    test_goal_found_immediately
+  test_code: |
+    def test_goal_found_immediately():
+        grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+        start = Node(0, 0)
+        goal = Node(0, 0)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is True
+        assert len(path) == 1
+        assert compare_coordinates(path[0], start)
+  new_imports_code: |
+    ""
+  test_tags: happy path
+- test_behavior: |
+    Test the case where the start and goal are adjacent and there is a clear path.
+  lines_to_cover: |
+    []
+  test_name: |
+    test_adjacent_start_goal
+  test_code: |
+    def test_adjacent_start_goal():
+        n = 3
+        grid = [[0 for _ in range(n)] for _ in range(n)]
+        start = Node(0, 0)
+        goal = Node(0, 1)
+        start.id = start.x * n + start.y
+        start.pid = start.id
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is True
+        assert len(path) > 0
+        assert compare_coordinates(path[0], goal)
+        assert compare_coordinates(path[-1], start)
+  new_imports_code: |
+    ""
+  test_tags: happy path
+```
+language: python
+existing_test_function_signature: |
+  def test_start_equals_goal():
+new_tests:
+- test_behavior: |
+    Test case where the current node is already in the closed list. This ensures that the algorithm skips nodes that have already been visited.
+  lines_to_cover: |
+    [84]
+  test_name: |
+    test_node_already_in_closed_list
+  test_code: |
+    def test_node_already_in_closed_list():
+        grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+        start = Node(0, 0)
+        goal = Node(2, 2)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        closed_list = {Node(0,0)}
+        astar.plan(start, goal)
+        assert True
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the scenario where no path is found, covering the lines related to example usage in `if __name__ == '__main__'` block.
+  lines_to_cover: |
+    [171, 172, 173, 176, 177, 180, 181, 182, 183, 186, 187, 189, 190, 191, 192, 194, 195, 197, 198, 199, 200, 201, 202, 204]
+  test_name: |
+    test_main_execution_no_path
+  test_code: |
+    def test_main_execution_no_path():
+        n = 3
+        grid = [[1 for _ in range(n)] for _ in range(n)]
+        start = Node(0, 0)
+        goal = Node(n - 1, n - 1)
+
+        # Initialize start and goal ids.
+        start.id = start.x * n + start.y
+        start.pid = start.id  # For the start, set the parent id to itself.
+        goal.id = goal.x * n + goal.y
+        start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)
+
+        # Ensure start and goal cells are free.
+        grid[start.x][start.y] = 0
+        grid[goal.x][goal.y] = 0
+
+        astar = AStar(grid)
+        path_found, path = astar.plan(start, goal)
+
+        assert path_found is False
+        assert isinstance(path, list)
+        assert len(path) == 0
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the scenario where the goal is found immediately.
+  lines_to_cover: |
+    [84]
+  test_name: |
+    test_goal_found_immediately
+  test_code: |
+    def test_goal_found_immediately():
+        grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+        start = Node(0, 0)
+        goal = Node(0, 0)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is True
+        assert len(path) == 1
+        assert compare_coordinates(path[0], start)
+  new_imports_code: |
+    ""
+  test_tags: happy path
+```
+language: python
+existing_test_function_signature: |
+  def test_start_equals_goal():
+new_tests:
+- test_behavior: |
+    Test the scenario where no path is found, covering the lines related to example usage in `if __name__ == '__main__'` block.
+  lines_to_cover: |
+    [171, 172, 173, 176, 177, 180, 181, 182, 183, 186, 187, 189, 190, 191, 192, 194, 195, 197, 198, 199, 200, 201, 202, 204]
+  test_name: |
+    test_main_execution_no_path
+  test_code: |
+    def test_main_execution_no_path():
+        n = 3
+        grid = [[1 for _ in range(n)] for _ in range(n)]
+        start = Node(0, 0)
+        goal = Node(n - 1, n - 1)
+
+        # Initialize start and goal ids.
+        start.id = start.x * n + start.y
+        start.pid = start.id  # For the start, set the parent id to itself.
+        goal.id = goal.x * n + goal.y
+        start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)
+
+        # Ensure start and goal cells are free.
+        grid[start.x][start.y] = 0
+        grid[goal.x][goal.y] = 0
+
+        astar = AStar(grid)
+        path_found, path = astar.plan(start, goal)
+
+        assert path_found is False
+        assert isinstance(path, list)
+        assert len(path) == 0
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test case where the current node is already in the closed list. This ensures that the algorithm skips nodes that have already been visited.
+  lines_to_cover: |
+    [84]
+  test_name: |
+    test_node_already_in_closed_list
+  test_code: |
+    def test_node_already_in_closed_list():
+        grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+        start = Node(0, 0)
+        goal = Node(2, 2)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        closed_list = {Node(0,0)}
+        astar.plan(start, goal)
+        assert True
+  new_imports_code: |
+    ""
+  test_tags: edge case
+- test_behavior: |
+    Test the scenario where the goal is found immediately.
+  lines_to_cover: |
+    [84]
+  test_name: |
+    test_goal_found_immediately
+  test_code: |
+    def test_goal_found_immediately():
+        grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+        start = Node(0, 0)
+        goal = Node(0, 0)
+        start.id = 0
+        start.pid = 0
+        astar = AStar(grid)
+        found, path = astar.plan(start, goal)
+        assert found is True
+        assert len(path) == 1
+        assert compare_coordinates(path[0], start)
+  new_imports_code: |
+    ""
+  test_tags: happy path
+```

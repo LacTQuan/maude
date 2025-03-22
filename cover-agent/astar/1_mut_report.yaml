@@ -1,0 +1,81 @@
+coverage:
+  all_nodes: 0
+  covered_nodes: 0
+mutation_score: 20.0
+mutations:
+- exception_traceback: "def test_simple_path():\n        \"\"\"\n        Test a simple\
+    \ 5x5 grid with no obstacles.\n        The start is at the top\u2010left and the\
+    \ goal at the bottom\u2010right.\n        The algorithm should find a path.\n\
+    \        \"\"\"\n        n = 5\n        grid = [[0 for _ in range(n)] for _ in\
+    \ range(n)]\n        start = Node(0, 0)\n        goal = Node(4, 4)\n        start.id\
+    \ = 0\n        start.pid = 0\n        astar = AStar(grid)\n        found, path\
+    \ = astar.plan(start, goal)\n        assert found is True, \"A path should be\
+    \ found in an open grid\"\n        # According to our conversion, the returned\
+    \ path is from goal to start.\n>       assert compare_coordinates(path[0], goal),\
+    \ \"The first node in the path should be the goal\"\nE       IndexError: list\
+    \ index out of range\n\ntest/test_app.py:51: IndexError"
+  killer: test/test_app.py::test_simple_path
+  module: &id001 !!python/module:app ''
+  mutations:
+  - lineno: 81
+    operator: AOR
+  number: 1
+  status: killed
+  tests_run: 2
+  time: 0.07829070091247559
+- exception_traceback: null
+  killer: null
+  module: *id001
+  mutations:
+  - lineno: 97
+    operator: AOR
+  number: 2
+  status: survived
+  tests_run: 16
+  time: 0.05426502227783203
+- exception_traceback: null
+  killer: null
+  module: *id001
+  mutations:
+  - lineno: 177
+    operator: AOR
+  number: 3
+  status: survived
+  tests_run: 16
+  time: 0.05415654182434082
+- exception_traceback: null
+  killer: null
+  module: *id001
+  mutations:
+  - lineno: 180
+    operator: AOR
+  number: 4
+  status: survived
+  tests_run: 16
+  time: 0.05387711524963379
+- exception_traceback: null
+  killer: null
+  module: *id001
+  mutations:
+  - lineno: 27
+    operator: LCR
+  number: 5
+  status: survived
+  tests_run: 16
+  time: 0.049665212631225586
+number_of_tests: 16
+targets:
+- src
+tests:
+- name: test_app
+  target: null
+  time: 0.11204910278320312
+- name: conftest
+  target: null
+  time: 0.029671430587768555
+time_stats:
+  create_mutant_module: 0.008524894714355469
+  create_target_ast: 0.00581669807434082
+  mutate_module: 1.2821009159088135
+  run_tests_with_mutant: 0.2921736240386963
+total_time: 1.4285359382629395

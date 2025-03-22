@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MutPy mutation report - mutation #4</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
+    
+<link href="http://alexgorbatchev.com/pub/sh/current/styles/shCore.css" rel="stylesheet" type="text/css" />
+<link href="http://alexgorbatchev.com/pub/sh/current/styles/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+    <script src="https://code.jquery.com/jquery.js"></script>
+    <script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+    
+<script src="http://alexgorbatchev.com/pub/sh/current/scripts/shCore.js" type="text/javascript"></script>
+<script src="http://alexgorbatchev.com/pub/sh/current/scripts/shBrushPython.js" type="text/javascript"></script>
+<script type="text/javascript">
+    SyntaxHighlighter.all();
+    window.setTimeout(function () {
+        
+        $('.line.number84').attr('title', 'BCR');
+        
+    }, 0);
+</script>
+
+</head>
+<body>
+    <div class="container">
+        
+<div class="page-header">
+    <h1>Mutation #4</h1>
+</div>
+<h3>Details</h3>
+<ul>
+    <li>module - <code><module 'app' from '/home/thiuquan/code/maude/cover-agent/astar/src/app.py'></code></li>
+    <li><span class="label label-danger">survived</span></li>
+    
+    <li>duration - 0.06 s</li>
+    
+    
+    <li>tests run - 16</li>
+    
+</ul>
+
+<h3>Mutations</h3>
+<ul>
+    
+    <li>BCR - line 84</li>
+    
+</ul>
+<h3>Mutant</h3>
+<pre class="brush: python; first-line: 2; highlight: [84]; toolbar: false;">
+'''
+This file is a Python translation of the provided C++ A* code.
+It implements a simple A* (greedy best-first) search over a grid.
+'''
+
+import heapq
+import random
+from dataclasses import dataclass
+from typing import List, Tuple
+
+
+@dataclass
+class Node:xint
+    yint
+    idint0
+    pidint0
+    h_costint0
+    
+    def __add__(self, other):
+        
+        return Node(self.x + other.x, self.y + other.y)
+    
+    def __eq__(self, other):
+        if not (isinstance(other, Node)):
+            return False
+        return (self.x == other.x and self.y == other.y)
+    
+    def __hash__(self):
+        
+        return hash((self.x, self.y))
+    
+    def __lt__(self, other):
+        
+        return self.h_cost < other.h_cost
+
+class Planner:
+    def __init__(self, grid: List[List[int]]):
+        
+        self.original_grid = [row[:] for row in grid]
+        self.grid = [row[:] for row in grid]
+        self.n = len(grid)
+
+def get_motion() -> List[Node]:
+    '''
+    Returns a list of possible moves (4-connected grid).
+    Each move is represented as a Node with the corresponding offset.
+    '''
+    
+    return [Node(-1, 0), Node(1, 0), Node(0, -1), Node(0, 1)]
+
+def check_outside_boundary(node: Node, n: int) -> bool:
+    '''Return True if the node is outside the grid boundaries.'''
+    return (node.x < 0 or node.x >= n or node.y < 0 or node.y >= n)
+
+def compare_coordinates(node1: Node, node2: Node) -> bool:
+    '''Return True if node1 and node2 share the same coordinates.'''
+    return (node1.x == node2.x and node1.y == node2.y)
+
+class AStar(Planner):
+    def __init__(self, grid: List[List[int]]):
+        super().__init__(grid)
+    
+    def plan(self, start: Node, goal: Node) -> Tuple[(bool, List[Node])]:
+        '''
+        Executes the A* (greedy best-first) search.
+        Returns a tuple: (True, path_list) if the goal is found,
+        otherwise (False, empty_list).
+        '''
+        
+        self.grid = [row[:] for row in self.original_grid]
+        open_list = []
+        closed_list = set()
+        
+        motion = get_motion()
+        heapq.heappush(open_list, start)
+        
+        
+        while open_list:
+            current = heapq.heappop(open_list)
+            current.id = (current.x * self.n) + current.y
+            
+            if current in closed_list:
+                break
+            
+            if compare_coordinates(current, goal):
+                closed_list.add(current)
+                self.grid[current.x][current.y] = 2
+                return (True, self.convert_closed_list_to_path(closed_list, start, goal))
+            
+            self.grid[current.x][current.y] = 2
+            
+            for m in motion:
+                new_point = current + m
+                if new_point in closed_list:
+                    continue
+                new_point.id = (new_point.x * self.n) + new_point.y
+                new_point.pid = current.id
+                new_point.h_cost = abs(new_point.x - goal.x) + abs(new_point.y - goal.y)
+                if compare_coordinates(new_point, goal):
+                    heapq.heappush(open_list, new_point)
+                    break
+                if check_outside_boundary(new_point, self.n):
+                    continue
+                if self.grid[new_point.x][new_point.y] != 0:
+                    continue
+                heapq.heappush(open_list, new_point)
+            
+            closed_list.add(current)
+        return (False, [])
+    
+    def convert_closed_list_to_path(self, closed_list: set, start: Node, goal: Node) -> List[Node]:
+        '''
+        Reconstructs the path from goal to start using the parent pointers (pid)
+        stored in the nodes in the closed list.
+        '''
+        current = None
+        
+        for node in closed_list:
+            if compare_coordinates(node, goal):
+                current = node
+                break
+        if current is None:
+            print('Error: Goal not found in closed list')
+            return []
+        
+        path = []
+        
+        while not (compare_coordinates(current, start)):
+            path.append(current)
+            
+            parent = Node(current.pid // self.n, current.pid % self.n)
+            parent_node = None
+            for node in closed_list:
+                if compare_coordinates(node, parent):
+                    parent_node = node
+                    break
+            if parent_node is None:
+                print('Error in calculating path')
+                return []
+            current = parent_node
+        path.append(start)
+        return path
+
+def make_grid(grid: List[List[int]]):
+    '''
+    A dummy grid creation function.
+    In the original C++ code, obstacles may be added here.
+    For simplicity, this version leaves the grid unchanged.
+    '''
+    pass
+
+def print_grid(grid: List[List[int]]):
+    '''Prints the grid row by row.'''
+    for row in grid:
+        print(' '.join(map(str, row)))
+
+def print_path(path: List[Node], start: Node, goal: Node, grid: List[List[int]]):
+    '''
+    Prints the grid with the path marked (using the value 8).
+    The path is taken as returned (from goal to start).
+    '''
+    grid_copy = [row[:] for row in grid]
+    for node in path:
+        grid_copy[node.x][node.y] = 8
+    print('Grid with path:')
+    print_grid(grid_copy)
+
+if __name__ == '__main__':
+    
+    n = 11
+    grid = [[0 for _ in range(n)] for _ in range(n)]
+    make_grid(grid)
+    
+    
+    start = Node(random.randint(0, n - 1), random.randint(0, n - 1))
+    goal = Node(random.randint(0, n - 1), random.randint(0, n - 1))
+    
+    
+    start.id = (start.x * n) + start.y
+    start.pid = start.id
+    goal.id = (goal.x * n) + goal.y
+    start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)
+    
+    
+    grid[start.x][start.y] = 0
+    grid[goal.x][goal.y] = 0
+    
+    print('Start:', start)
+    print('Goal:', goal)
+    print('Initial Grid:')
+    print_grid(grid)
+    
+    astar = AStar(grid)
+    (path_found, path) = astar.plan(start, goal)
+    
+    if path_found:
+        print('\nPath found:')
+        for node in path:
+            print(node)
+        print()
+        print_path(path, start, goal, grid)
+    else:
+        print('No path found.')</pre>
+
+    </div>
+</body>
+</html>

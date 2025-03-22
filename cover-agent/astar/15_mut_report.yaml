@@ -1,0 +1,106 @@
+coverage:
+  all_nodes: 0
+  covered_nodes: 0
+mutation_score: 80.0
+mutations:
+- exception_traceback: null
+  killer: null
+  module: &id001 !!python/module:app ''
+  mutations:
+  - lineno: 183
+    operator: AOR
+  number: 1
+  status: survived
+  tests_run: 16
+  time: 0.06543993949890137
+- exception_traceback: "def test_start_equals_goal():\n        \"\"\"\n        Test\
+    \ the trivial case where the start and goal are the same.\n        The expected\
+    \ result is an immediate success with a path containing only the start.\n    \
+    \    \"\"\"\n        grid = [\n            [0, 0],\n            [0, 0]\n     \
+    \   ]\n        start = Node(0, 0)\n        goal = Node(0, 0)\n        # Set the\
+    \ start node's id and parent id.\n        start.id = 0\n        start.pid = 0\n\
+    \        astar = AStar(grid)\n        found, path = astar.plan(start, goal)\n\
+    >       assert found is True, \"Path should be found when start equals goal\"\n\
+    E       AssertionError: Path should be found when start equals goal\n\ntest/test_app.py:30:\
+    \ AssertionError"
+  killer: test/test_app.py::test_start_equals_goal
+  module: *id001
+  mutations:
+  - lineno: 83
+    operator: COI
+  number: 2
+  status: killed
+  tests_run: 1
+  time: 0.0793917179107666
+- exception_traceback: "def test_simple_path():\n        \"\"\"\n        Test a simple\
+    \ 5x5 grid with no obstacles.\n        The start is at the top\u2010left and the\
+    \ goal at the bottom\u2010right.\n        The algorithm should find a path.\n\
+    \        \"\"\"\n        n = 5\n        grid = [[0 for _ in range(n)] for _ in\
+    \ range(n)]\n        start = Node(0, 0)\n        goal = Node(4, 4)\n        start.id\
+    \ = 0\n        start.pid = 0\n        astar = AStar(grid)\n        found, path\
+    \ = astar.plan(start, goal)\n        assert found is True, \"A path should be\
+    \ found in an open grid\"\n        # According to our conversion, the returned\
+    \ path is from goal to start.\n>       assert compare_coordinates(path[0], goal),\
+    \ \"The first node in the path should be the goal\"\nE       AssertionError: The\
+    \ first node in the path should be the goal\n\ntest/test_app.py:51: AssertionError"
+  killer: test/test_app.py::test_simple_path
+  module: *id001
+  mutations:
+  - lineno: 58
+    operator: LCR
+  number: 3
+  status: killed
+  tests_run: 2
+  time: 0.07847428321838379
+- exception_traceback: "def test_simple_path():\n        \"\"\"\n        Test a simple\
+    \ 5x5 grid with no obstacles.\n        The start is at the top\u2010left and the\
+    \ goal at the bottom\u2010right.\n        The algorithm should find a path.\n\
+    \        \"\"\"\n        n = 5\n        grid = [[0 for _ in range(n)] for _ in\
+    \ range(n)]\n        start = Node(0, 0)\n        goal = Node(4, 4)\n        start.id\
+    \ = 0\n        start.pid = 0\n        astar = AStar(grid)\n        found, path\
+    \ = astar.plan(start, goal)\n>       assert found is True, \"A path should be\
+    \ found in an open grid\"\nE       AssertionError: A path should be found in an\
+    \ open grid\n\ntest/test_app.py:49: AssertionError"
+  killer: test/test_app.py::test_simple_path
+  module: *id001
+  mutations:
+  - lineno: 54
+    operator: ROR
+  number: 4
+  status: killed
+  tests_run: 2
+  time: 0.09818720817565918
+- exception_traceback: "def test_simple_path():\n        \"\"\"\n        Test a simple\
+    \ 5x5 grid with no obstacles.\n        The start is at the top\u2010left and the\
+    \ goal at the bottom\u2010right.\n        The algorithm should find a path.\n\
+    \        \"\"\"\n        n = 5\n        grid = [[0 for _ in range(n)] for _ in\
+    \ range(n)]\n        start = Node(0, 0)\n        goal = Node(4, 4)\n        start.id\
+    \ = 0\n        start.pid = 0\n        astar = AStar(grid)\n        found, path\
+    \ = astar.plan(start, goal)\n>       assert found is True, \"A path should be\
+    \ found in an open grid\"\nE       AssertionError: A path should be found in an\
+    \ open grid\n\ntest/test_app.py:49: AssertionError"
+  killer: test/test_app.py::test_simple_path
+  module: *id001
+  mutations:
+  - lineno: 105
+    operator: ROR
+  number: 5
+  status: killed
+  tests_run: 2
+  time: 0.08732295036315918
+number_of_tests: 16
+targets:
+- src
+tests:
+- name: test_app
+  target: null
+  time: 0.14541077613830566
+- name: conftest
+  target: null
+  time: 0.038513898849487305
+time_stats:
+  create_mutant_module: 0.009746074676513672
+  create_target_ast: 0.00561213493347168
+  mutate_module: 1.4305133819580078
+  run_tests_with_mutant: 0.4111618995666504
+total_time: 1.6193058490753174

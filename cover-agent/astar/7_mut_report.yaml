@@ -1,0 +1,133 @@
+coverage:
+  all_nodes: 0
+  covered_nodes: 0
+mutation_score: 22.22222222222222
+mutations:
+- exception_traceback: null
+  killer: null
+  module: &id001 !!python/module:app ''
+  mutations:
+  - lineno: 94
+    operator: AOR
+  number: 1
+  status: incompetent
+  tests_run: 2
+  time: 0.08546710014343262
+- exception_traceback: null
+  killer: null
+  module: *id001
+  mutations:
+  - lineno: 99
+    operator: AOR
+  number: 2
+  status: survived
+  tests_run: 16
+  time: 0.05765104293823242
+- exception_traceback: null
+  killer: null
+  module: *id001
+  mutations:
+  - lineno: 99
+    operator: AOR
+  number: 3
+  status: survived
+  tests_run: 16
+  time: 0.05477309226989746
+- exception_traceback: null
+  killer: null
+  module: *id001
+  mutations:
+  - lineno: 182
+    operator: AOR
+  number: 4
+  status: survived
+  tests_run: 16
+  time: 0.06523609161376953
+- exception_traceback: null
+  killer: null
+  module: *id001
+  mutations:
+  - lineno: 183
+    operator: AOR
+  number: 5
+  status: survived
+  tests_run: 16
+  time: 0.06289148330688477
+- exception_traceback: null
+  killer: null
+  module: *id001
+  mutations:
+  - lineno: 84
+    operator: BCR
+  number: 6
+  status: survived
+  tests_run: 16
+  time: 0.053972482681274414
+- exception_traceback: null
+  killer: null
+  module: *id001
+  mutations:
+  - lineno: 137
+    operator: BCR
+  number: 7
+  status: survived
+  tests_run: 16
+  time: 0.05856919288635254
+- exception_traceback: "def test_node_equality_non_node():\n        node = Node(1,\
+    \ 2)\n>       assert (node == 1) is False\n\ntest/test_app.py:256: \n_ _ _ _ _\
+    \ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself\
+    \ = Node(x=1, y=2, id=0, pid=0, h_cost=0), other = 1\n\n>   ???\nE   AttributeError:\
+    \ 'int' object has no attribute 'x'\n\napp:27: AttributeError"
+  killer: test/test_app.py::test_node_equality_non_node
+  module: *id001
+  mutations:
+  - lineno: 25
+    operator: COD
+  number: 8
+  status: killed
+  tests_run: 15
+  time: 0.08798575401306152
+- exception_traceback: "def test_simple_path():\n        \"\"\"\n        Test a simple\
+    \ 5x5 grid with no obstacles.\n        The start is at the top\u2010left and the\
+    \ goal at the bottom\u2010right.\n        The algorithm should find a path.\n\
+    \        \"\"\"\n        n = 5\n        grid = [[0 for _ in range(n)] for _ in\
+    \ range(n)]\n        start = Node(0, 0)\n        goal = Node(4, 4)\n        start.id\
+    \ = 0\n        start.pid = 0\n        astar = AStar(grid)\n        found, path\
+    \ = astar.plan(start, goal)\n>       assert found is True, \"A path should be\
+    \ found in an open grid\"\nE       AssertionError: A path should be found in an\
+    \ open grid\n\ntest/test_app.py:49: AssertionError"
+  killer: test/test_app.py::test_simple_path
+  module: *id001
+  mutations:
+  - lineno: 95
+    operator: COI
+  number: 9
+  status: killed
+  tests_run: 2
+  time: 0.08048129081726074
+- exception_traceback: null
+  killer: null
+  module: *id001
+  mutations:
+  - lineno: 35
+    operator: ROR
+  number: 10
+  status: survived
+  tests_run: 16
+  time: 0.05718374252319336
+number_of_tests: 16
+targets:
+- src
+tests:
+- name: test_app
+  target: null
+  time: 0.15174436569213867
+- name: conftest
+  target: null
+  time: 0.03863692283630371
+time_stats:
+  create_mutant_module: 0.017663002014160156
+  create_target_ast: 0.006403207778930664
+  mutate_module: 2.334651231765747
+  run_tests_with_mutant: 0.6684210300445557
+total_time: 2.5302579402923584

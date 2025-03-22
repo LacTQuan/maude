@@ -1,0 +1,30 @@
+Test Behavior: Test case where the current node is already in the closed list. This ensures that the algorithm skips nodes that have already been visited.
+
+Test Behavior: Test the scenario where no path is found, covering the lines related to example usage in `if __name__ == '__main__'` block.
+
+Test Behavior: Test case where the current node is already in the closed list. This ensures that the algorithm skips nodes that have already been visited.
+
+Test Behavior: Test the scenario where no path is found, covering the lines related to example usage in `if __name__ == '__main__'` block.
+
+Test Behavior: Test the case where the start and goal are adjacent and there is a clear path.
+
+Test Behavior: Test the node equality when the other object is not a Node instance.
+
+Test Behavior: Test the scenario where no path is found, covering the lines related to example usage in `if __name__ == '__main__'` block.
+
+Test Behavior: Test the scenario where the goal is found immediately.
+
+Test Behavior: Test the case where the start and goal are adjacent and there is a clear path.
+
+Test Behavior: Test case where the current node is already in the closed list. This ensures that the algorithm skips nodes that have already been visited.
+
+Test Behavior: Test the scenario where no path is found, covering the lines related to example usage in `if __name__ == '__main__'` block.
+
+Test Behavior: Test the scenario where the goal is found immediately.
+
+Test Behavior: Test the scenario where no path is found, covering the lines related to example usage in `if __name__ == '__main__'` block.
+
+Test Behavior: Test case where the current node is already in the closed list. This ensures that the algorithm skips nodes that have already been visited.
+
+Test Behavior: Test the scenario where the goal is found immediately.
+

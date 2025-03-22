@@ -1,0 +1,166 @@
+coverage:
+  all_nodes: 0
+  covered_nodes: 0
+mutation_score: 36.36363636363637
+mutations:
+- exception_traceback: null
+  killer: null
+  module: &id001 !!python/module:app ''
+  mutations:
+  - lineno: 22
+    operator: AOR
+  number: 1
+  status: survived
+  tests_run: 16
+  time: 0.07602763175964355
+- exception_traceback: null
+  killer: null
+  module: *id001
+  mutations:
+  - lineno: 99
+    operator: AOR
+  number: 2
+  status: survived
+  tests_run: 16
+  time: 0.05481719970703125
+- exception_traceback: null
+  killer: null
+  module: *id001
+  mutations:
+  - lineno: 180
+    operator: AOR
+  number: 3
+  status: survived
+  tests_run: 16
+  time: 0.056745052337646484
+- exception_traceback: null
+  killer: null
+  module: *id001
+  mutations:
+  - lineno: 180
+    operator: AOR
+  number: 4
+  status: survived
+  tests_run: 16
+  time: 0.0503077507019043
+- exception_traceback: null
+  killer: null
+  module: *id001
+  mutations:
+  - lineno: 84
+    operator: BCR
+  number: 5
+  status: survived
+  tests_run: 16
+  time: 0.0501248836517334
+- exception_traceback: "def test_simple_path():\n        \"\"\"\n        Test a simple\
+    \ 5x5 grid with no obstacles.\n        The start is at the top\u2010left and the\
+    \ goal at the bottom\u2010right.\n        The algorithm should find a path.\n\
+    \        \"\"\"\n        n = 5\n        grid = [[0 for _ in range(n)] for _ in\
+    \ range(n)]\n        start = Node(0, 0)\n        goal = Node(4, 4)\n        start.id\
+    \ = 0\n        start.pid = 0\n        astar = AStar(grid)\n        found, path\
+    \ = astar.plan(start, goal)\n>       assert found is True, \"A path should be\
+    \ found in an open grid\"\nE       AssertionError: A path should be found in an\
+    \ open grid\n\ntest/test_app.py:49: AssertionError"
+  killer: test/test_app.py::test_simple_path
+  module: *id001
+  mutations:
+  - lineno: 96
+    operator: BCR
+  number: 6
+  status: killed
+  tests_run: 2
+  time: 0.07620573043823242
+- exception_traceback: "def test_path_with_obstacle():\n        n = 3\n        grid\
+    \ = [[0 for _ in range(n)] for _ in range(n)]\n        grid[1][1] = 1  # Add an\
+    \ obstacle in the middle\n        start = Node(0, 0)\n        goal = Node(2, 2)\n\
+    \        start.id = start.x * n + start.y\n        start.pid = start.id\n    \
+    \    goal.id = goal.x * n + goal.y\n        start.h_cost = abs(start.x - goal.x)\
+    \ + abs(start.y - goal.y)\n        grid[start.x][start.y] = 0\n        grid[goal.x][goal.y]\
+    \ = 0\n        astar = AStar(grid)\n        found, path = astar.plan(start, goal)\n\
+    >       assert found is True\nE       AssertionError\n\ntest/test_app.py:195:\
+    \ AssertionError"
+  killer: test/test_app.py::test_path_with_obstacle
+  module: *id001
+  mutations:
+  - lineno: 106
+    operator: BCR
+  number: 7
+  status: killed
+  tests_run: 12
+  time: 0.07004332542419434
+- exception_traceback: "def test_simple_path():\n        \"\"\"\n        Test a simple\
+    \ 5x5 grid with no obstacles.\n        The start is at the top\u2010left and the\
+    \ goal at the bottom\u2010right.\n        The algorithm should find a path.\n\
+    \        \"\"\"\n        n = 5\n        grid = [[0 for _ in range(n)] for _ in\
+    \ range(n)]\n        start = Node(0, 0)\n        goal = Node(4, 4)\n        start.id\
+    \ = 0\n        start.pid = 0\n        astar = AStar(grid)\n        found, path\
+    \ = astar.plan(start, goal)\n>       assert found is True, \"A path should be\
+    \ found in an open grid\"\nE       AssertionError: A path should be found in an\
+    \ open grid\n\ntest/test_app.py:49: AssertionError"
+  killer: test/test_app.py::test_simple_path
+  module: *id001
+  mutations:
+  - lineno: 105
+    operator: COI
+  number: 8
+  status: killed
+  tests_run: 2
+  time: 0.06728911399841309
+- exception_traceback: null
+  killer: null
+  module: *id001
+  mutations:
+  - lineno: 35
+    operator: ROR
+  number: 9
+  status: survived
+  tests_run: 16
+  time: 0.05034327507019043
+- exception_traceback: null
+  killer: null
+  module: *id001
+  mutations:
+  - lineno: 54
+    operator: ROR
+  number: 10
+  status: survived
+  tests_run: 16
+  time: 0.05847311019897461
+- exception_traceback: "def test_start_equals_goal():\n        \"\"\"\n        Test\
+    \ the trivial case where the start and goal are the same.\n        The expected\
+    \ result is an immediate success with a path containing only the start.\n    \
+    \    \"\"\"\n        grid = [\n            [0, 0],\n            [0, 0]\n     \
+    \   ]\n        start = Node(0, 0)\n        goal = Node(0, 0)\n        # Set the\
+    \ start node's id and parent id.\n        start.id = 0\n        start.pid = 0\n\
+    \        astar = AStar(grid)\n        found, path = astar.plan(start, goal)\n\
+    \        assert found is True, \"Path should be found when start equals goal\"\
+    \n        # The path should consist of only one node (start).\n        assert\
+    \ len(path) == 1\n>       assert compare_coordinates(path[0], start), \"The only\
+    \ node in the path should be the start\"\nE       AssertionError: The only node\
+    \ in the path should be the start\n\ntest/test_app.py:33: AssertionError"
+  killer: test/test_app.py::test_start_equals_goal
+  module: *id001
+  mutations:
+  - lineno: 58
+    operator: ROR
+  number: 11
+  status: killed
+  tests_run: 1
+  time: 0.07447195053100586
+number_of_tests: 16
+targets:
+- src
+tests:
+- name: test_app
+  target: null
+  time: 0.12039637565612793
+- name: conftest
+  target: null
+  time: 0.041512250900268555
+time_stats:
+  create_mutant_module: 0.02027153968811035
+  create_target_ast: 0.00624537467956543
+  mutate_module: 2.3361353874206543
+  run_tests_with_mutant: 0.6902415752410889
+total_time: 2.502988576889038

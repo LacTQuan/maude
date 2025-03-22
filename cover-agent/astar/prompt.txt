@@ -1,0 +1,3702 @@
+system: 
+user: ## Overview
+You are a code assistant that accepts a python test file as input.
+Your goal is to analyze this file, and provide several feedbacks: the programming language of the test file, the testing framework needed to run the tests in the test file, the number of tests in the test file, and the indentation of the test headers in the test file.
+
+Here is the file that contains the existing tests, called `test/test_app.py`:
+=========
+#!/usr/bin/env python3
+"""
+Unit tests for the AStar algorithm using pytest.
+To run these tests, execute:
+    pytest test_astar.py
+"""
+
+import pytest
+from src.app import Node, AStar, compare_coordinates
+from src.app import make_grid, print_path
+from src.app import print_grid
+from src.app import make_grid
+
+def test_start_equals_goal():
+    """
+    Test the trivial case where the start and goal are the same.
+    The expected result is an immediate success with a path containing only the start.
+    """
+    grid = [
+        [0, 0],
+        [0, 0]
+    ]
+    start = Node(0, 0)
+    goal = Node(0, 0)
+    # Set the start node's id and parent id.
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is True, "Path should be found when start equals goal"
+    # The path should consist of only one node (start).
+    assert len(path) == 1
+    assert compare_coordinates(path[0], start), "The only node in the path should be the start"
+
+def test_simple_path():
+    """
+    Test a simple 5x5 grid with no obstacles.
+    The start is at the top‐left and the goal at the bottom‐right.
+    The algorithm should find a path.
+    """
+    n = 5
+    grid = [[0 for _ in range(n)] for _ in range(n)]
+    start = Node(0, 0)
+    goal = Node(4, 4)
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is True, "A path should be found in an open grid"
+    # According to our conversion, the returned path is from goal to start.
+    assert compare_coordinates(path[0], goal), "The first node in the path should be the goal"
+    assert compare_coordinates(path[-1], start), "The last node in the path should be the start"
+
+def test_no_path():
+    """
+    Test a grid where obstacles block any possible path from start to goal.
+    Obstacles are represented by any non-zero cell.
+    """
+    grid = [
+        [0, 1, 1],
+        [1, 1, 1],
+        [1, 1, 0]
+    ]
+    start = Node(0, 0)
+    goal = Node(2, 2)
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is False, "No path should be found when obstacles block the way"
+    assert path == [], "The path should be empty when no path exists"
+
+
+def test_no_path_outside_boundary():
+    grid = [
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0]
+    ]
+    start = Node(-1, -1)  # Outside the grid
+    goal = Node(2, 2)     # Inside the grid
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is False, "No path should be found when start is outside the grid"
+    assert path == [], "The path should be empty when no path exists"
+
+
+def test_edge_case_start_goal():
+    grid = [
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0]
+    ]
+    start = Node(0, 0)  # Top-left corner
+    goal = Node(2, 2)   # Bottom-right corner
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is True, "A path should be found from top-left to bottom-right"
+    assert len(path) > 0, "The path should not be empty"
+
+
+def test_no_path_both_outside_boundary():
+    grid = [
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0]
+    ]
+    start = Node(-1, -1)  # Outside the grid
+    goal = Node(-2, -2)    # Outside the grid
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is False, "No path should be found when both start and goal are outside the grid"
+    assert path == [], "The path should be empty when no path exists"
+
+
+def test_parent_node_not_found():
+    grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+    start = Node(0, 0)
+    goal = Node(2, 2)
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    closed_list = {Node(0, 0), Node(1, 1), Node(2, 2)}
+    # Modify the goal node's pid to point to a non-existent parent.
+    for node in closed_list:
+        if compare_coordinates(node, goal):
+            node.pid = 999  # Non-existent ID
+            break
+    path = astar.convert_closed_list_to_path(closed_list, start, goal)
+    assert path == [], "Path should be empty when parent node is not found"
+
+
+def test_goal_not_found_in_closed_list():
+    grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+    start = Node(0, 0)
+    goal = Node(2, 2)
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    closed_list = {Node(0, 0), Node(1, 1)}  # Goal is not in closed_list
+    path = astar.convert_closed_list_to_path(closed_list, start, goal)
+    assert path == [], "Path should be empty when goal is not found in closed list"
+
+def test_print_grid():
+    grid = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+    # Call print_grid and check that it doesn't raise an exception.
+    try:
+        print_grid(grid)
+    except Exception as e:
+        assert False, f"print_grid raised an exception: {e}"
+    assert True  # If no exception was raised, the test passes.
+
+
+def test_make_grid_call():
+    grid = [[0, 0], [0, 0]]
+    try:
+        make_grid(grid)
+    except Exception as e:
+        assert False, f"make_grid raised an exception: {e}"
+    assert True
+
+
+def test_print_path():
+    grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+    start = Node(0, 0)
+    goal = Node(2, 2)
+    path = [Node(2, 2), Node(1, 1), Node(0, 0)]  # Example path
+    try:
+        print_path(path, start, goal, grid)
+    except Exception as e:
+        assert False, f"print_path raised an exception: {e}"
+    assert True
+
+
+def test_path_with_obstacle():
+    n = 3
+    grid = [[0 for _ in range(n)] for _ in range(n)]
+    grid[1][1] = 1  # Add an obstacle in the middle
+    start = Node(0, 0)
+    goal = Node(2, 2)
+    start.id = start.x * n + start.y
+    start.pid = start.id
+    goal.id = goal.x * n + goal.y
+    start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)
+    grid[start.x][start.y] = 0
+    grid[goal.x][goal.y] = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is True
+    assert len(path) > 0
+    assert compare_coordinates(path[0], goal)
+    assert compare_coordinates(path[-1], start)
+
+
+
+def test_main_execution():
+    n = 5  # Reduced grid size for faster testing
+    grid = [[0 for _ in range(n)] for _ in range(n)]
+    make_grid(grid)
+
+    # Randomly select start and goal positions.
+    start = Node(0, 0)
+    goal = Node(n - 1, n - 1)
+
+    # Initialize start and goal ids.
+    start.id = start.x * n + start.y
+    start.pid = start.id  # For the start, set the parent id to itself.
+    goal.id = goal.x * n + goal.y
+    start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)
+
+    # Ensure start and goal cells are free.
+    grid[start.x][start.y] = 0
+    grid[goal.x][goal.y] = 0
+
+    astar = AStar(grid)
+    path_found, path = astar.plan(start, goal)
+
+    assert isinstance(path_found, bool), "path_found should be a boolean"
+    assert isinstance(path, list), "path should be a list"
+
+
+def test_main_execution_no_random():
+    n = 5  # Reduced grid size for faster testing
+    grid = [[0 for _ in range(n)] for _ in range(n)]
+    make_grid(grid)
+
+    # Randomly select start and goal positions.
+    start = Node(0, 0)
+    goal = Node(n - 1, n - 1)
+
+    # Initialize start and goal ids.
+    start.id = start.x * n + start.y
+    start.pid = start.id  # For the start, set the parent id to itself.
+    goal.id = goal.x * n + goal.y
+    start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)
+
+    # Ensure start and goal cells are free.
+    grid[start.x][start.y] = 0
+    grid[goal.x][goal.y] = 0
+
+    astar = AStar(grid)
+    path_found, path = astar.plan(start, goal)
+
+    assert isinstance(path_found, bool), "path_found should be a boolean"
+    assert isinstance(path, list), "path should be a list"
+
+
+def test_node_equality_non_node():
+    node = Node(1, 2)
+    assert (node == 1) is False
+=========
+
+
+Now, you need to analyze the test file and provide a YAML object equivalent to type $TestsAnalysis, according to the following Pydantic definitions:
+=====
+
+class TestsAnalysis(BaseModel):
+    language: str = Field(description="The programming language used by the test file")
+    testing_framework: str = Field(description="The testing framework needed to run the tests in the test file")
+    number_of_tests: int = Field(description="The number of tests in the test file")
+    test_headers_indentation: int = Field(description="The indentation of the test headers in the test file.For example, "def test_..." has an indentation of 0, "  def test_..." has an indentation of 2, "    def test_..." has an indentation of 4, and so on.")
+
+=====
+
+
+Example output:
+
+```yaml
+language: python
+testing_framework: ...
+number_of_tests: ...
+test_headers_indentation: ...
+```
+
+The Response should be only a valid YAML object, without any introduction text or follow-up text.
+
+Answer:
+```yaml
+
+system: 
+user: ## Overview
+You are a code assistant that accepts a python test file as input.
+Your goal is to analyze this file and provide the following: 
+* The programming language of the test file
+* The testing framework needed to run the tests in the test file
+* The number of tests in the test file
+* The line number in the test file where the new test should be inserted. 
+
+IMPORTANT: Ensure that you account for block delimiters (e.g., curly braces in Java, `end` in Ruby) to correctly place the new test before the end of the relevant block, such as a class or method definition. If a test should live within a class then the insertion happens BEFORE the last delimiter (if relevant).
+
+Here is the file that contains the existing tests, called `test/test_app.py`. Note that we have manually added line numbers for each line of code, to help you understand the structure of the file. Those numbers are not a part of the original code.
+=========
+1 #!/usr/bin/env python3
+2 """
+3 Unit tests for the AStar algorithm using pytest.
+4 To run these tests, execute:
+5     pytest test_astar.py
+6 """
+7 
+8 import pytest
+9 from src.app import Node, AStar, compare_coordinates
+10 from src.app import make_grid, print_path
+11 from src.app import print_grid
+12 from src.app import make_grid
+13 
+14 def test_start_equals_goal():
+15     """
+16     Test the trivial case where the start and goal are the same.
+17     The expected result is an immediate success with a path containing only the start.
+18     """
+19     grid = [
+20         [0, 0],
+21         [0, 0]
+22     ]
+23     start = Node(0, 0)
+24     goal = Node(0, 0)
+25     # Set the start node's id and parent id.
+26     start.id = 0
+27     start.pid = 0
+28     astar = AStar(grid)
+29     found, path = astar.plan(start, goal)
+30     assert found is True, "Path should be found when start equals goal"
+31     # The path should consist of only one node (start).
+32     assert len(path) == 1
+33     assert compare_coordinates(path[0], start), "The only node in the path should be the start"
+34 
+35 def test_simple_path():
+36     """
+37     Test a simple 5x5 grid with no obstacles.
+38     The start is at the top‐left and the goal at the bottom‐right.
+39     The algorithm should find a path.
+40     """
+41     n = 5
+42     grid = [[0 for _ in range(n)] for _ in range(n)]
+43     start = Node(0, 0)
+44     goal = Node(4, 4)
+45     start.id = 0
+46     start.pid = 0
+47     astar = AStar(grid)
+48     found, path = astar.plan(start, goal)
+49     assert found is True, "A path should be found in an open grid"
+50     # According to our conversion, the returned path is from goal to start.
+51     assert compare_coordinates(path[0], goal), "The first node in the path should be the goal"
+52     assert compare_coordinates(path[-1], start), "The last node in the path should be the start"
+53 
+54 def test_no_path():
+55     """
+56     Test a grid where obstacles block any possible path from start to goal.
+57     Obstacles are represented by any non-zero cell.
+58     """
+59     grid = [
+60         [0, 1, 1],
+61         [1, 1, 1],
+62         [1, 1, 0]
+63     ]
+64     start = Node(0, 0)
+65     goal = Node(2, 2)
+66     start.id = 0
+67     start.pid = 0
+68     astar = AStar(grid)
+69     found, path = astar.plan(start, goal)
+70     assert found is False, "No path should be found when obstacles block the way"
+71     assert path == [], "The path should be empty when no path exists"
+72 
+73 
+74 def test_no_path_outside_boundary():
+75     grid = [
+76         [0, 0, 0],
+77         [0, 0, 0],
+78         [0, 0, 0]
+79     ]
+80     start = Node(-1, -1)  # Outside the grid
+81     goal = Node(2, 2)     # Inside the grid
+82     start.id = 0
+83     start.pid = 0
+84     astar = AStar(grid)
+85     found, path = astar.plan(start, goal)
+86     assert found is False, "No path should be found when start is outside the grid"
+87     assert path == [], "The path should be empty when no path exists"
+88 
+89 
+90 def test_edge_case_start_goal():
+91     grid = [
+92         [0, 0, 0],
+93         [0, 0, 0],
+94         [0, 0, 0]
+95     ]
+96     start = Node(0, 0)  # Top-left corner
+97     goal = Node(2, 2)   # Bottom-right corner
+98     start.id = 0
+99     start.pid = 0
+100     astar = AStar(grid)
+101     found, path = astar.plan(start, goal)
+102     assert found is True, "A path should be found from top-left to bottom-right"
+103     assert len(path) > 0, "The path should not be empty"
+104 
+105 
+106 def test_no_path_both_outside_boundary():
+107     grid = [
+108         [0, 0, 0],
+109         [0, 0, 0],
+110         [0, 0, 0]
+111     ]
+112     start = Node(-1, -1)  # Outside the grid
+113     goal = Node(-2, -2)    # Outside the grid
+114     start.id = 0
+115     start.pid = 0
+116     astar = AStar(grid)
+117     found, path = astar.plan(start, goal)
+118     assert found is False, "No path should be found when both start and goal are outside the grid"
+119     assert path == [], "The path should be empty when no path exists"
+120 
+121 
+122 def test_parent_node_not_found():
+123     grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+124     start = Node(0, 0)
+125     goal = Node(2, 2)
+126     start.id = 0
+127     start.pid = 0
+128     astar = AStar(grid)
+129     closed_list = {Node(0, 0), Node(1, 1), Node(2, 2)}
+130     # Modify the goal node's pid to point to a non-existent parent.
+131     for node in closed_list:
+132         if compare_coordinates(node, goal):
+133             node.pid = 999  # Non-existent ID
+134             break
+135     path = astar.convert_closed_list_to_path(closed_list, start, goal)
+136     assert path == [], "Path should be empty when parent node is not found"
+137 
+138 
+139 def test_goal_not_found_in_closed_list():
+140     grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+141     start = Node(0, 0)
+142     goal = Node(2, 2)
+143     start.id = 0
+144     start.pid = 0
+145     astar = AStar(grid)
+146     closed_list = {Node(0, 0), Node(1, 1)}  # Goal is not in closed_list
+147     path = astar.convert_closed_list_to_path(closed_list, start, goal)
+148     assert path == [], "Path should be empty when goal is not found in closed list"
+149 
+150 def test_print_grid():
+151     grid = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+152     # Call print_grid and check that it doesn't raise an exception.
+153     try:
+154         print_grid(grid)
+155     except Exception as e:
+156         assert False, f"print_grid raised an exception: {e}"
+157     assert True  # If no exception was raised, the test passes.
+158 
+159 
+160 def test_make_grid_call():
+161     grid = [[0, 0], [0, 0]]
+162     try:
+163         make_grid(grid)
+164     except Exception as e:
+165         assert False, f"make_grid raised an exception: {e}"
+166     assert True
+167 
+168 
+169 def test_print_path():
+170     grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+171     start = Node(0, 0)
+172     goal = Node(2, 2)
+173     path = [Node(2, 2), Node(1, 1), Node(0, 0)]  # Example path
+174     try:
+175         print_path(path, start, goal, grid)
+176     except Exception as e:
+177         assert False, f"print_path raised an exception: {e}"
+178     assert True
+179 
+180 
+181 def test_path_with_obstacle():
+182     n = 3
+183     grid = [[0 for _ in range(n)] for _ in range(n)]
+184     grid[1][1] = 1  # Add an obstacle in the middle
+185     start = Node(0, 0)
+186     goal = Node(2, 2)
+187     start.id = start.x * n + start.y
+188     start.pid = start.id
+189     goal.id = goal.x * n + goal.y
+190     start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)
+191     grid[start.x][start.y] = 0
+192     grid[goal.x][goal.y] = 0
+193     astar = AStar(grid)
+194     found, path = astar.plan(start, goal)
+195     assert found is True
+196     assert len(path) > 0
+197     assert compare_coordinates(path[0], goal)
+198     assert compare_coordinates(path[-1], start)
+199 
+200 
+201 
+202 def test_main_execution():
+203     n = 5  # Reduced grid size for faster testing
+204     grid = [[0 for _ in range(n)] for _ in range(n)]
+205     make_grid(grid)
+206 
+207     # Randomly select start and goal positions.
+208     start = Node(0, 0)
+209     goal = Node(n - 1, n - 1)
+210 
+211     # Initialize start and goal ids.
+212     start.id = start.x * n + start.y
+213     start.pid = start.id  # For the start, set the parent id to itself.
+214     goal.id = goal.x * n + goal.y
+215     start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)
+216 
+217     # Ensure start and goal cells are free.
+218     grid[start.x][start.y] = 0
+219     grid[goal.x][goal.y] = 0
+220 
+221     astar = AStar(grid)
+222     path_found, path = astar.plan(start, goal)
+223 
+224     assert isinstance(path_found, bool), "path_found should be a boolean"
+225     assert isinstance(path, list), "path should be a list"
+226 
+227 
+228 def test_main_execution_no_random():
+229     n = 5  # Reduced grid size for faster testing
+230     grid = [[0 for _ in range(n)] for _ in range(n)]
+231     make_grid(grid)
+232 
+233     # Randomly select start and goal positions.
+234     start = Node(0, 0)
+235     goal = Node(n - 1, n - 1)
+236 
+237     # Initialize start and goal ids.
+238     start.id = start.x * n + start.y
+239     start.pid = start.id  # For the start, set the parent id to itself.
+240     goal.id = goal.x * n + goal.y
+241     start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)
+242 
+243     # Ensure start and goal cells are free.
+244     grid[start.x][start.y] = 0
+245     grid[goal.x][goal.y] = 0
+246 
+247     astar = AStar(grid)
+248     path_found, path = astar.plan(start, goal)
+249 
+250     assert isinstance(path_found, bool), "path_found should be a boolean"
+251     assert isinstance(path, list), "path should be a list"
+252 
+253 
+254 def test_node_equality_non_node():
+255     node = Node(1, 2)
+256     assert (node == 1) is False
+257
+=========
+
+
+Now, you need to analyze the test file and provide a YAML object equivalent to type $TestsAnalysis, according to the following Pydantic definitions:
+=====
+class TestsAnalysis(BaseModel):
+    language: str = Field(description="The programming language used by the test file")
+    testing_framework: str = Field(description="The testing framework needed to run the tests in the test file")
+    number_of_tests: int = Field(description="The number of tests in the test file")
+    relevant_line_number_to_insert_tests_after: int = Field(description="The line number in the test file, **after which** the new tests should be inserted, so they will be a part of the existing test suite. Place the new tests after the last test in the suite.")
+    relevant_line_number_to_insert_imports_after: int = Field(description="The line number in the test file, **after which**  new imports should be inserted, so they will be a legal valid code, and the new test file will be able to run. The new imports should be introduced as independent import lines, and not as part of the existing imports.")
+=====
+
+
+Example output:
+
+```yaml
+language: python
+testing_framework: ...
+number_of_tests: ...
+relevant_line_number_to_insert_tests_after: ...
+relevant_line_number_to_insert_imports_after: ...
+```
+
+## Additional Instructions
+======
+However, do not assert exception messages or any string-based messages in assertions, as these may lead to test failures due to minor variations.
+======
+
+
+The Response should be only a valid YAML object, without any introduction text or follow-up text.
+
+Answer:
+```yaml
+
+system: 
+user: ## Overview
+You are a code assistant that accepts a python source file, and a python test file.
+Your goal is to generate additional comprehensive unit tests to complement the existing test suite, in order to increase the code coverage against the source file.
+
+Additional guidelines:
+- Step by step carefully analyze the provided code. Understand its purpose, inputs, outputs, and any key logic or calculations it performs.
+- Brainstorm a list of diverse and meaningful test cases you think will be necessary to fully validate the correctness and functionality of the code, and achieve 100% code coverage.
+- After each individual test has been added, review all tests to ensure they cover the full range of scenarios, including how to handle exceptions or errors.
+- If the original test file contains a test suite, assume that each generated test will be a part of the same suite. Ensure that the new tests are consistent with the existing test suite in terms of style, naming conventions, and structure.
+- You may need to use **Equivalent Partitioning** strategy to cover as many test scenarios as possible and reduce the number of test cases while maintaing good code coverage.
+- There are some cases that result multiple correct answers, you should consider it carefully and define the assertions not so strictly.
+
+## Source File
+Here is the source file that you will be writing tests against, called `src/app.py`.
+Note that we have manually added line numbers for each line of code, to help you understand the code coverage report.
+Those numbers are not a part of the original code.
+=========
+1 #!/usr/bin/env python3
+2 """
+3 This file is a Python translation of the provided C++ A* code.
+4 It implements a simple A* (greedy best-first) search over a grid.
+5 """
+6 
+7 import heapq
+8 import random
+9 from dataclasses import dataclass
+10 from typing import List, Tuple
+11 
+12 @dataclass
+13 class Node:
+14     x: int
+15     y: int
+16     id: int = 0    # Unique identifier, computed as x * n + y
+17     pid: int = 0   # Parent id
+18     h_cost: int = 0  # Heuristic cost (here, Manhattan distance)
+19 
+20     def __add__(self, other):
+21         # Allow adding a motion (as a Node with offset values) to the current node.
+22         return Node(self.x + other.x, self.y + other.y)
+23 
+24     def __eq__(self, other):
+25         if not isinstance(other, Node):
+26             return False
+27         return self.x == other.x and self.y == other.y
+28 
+29     def __hash__(self):
+30         # Two nodes are considered the same (for our closed list) if they have the same coordinates.
+31         return hash((self.x, self.y))
+32 
+33     def __lt__(self, other):
+34         # For the priority queue: compare based on the heuristic cost.
+35         return self.h_cost < other.h_cost
+36 
+37 class Planner:
+38     def __init__(self, grid: List[List[int]]):
+39         # Save a copy of the original grid and store the grid dimensions.
+40         self.original_grid = [row[:] for row in grid]
+41         self.grid = [row[:] for row in grid]
+42         self.n = len(grid)
+43 
+44 def get_motion() -> List[Node]:
+45     """
+46     Returns a list of possible moves (4-connected grid).
+47     Each move is represented as a Node with the corresponding offset.
+48     """
+49     # Movements: up, down, left, right.
+50     return [Node(-1, 0), Node(1, 0), Node(0, -1), Node(0, 1)]
+51 
+52 def check_outside_boundary(node: Node, n: int) -> bool:
+53     """Return True if the node is outside the grid boundaries."""
+54     return node.x < 0 or node.x >= n or node.y < 0 or node.y >= n
+55 
+56 def compare_coordinates(node1: Node, node2: Node) -> bool:
+57     """Return True if node1 and node2 share the same coordinates."""
+58     return node1.x == node2.x and node1.y == node2.y
+59 
+60 class AStar(Planner):
+61     def __init__(self, grid: List[List[int]]):
+62         super().__init__(grid)
+63 
+64     def plan(self, start: Node, goal: Node) -> Tuple[bool, List[Node]]:
+65         """
+66         Executes the A* (greedy best-first) search.
+67         Returns a tuple: (True, path_list) if the goal is found,
+68         otherwise (False, empty_list).
+69         """
+70         # Reset grid to the original configuration.
+71         self.grid = [row[:] for row in self.original_grid]
+72         open_list = []  # priority queue (heap)
+73         closed_list = set()  # set of visited nodes
+74 
+75         motion = get_motion()
+76         heapq.heappush(open_list, start)
+77 
+78         # Main loop
+79         while open_list:
+80             current = heapq.heappop(open_list)
+81             current.id = current.x * self.n + current.y
+82 
+83             if current in closed_list:
+84                 continue
+85 
+86             if compare_coordinates(current, goal):
+87                 closed_list.add(current)
+88                 self.grid[current.x][current.y] = 2
+89                 return True, self.convert_closed_list_to_path(closed_list, start, goal)
+90 
+91             self.grid[current.x][current.y] = 2  # Mark current as opened/visited.
+92 
+93             for m in motion:
+94                 new_point = current + m
+95                 if new_point in closed_list:
+96                     continue
+97                 new_point.id = new_point.x * self.n + new_point.y
+98                 new_point.pid = current.id
+99                 new_point.h_cost = abs(new_point.x - goal.x) + abs(new_point.y - goal.y)
+100                 if compare_coordinates(new_point, goal):
+101                     heapq.heappush(open_list, new_point)
+102                     break
+103                 if check_outside_boundary(new_point, self.n):
+104                     continue  # Out of boundary.
+105                 if self.grid[new_point.x][new_point.y] != 0:
+106                     continue  # Skip obstacles or already visited.
+107                 heapq.heappush(open_list, new_point)
+108 
+109             closed_list.add(current)
+110         return False, []
+111 
+112     def convert_closed_list_to_path(self, closed_list: set, start: Node, goal: Node) -> List[Node]:
+113         """
+114         Reconstructs the path from goal to start using the parent pointers (pid)
+115         stored in the nodes in the closed list.
+116         """
+117         current = None
+118         # Find the node in closed_list that matches the goal.
+119         for node in closed_list:
+120             if compare_coordinates(node, goal):
+121                 current = node
+122                 break
+123         if current is None:
+124             print("Error: Goal not found in closed list")
+125             return []
+126 
+127         path = []
+128         # Traverse backwards from goal to start.
+129         while not compare_coordinates(current, start):
+130             path.append(current)
+131             # Reconstruct the parent coordinates from the stored pid.
+132             parent = Node(current.pid // self.n, current.pid % self.n)
+133             parent_node = None
+134             for node in closed_list:
+135                 if compare_coordinates(node, parent):
+136                     parent_node = node
+137                     break
+138             if parent_node is None:
+139                 print("Error in calculating path")
+140                 return []
+141             current = parent_node
+142         path.append(start)
+143         return path
+144 
+145 def make_grid(grid: List[List[int]]):
+146     """
+147     A dummy grid creation function.
+148     In the original C++ code, obstacles may be added here.
+149     For simplicity, this version leaves the grid unchanged.
+150     """
+151     pass
+152 
+153 def print_grid(grid: List[List[int]]):
+154     """Prints the grid row by row."""
+155     for row in grid:
+156         print(" ".join(map(str, row)))
+157 
+158 def print_path(path: List[Node], start: Node, goal: Node, grid: List[List[int]]):
+159     """
+160     Prints the grid with the path marked (using the value 8).
+161     The path is taken as returned (from goal to start).
+162     """
+163     grid_copy = [row[:] for row in grid]
+164     for node in path:
+165         grid_copy[node.x][node.y] = 8  # Mark path cells with an 8.
+166     print("Grid with path:")
+167     print_grid(grid_copy)
+168 
+169 if __name__ == '__main__':
+170     # Example usage similar to the C++ main inside BUILD_INDIVIDUAL.
+171     n = 11
+172     grid = [[0 for _ in range(n)] for _ in range(n)]
+173     make_grid(grid)
+174 
+175     # Randomly select start and goal positions.
+176     start = Node(random.randint(0, n - 1), random.randint(0, n - 1))
+177     goal = Node(random.randint(0, n - 1), random.randint(0, n - 1))
+178 
+179     # Initialize start and goal ids.
+180     start.id = start.x * n + start.y
+181     start.pid = start.id  # For the start, set the parent id to itself.
+182     goal.id = goal.x * n + goal.y
+183     start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)
+184 
+185     # Ensure start and goal cells are free.
+186     grid[start.x][start.y] = 0
+187     grid[goal.x][goal.y] = 0
+188 
+189     print("Start:", start)
+190     print("Goal:", goal)
+191     print("Initial Grid:")
+192     print_grid(grid)
+193 
+194     astar = AStar(grid)
+195     path_found, path = astar.plan(start, goal)
+196 
+197     if path_found:
+198         print("\nPath found:")
+199         for node in path:
+200             print(node)
+201         print()
+202         print_path(path, start, goal, grid)
+203     else:
+204         print("No path found.")
+205
+=========
+
+
+## Test File
+Here is the file that contains the existing tests, called `test/test_app.py`:
+=========
+#!/usr/bin/env python3
+"""
+Unit tests for the AStar algorithm using pytest.
+To run these tests, execute:
+    pytest test_astar.py
+"""
+
+import pytest
+from src.app import Node, AStar, compare_coordinates
+from src.app import make_grid, print_path
+from src.app import print_grid
+from src.app import make_grid
+
+def test_start_equals_goal():
+    """
+    Test the trivial case where the start and goal are the same.
+    The expected result is an immediate success with a path containing only the start.
+    """
+    grid = [
+        [0, 0],
+        [0, 0]
+    ]
+    start = Node(0, 0)
+    goal = Node(0, 0)
+    # Set the start node's id and parent id.
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is True, "Path should be found when start equals goal"
+    # The path should consist of only one node (start).
+    assert len(path) == 1
+    assert compare_coordinates(path[0], start), "The only node in the path should be the start"
+
+def test_simple_path():
+    """
+    Test a simple 5x5 grid with no obstacles.
+    The start is at the top‐left and the goal at the bottom‐right.
+    The algorithm should find a path.
+    """
+    n = 5
+    grid = [[0 for _ in range(n)] for _ in range(n)]
+    start = Node(0, 0)
+    goal = Node(4, 4)
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is True, "A path should be found in an open grid"
+    # According to our conversion, the returned path is from goal to start.
+    assert compare_coordinates(path[0], goal), "The first node in the path should be the goal"
+    assert compare_coordinates(path[-1], start), "The last node in the path should be the start"
+
+def test_no_path():
+    """
+    Test a grid where obstacles block any possible path from start to goal.
+    Obstacles are represented by any non-zero cell.
+    """
+    grid = [
+        [0, 1, 1],
+        [1, 1, 1],
+        [1, 1, 0]
+    ]
+    start = Node(0, 0)
+    goal = Node(2, 2)
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is False, "No path should be found when obstacles block the way"
+    assert path == [], "The path should be empty when no path exists"
+
+
+def test_no_path_outside_boundary():
+    grid = [
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0]
+    ]
+    start = Node(-1, -1)  # Outside the grid
+    goal = Node(2, 2)     # Inside the grid
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is False, "No path should be found when start is outside the grid"
+    assert path == [], "The path should be empty when no path exists"
+
+
+def test_edge_case_start_goal():
+    grid = [
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0]
+    ]
+    start = Node(0, 0)  # Top-left corner
+    goal = Node(2, 2)   # Bottom-right corner
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is True, "A path should be found from top-left to bottom-right"
+    assert len(path) > 0, "The path should not be empty"
+
+
+def test_no_path_both_outside_boundary():
+    grid = [
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0]
+    ]
+    start = Node(-1, -1)  # Outside the grid
+    goal = Node(-2, -2)    # Outside the grid
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is False, "No path should be found when both start and goal are outside the grid"
+    assert path == [], "The path should be empty when no path exists"
+
+
+def test_parent_node_not_found():
+    grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+    start = Node(0, 0)
+    goal = Node(2, 2)
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    closed_list = {Node(0, 0), Node(1, 1), Node(2, 2)}
+    # Modify the goal node's pid to point to a non-existent parent.
+    for node in closed_list:
+        if compare_coordinates(node, goal):
+            node.pid = 999  # Non-existent ID
+            break
+    path = astar.convert_closed_list_to_path(closed_list, start, goal)
+    assert path == [], "Path should be empty when parent node is not found"
+
+
+def test_goal_not_found_in_closed_list():
+    grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+    start = Node(0, 0)
+    goal = Node(2, 2)
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    closed_list = {Node(0, 0), Node(1, 1)}  # Goal is not in closed_list
+    path = astar.convert_closed_list_to_path(closed_list, start, goal)
+    assert path == [], "Path should be empty when goal is not found in closed list"
+
+def test_print_grid():
+    grid = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+    # Call print_grid and check that it doesn't raise an exception.
+    try:
+        print_grid(grid)
+    except Exception as e:
+        assert False, f"print_grid raised an exception: {e}"
+    assert True  # If no exception was raised, the test passes.
+
+
+def test_make_grid_call():
+    grid = [[0, 0], [0, 0]]
+    try:
+        make_grid(grid)
+    except Exception as e:
+        assert False, f"make_grid raised an exception: {e}"
+    assert True
+
+
+def test_print_path():
+    grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+    start = Node(0, 0)
+    goal = Node(2, 2)
+    path = [Node(2, 2), Node(1, 1), Node(0, 0)]  # Example path
+    try:
+        print_path(path, start, goal, grid)
+    except Exception as e:
+        assert False, f"print_path raised an exception: {e}"
+    assert True
+
+
+def test_path_with_obstacle():
+    n = 3
+    grid = [[0 for _ in range(n)] for _ in range(n)]
+    grid[1][1] = 1  # Add an obstacle in the middle
+    start = Node(0, 0)
+    goal = Node(2, 2)
+    start.id = start.x * n + start.y
+    start.pid = start.id
+    goal.id = goal.x * n + goal.y
+    start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)
+    grid[start.x][start.y] = 0
+    grid[goal.x][goal.y] = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is True
+    assert len(path) > 0
+    assert compare_coordinates(path[0], goal)
+    assert compare_coordinates(path[-1], start)
+
+
+
+def test_main_execution():
+    n = 5  # Reduced grid size for faster testing
+    grid = [[0 for _ in range(n)] for _ in range(n)]
+    make_grid(grid)
+
+    # Randomly select start and goal positions.
+    start = Node(0, 0)
+    goal = Node(n - 1, n - 1)
+
+    # Initialize start and goal ids.
+    start.id = start.x * n + start.y
+    start.pid = start.id  # For the start, set the parent id to itself.
+    goal.id = goal.x * n + goal.y
+    start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)
+
+    # Ensure start and goal cells are free.
+    grid[start.x][start.y] = 0
+    grid[goal.x][goal.y] = 0
+
+    astar = AStar(grid)
+    path_found, path = astar.plan(start, goal)
+
+    assert isinstance(path_found, bool), "path_found should be a boolean"
+    assert isinstance(path, list), "path should be a list"
+
+
+def test_main_execution_no_random():
+    n = 5  # Reduced grid size for faster testing
+    grid = [[0 for _ in range(n)] for _ in range(n)]
+    make_grid(grid)
+
+    # Randomly select start and goal positions.
+    start = Node(0, 0)
+    goal = Node(n - 1, n - 1)
+
+    # Initialize start and goal ids.
+    start.id = start.x * n + start.y
+    start.pid = start.id  # For the start, set the parent id to itself.
+    goal.id = goal.x * n + goal.y
+    start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)
+
+    # Ensure start and goal cells are free.
+    grid[start.x][start.y] = 0
+    grid[goal.x][goal.y] = 0
+
+    astar = AStar(grid)
+    path_found, path = astar.plan(start, goal)
+
+    assert isinstance(path_found, bool), "path_found should be a boolean"
+    assert isinstance(path, list), "path should be a list"
+
+
+def test_node_equality_non_node():
+    node = Node(1, 2)
+    assert (node == 1) is False
+=========
+
+
+### Test Framework
+The test framework used for running tests is `pytest`.
+If the current tests are part of a class and contain a 'self' input, than the generated tests should also include the `self` parameter in the test function signature.
+
+
+## Additional Instructions
+======
+However, do not assert exception messages or any string-based messages in assertions, as these may lead to test failures due to minor variations.
+======
+
+
+
+## Code Coverage
+Based on the code coverage report below, your goal is to suggest new test cases for the test file `test/test_app.py` against the source file `src/app.py` that would increase the coverage, meaning cover missing lines of code.
+=========
+Lines covered: [7, 8, 9, 10, 12, 13, 14, 15, 16, 17, 18, 20, 22, 24, 25, 26, 27, 29, 31, 33, 35, 37, 38, 40, 41, 42, 44, 50, 52, 54, 56, 58, 60, 61, 62, 64, 71, 72, 73, 75, 76, 79, 80, 81, 83, 86, 87, 88, 89, 91, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 109, 110, 112, 117, 119, 120, 121, 122, 123, 124, 125, 127, 129, 130, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 145, 151, 153, 155, 156, 158, 163, 164, 165, 166, 167, 169]
+Lines missed: [84, 171, 172, 173, 176, 177, 180, 181, 182, 183, 186, 187, 189, 190, 191, 192, 194, 195, 197, 198, 199, 200, 201, 202, 204]
+Percentage covered: 80.47%
+=========
+
+
+## Response
+The output must be a YAML object equivalent to type $NewTests, according to the following Pydantic definitions:
+=====
+class SingleTest(BaseModel):
+    test_behavior: str = Field(description="Short description of the behavior the test covers")
+    lines_to_cover: str = Field(description="A list of line numbers, currently uncovered, that this specific new test aims to cover")
+    test_name: str = Field(description=" A short test name, in snake case, that reflects the behaviour to test")
+    test_code: str = Field(description="A new 'pytest' test function that extends the existing test suite, and tests the behavior described in 'test_behavior'. The test should be a written like its a part of the existing test suite, if there is one, and it can use existing helper functions, setup, or teardown code. Don't iclude new imports here, use 'new_imports_code' section instead.")
+    new_imports_code: str = Field(description="New imports that are required to run the new test function, and are not already imported in the test file. Give an empty string if no new imports are required. If relevant, add new imports as  'import ...' lines.")
+    test_tags: str = Field(description="A single label that best describes the test, out of: ['happy path', 'edge case','other']")
+
+class NewTests(BaseModel):
+    language: str = Field(description="The programming language of the source code")
+    existing_test_function_signature: str = Field(description="A single line repeating a signature header of one of the existing test functions")
+    new_tests: List[SingleTest] = Field(min_items=1, max_items=4, description="A list of new test functions to append to the existing test suite, aiming to increase the code coverage. Each test should run as-is, without requiring any additional inputs or setup code. Don't introduce new dependencies")
+=====
+
+
+Example output:
+
+```yaml
+language: python
+existing_test_function_signature: |
+  ...
+new_tests:
+- test_behavior: |
+    Test that the function returns the correct output for a single element list
+  lines_to_cover: |
+    [1,2,5, ...]
+  test_name: |
+    test_single_element_list
+  test_code: |
+    def ...
+  new_imports_code: |
+    ""
+  test_tags: happy path
+    ...
+```
+
+
+Use block scalar('|') to format each YAML output.
+
+Response (should be a valid YAML, and nothing else):
+```yaml
+
+system: 
+user: ## Overview
+You are a code assistant that accepts a python source file, and a python test file.
+Your goal is to generate additional comprehensive unit tests to complement the existing test suite, in order to increase the code coverage against the source file.
+
+Additional guidelines:
+- Step by step carefully analyze the provided code. Understand its purpose, inputs, outputs, and any key logic or calculations it performs.
+- Brainstorm a list of diverse and meaningful test cases you think will be necessary to fully validate the correctness and functionality of the code, and achieve 100% code coverage.
+- After each individual test has been added, review all tests to ensure they cover the full range of scenarios, including how to handle exceptions or errors.
+- If the original test file contains a test suite, assume that each generated test will be a part of the same suite. Ensure that the new tests are consistent with the existing test suite in terms of style, naming conventions, and structure.
+- You may need to use **Equivalent Partitioning** strategy to cover as many test scenarios as possible and reduce the number of test cases while maintaing good code coverage.
+- There are some cases that result multiple correct answers, you should consider it carefully and define the assertions not so strictly.
+
+## Source File
+Here is the source file that you will be writing tests against, called `src/app.py`.
+Note that we have manually added line numbers for each line of code, to help you understand the code coverage report.
+Those numbers are not a part of the original code.
+=========
+1 #!/usr/bin/env python3
+2 """
+3 This file is a Python translation of the provided C++ A* code.
+4 It implements a simple A* (greedy best-first) search over a grid.
+5 """
+6 
+7 import heapq
+8 import random
+9 from dataclasses import dataclass
+10 from typing import List, Tuple
+11 
+12 @dataclass
+13 class Node:
+14     x: int
+15     y: int
+16     id: int = 0    # Unique identifier, computed as x * n + y
+17     pid: int = 0   # Parent id
+18     h_cost: int = 0  # Heuristic cost (here, Manhattan distance)
+19 
+20     def __add__(self, other):
+21         # Allow adding a motion (as a Node with offset values) to the current node.
+22         return Node(self.x + other.x, self.y + other.y)
+23 
+24     def __eq__(self, other):
+25         if not isinstance(other, Node):
+26             return False
+27         return self.x == other.x and self.y == other.y
+28 
+29     def __hash__(self):
+30         # Two nodes are considered the same (for our closed list) if they have the same coordinates.
+31         return hash((self.x, self.y))
+32 
+33     def __lt__(self, other):
+34         # For the priority queue: compare based on the heuristic cost.
+35         return self.h_cost < other.h_cost
+36 
+37 class Planner:
+38     def __init__(self, grid: List[List[int]]):
+39         # Save a copy of the original grid and store the grid dimensions.
+40         self.original_grid = [row[:] for row in grid]
+41         self.grid = [row[:] for row in grid]
+42         self.n = len(grid)
+43 
+44 def get_motion() -> List[Node]:
+45     """
+46     Returns a list of possible moves (4-connected grid).
+47     Each move is represented as a Node with the corresponding offset.
+48     """
+49     # Movements: up, down, left, right.
+50     return [Node(-1, 0), Node(1, 0), Node(0, -1), Node(0, 1)]
+51 
+52 def check_outside_boundary(node: Node, n: int) -> bool:
+53     """Return True if the node is outside the grid boundaries."""
+54     return node.x < 0 or node.x >= n or node.y < 0 or node.y >= n
+55 
+56 def compare_coordinates(node1: Node, node2: Node) -> bool:
+57     """Return True if node1 and node2 share the same coordinates."""
+58     return node1.x == node2.x and node1.y == node2.y
+59 
+60 class AStar(Planner):
+61     def __init__(self, grid: List[List[int]]):
+62         super().__init__(grid)
+63 
+64     def plan(self, start: Node, goal: Node) -> Tuple[bool, List[Node]]:
+65         """
+66         Executes the A* (greedy best-first) search.
+67         Returns a tuple: (True, path_list) if the goal is found,
+68         otherwise (False, empty_list).
+69         """
+70         # Reset grid to the original configuration.
+71         self.grid = [row[:] for row in self.original_grid]
+72         open_list = []  # priority queue (heap)
+73         closed_list = set()  # set of visited nodes
+74 
+75         motion = get_motion()
+76         heapq.heappush(open_list, start)
+77 
+78         # Main loop
+79         while open_list:
+80             current = heapq.heappop(open_list)
+81             current.id = current.x * self.n + current.y
+82 
+83             if current in closed_list:
+84                 continue
+85 
+86             if compare_coordinates(current, goal):
+87                 closed_list.add(current)
+88                 self.grid[current.x][current.y] = 2
+89                 return True, self.convert_closed_list_to_path(closed_list, start, goal)
+90 
+91             self.grid[current.x][current.y] = 2  # Mark current as opened/visited.
+92 
+93             for m in motion:
+94                 new_point = current + m
+95                 if new_point in closed_list:
+96                     continue
+97                 new_point.id = new_point.x * self.n + new_point.y
+98                 new_point.pid = current.id
+99                 new_point.h_cost = abs(new_point.x - goal.x) + abs(new_point.y - goal.y)
+100                 if compare_coordinates(new_point, goal):
+101                     heapq.heappush(open_list, new_point)
+102                     break
+103                 if check_outside_boundary(new_point, self.n):
+104                     continue  # Out of boundary.
+105                 if self.grid[new_point.x][new_point.y] != 0:
+106                     continue  # Skip obstacles or already visited.
+107                 heapq.heappush(open_list, new_point)
+108 
+109             closed_list.add(current)
+110         return False, []
+111 
+112     def convert_closed_list_to_path(self, closed_list: set, start: Node, goal: Node) -> List[Node]:
+113         """
+114         Reconstructs the path from goal to start using the parent pointers (pid)
+115         stored in the nodes in the closed list.
+116         """
+117         current = None
+118         # Find the node in closed_list that matches the goal.
+119         for node in closed_list:
+120             if compare_coordinates(node, goal):
+121                 current = node
+122                 break
+123         if current is None:
+124             print("Error: Goal not found in closed list")
+125             return []
+126 
+127         path = []
+128         # Traverse backwards from goal to start.
+129         while not compare_coordinates(current, start):
+130             path.append(current)
+131             # Reconstruct the parent coordinates from the stored pid.
+132             parent = Node(current.pid // self.n, current.pid % self.n)
+133             parent_node = None
+134             for node in closed_list:
+135                 if compare_coordinates(node, parent):
+136                     parent_node = node
+137                     break
+138             if parent_node is None:
+139                 print("Error in calculating path")
+140                 return []
+141             current = parent_node
+142         path.append(start)
+143         return path
+144 
+145 def make_grid(grid: List[List[int]]):
+146     """
+147     A dummy grid creation function.
+148     In the original C++ code, obstacles may be added here.
+149     For simplicity, this version leaves the grid unchanged.
+150     """
+151     pass
+152 
+153 def print_grid(grid: List[List[int]]):
+154     """Prints the grid row by row."""
+155     for row in grid:
+156         print(" ".join(map(str, row)))
+157 
+158 def print_path(path: List[Node], start: Node, goal: Node, grid: List[List[int]]):
+159     """
+160     Prints the grid with the path marked (using the value 8).
+161     The path is taken as returned (from goal to start).
+162     """
+163     grid_copy = [row[:] for row in grid]
+164     for node in path:
+165         grid_copy[node.x][node.y] = 8  # Mark path cells with an 8.
+166     print("Grid with path:")
+167     print_grid(grid_copy)
+168 
+169 if __name__ == '__main__':
+170     # Example usage similar to the C++ main inside BUILD_INDIVIDUAL.
+171     n = 11
+172     grid = [[0 for _ in range(n)] for _ in range(n)]
+173     make_grid(grid)
+174 
+175     # Randomly select start and goal positions.
+176     start = Node(random.randint(0, n - 1), random.randint(0, n - 1))
+177     goal = Node(random.randint(0, n - 1), random.randint(0, n - 1))
+178 
+179     # Initialize start and goal ids.
+180     start.id = start.x * n + start.y
+181     start.pid = start.id  # For the start, set the parent id to itself.
+182     goal.id = goal.x * n + goal.y
+183     start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)
+184 
+185     # Ensure start and goal cells are free.
+186     grid[start.x][start.y] = 0
+187     grid[goal.x][goal.y] = 0
+188 
+189     print("Start:", start)
+190     print("Goal:", goal)
+191     print("Initial Grid:")
+192     print_grid(grid)
+193 
+194     astar = AStar(grid)
+195     path_found, path = astar.plan(start, goal)
+196 
+197     if path_found:
+198         print("\nPath found:")
+199         for node in path:
+200             print(node)
+201         print()
+202         print_path(path, start, goal, grid)
+203     else:
+204         print("No path found.")
+205
+=========
+
+
+## Test File
+Here is the file that contains the existing tests, called `test/test_app.py`:
+=========
+#!/usr/bin/env python3
+"""
+Unit tests for the AStar algorithm using pytest.
+To run these tests, execute:
+    pytest test_astar.py
+"""
+
+import pytest
+from src.app import Node, AStar, compare_coordinates
+from src.app import make_grid, print_path
+from src.app import print_grid
+from src.app import make_grid
+
+def test_start_equals_goal():
+    """
+    Test the trivial case where the start and goal are the same.
+    The expected result is an immediate success with a path containing only the start.
+    """
+    grid = [
+        [0, 0],
+        [0, 0]
+    ]
+    start = Node(0, 0)
+    goal = Node(0, 0)
+    # Set the start node's id and parent id.
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is True, "Path should be found when start equals goal"
+    # The path should consist of only one node (start).
+    assert len(path) == 1
+    assert compare_coordinates(path[0], start), "The only node in the path should be the start"
+
+def test_simple_path():
+    """
+    Test a simple 5x5 grid with no obstacles.
+    The start is at the top‐left and the goal at the bottom‐right.
+    The algorithm should find a path.
+    """
+    n = 5
+    grid = [[0 for _ in range(n)] for _ in range(n)]
+    start = Node(0, 0)
+    goal = Node(4, 4)
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is True, "A path should be found in an open grid"
+    # According to our conversion, the returned path is from goal to start.
+    assert compare_coordinates(path[0], goal), "The first node in the path should be the goal"
+    assert compare_coordinates(path[-1], start), "The last node in the path should be the start"
+
+def test_no_path():
+    """
+    Test a grid where obstacles block any possible path from start to goal.
+    Obstacles are represented by any non-zero cell.
+    """
+    grid = [
+        [0, 1, 1],
+        [1, 1, 1],
+        [1, 1, 0]
+    ]
+    start = Node(0, 0)
+    goal = Node(2, 2)
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is False, "No path should be found when obstacles block the way"
+    assert path == [], "The path should be empty when no path exists"
+
+
+def test_no_path_outside_boundary():
+    grid = [
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0]
+    ]
+    start = Node(-1, -1)  # Outside the grid
+    goal = Node(2, 2)     # Inside the grid
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is False, "No path should be found when start is outside the grid"
+    assert path == [], "The path should be empty when no path exists"
+
+
+def test_edge_case_start_goal():
+    grid = [
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0]
+    ]
+    start = Node(0, 0)  # Top-left corner
+    goal = Node(2, 2)   # Bottom-right corner
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is True, "A path should be found from top-left to bottom-right"
+    assert len(path) > 0, "The path should not be empty"
+
+
+def test_no_path_both_outside_boundary():
+    grid = [
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0]
+    ]
+    start = Node(-1, -1)  # Outside the grid
+    goal = Node(-2, -2)    # Outside the grid
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is False, "No path should be found when both start and goal are outside the grid"
+    assert path == [], "The path should be empty when no path exists"
+
+
+def test_parent_node_not_found():
+    grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+    start = Node(0, 0)
+    goal = Node(2, 2)
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    closed_list = {Node(0, 0), Node(1, 1), Node(2, 2)}
+    # Modify the goal node's pid to point to a non-existent parent.
+    for node in closed_list:
+        if compare_coordinates(node, goal):
+            node.pid = 999  # Non-existent ID
+            break
+    path = astar.convert_closed_list_to_path(closed_list, start, goal)
+    assert path == [], "Path should be empty when parent node is not found"
+
+
+def test_goal_not_found_in_closed_list():
+    grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+    start = Node(0, 0)
+    goal = Node(2, 2)
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    closed_list = {Node(0, 0), Node(1, 1)}  # Goal is not in closed_list
+    path = astar.convert_closed_list_to_path(closed_list, start, goal)
+    assert path == [], "Path should be empty when goal is not found in closed list"
+
+def test_print_grid():
+    grid = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+    # Call print_grid and check that it doesn't raise an exception.
+    try:
+        print_grid(grid)
+    except Exception as e:
+        assert False, f"print_grid raised an exception: {e}"
+    assert True  # If no exception was raised, the test passes.
+
+
+def test_make_grid_call():
+    grid = [[0, 0], [0, 0]]
+    try:
+        make_grid(grid)
+    except Exception as e:
+        assert False, f"make_grid raised an exception: {e}"
+    assert True
+
+
+def test_print_path():
+    grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+    start = Node(0, 0)
+    goal = Node(2, 2)
+    path = [Node(2, 2), Node(1, 1), Node(0, 0)]  # Example path
+    try:
+        print_path(path, start, goal, grid)
+    except Exception as e:
+        assert False, f"print_path raised an exception: {e}"
+    assert True
+
+
+def test_path_with_obstacle():
+    n = 3
+    grid = [[0 for _ in range(n)] for _ in range(n)]
+    grid[1][1] = 1  # Add an obstacle in the middle
+    start = Node(0, 0)
+    goal = Node(2, 2)
+    start.id = start.x * n + start.y
+    start.pid = start.id
+    goal.id = goal.x * n + goal.y
+    start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)
+    grid[start.x][start.y] = 0
+    grid[goal.x][goal.y] = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is True
+    assert len(path) > 0
+    assert compare_coordinates(path[0], goal)
+    assert compare_coordinates(path[-1], start)
+
+
+
+def test_main_execution():
+    n = 5  # Reduced grid size for faster testing
+    grid = [[0 for _ in range(n)] for _ in range(n)]
+    make_grid(grid)
+
+    # Randomly select start and goal positions.
+    start = Node(0, 0)
+    goal = Node(n - 1, n - 1)
+
+    # Initialize start and goal ids.
+    start.id = start.x * n + start.y
+    start.pid = start.id  # For the start, set the parent id to itself.
+    goal.id = goal.x * n + goal.y
+    start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)
+
+    # Ensure start and goal cells are free.
+    grid[start.x][start.y] = 0
+    grid[goal.x][goal.y] = 0
+
+    astar = AStar(grid)
+    path_found, path = astar.plan(start, goal)
+
+    assert isinstance(path_found, bool), "path_found should be a boolean"
+    assert isinstance(path, list), "path should be a list"
+
+
+def test_main_execution_no_random():
+    n = 5  # Reduced grid size for faster testing
+    grid = [[0 for _ in range(n)] for _ in range(n)]
+    make_grid(grid)
+
+    # Randomly select start and goal positions.
+    start = Node(0, 0)
+    goal = Node(n - 1, n - 1)
+
+    # Initialize start and goal ids.
+    start.id = start.x * n + start.y
+    start.pid = start.id  # For the start, set the parent id to itself.
+    goal.id = goal.x * n + goal.y
+    start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)
+
+    # Ensure start and goal cells are free.
+    grid[start.x][start.y] = 0
+    grid[goal.x][goal.y] = 0
+
+    astar = AStar(grid)
+    path_found, path = astar.plan(start, goal)
+
+    assert isinstance(path_found, bool), "path_found should be a boolean"
+    assert isinstance(path, list), "path should be a list"
+
+
+def test_node_equality_non_node():
+    node = Node(1, 2)
+    assert (node == 1) is False
+=========
+
+
+### Test Framework
+The test framework used for running tests is `pytest`.
+If the current tests are part of a class and contain a 'self' input, than the generated tests should also include the `self` parameter in the test function signature.
+
+
+## Previous Iterations Failed Tests
+Below is a list of failed tests that were generated in previous iterations. Do not generate the same tests again, and take the failed tests into account when generating new tests.
+======
+Failed Test:
+```
+{"test_behavior": "Test case where the current node is already in the closed list. This ensures that the algorithm skips nodes that have already been visited.\n", "lines_to_cover": "[84]\n", "test_name": "test_node_already_in_closed_list\n", "test_code": "def test_node_already_in_closed_list():\n    grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]\n    start = Node(0, 0)\n    goal = Node(2, 2)\n    start.id = 0\n    start.pid = 0\n    astar = AStar(grid)\n    open_list = [start]\n    closed_list = {start}  # Add start node to closed list initially\n    astar.plan(start, goal)\n    # The assertion is implicit: the test should not get stuck in a loop.\n    assert True\n", "new_imports_code": "\"\"\n", "test_tags": "edge case"}
+```
+Test execution error analysis:
+Code coverage did not increase
+
+
+Failed Test:
+```
+{"test_behavior": "Test the scenario where no path is found, covering the lines related to example usage in `if __name__ == '__main__'` block.\n", "lines_to_cover": "[171, 172, 173, 176, 177, 180, 181, 182, 183, 186, 187, 189, 190, 191, 192, 194, 195, 197, 198, 199, 200, 201, 202, 204]\n", "test_name": "test_main_execution_no_path\n", "test_code": "def test_main_execution_no_path():\n    n = 3\n    grid = [[1 for _ in range(n)] for _ in range(n)]\n    start = Node(0, 0)\n    goal = Node(n - 1, n - 1)\n\n    # Initialize start and goal ids.\n    start.id = start.x * n + start.y\n    start.pid = start.id  # For the start, set the parent id to itself.\n    goal.id = goal.x * n + goal.y\n    start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)\n\n    # Ensure start and goal cells are free.\n    grid[start.x][start.y] = 0\n    grid[goal.x][goal.y] = 0\n\n    astar = AStar(grid)\n    path_found, path = astar.plan(start, goal)\n\n    assert path_found is False, \"path_found should be False\"\n    assert isinstance(path, list), \"path should be a list\"\n    assert len(path) == 0, \"Path should be empty\"\n", "new_imports_code": "\"\"\n", "test_tags": "edge case"}
+```
+Test execution error analysis:
+Code coverage did not increase
+
+
+
+======
+
+
+
+
+## Results of Mutation Testing
+**Mutation Score**: 25.00%
+**Nodes Covered**: 0/0
+The following mutants **survived**:
+1) line 176, operator: Arithmetic Operator Replacement
+2) line 180, operator: Arithmetic Operator Replacement
+3) line 183, operator: Arithmetic Operator Replacement
+4) line 197, operator: Unknown operator
+5) line 27, operator: Logical Connector Replacement
+6) line 169, operator: Relational Operator Replacement
+
+**Goal**: Please generate or refine tests so that these surviving mutants are killed.
+Focus on the lines and operators that survived. For each, we need a test scenario that fails if that mutation occurs.
+
+
+
+
+## Additional Instructions
+======
+However, do not assert exception messages or any string-based messages in assertions, as these may lead to test failures due to minor variations.
+======
+
+
+
+## Code Coverage
+Based on the code coverage report below, your goal is to suggest new test cases for the test file `test/test_app.py` against the source file `src/app.py` that would increase the coverage, meaning cover missing lines of code.
+=========
+Lines covered: [7, 8, 9, 10, 12, 13, 14, 15, 16, 17, 18, 20, 22, 24, 25, 26, 27, 29, 31, 33, 35, 37, 38, 40, 41, 42, 44, 50, 52, 54, 56, 58, 60, 61, 62, 64, 71, 72, 73, 75, 76, 79, 80, 81, 83, 86, 87, 88, 89, 91, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 109, 110, 112, 117, 119, 120, 121, 122, 123, 124, 125, 127, 129, 130, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 145, 151, 153, 155, 156, 158, 163, 164, 165, 166, 167, 169]
+Lines missed: [84, 171, 172, 173, 176, 177, 180, 181, 182, 183, 186, 187, 189, 190, 191, 192, 194, 195, 197, 198, 199, 200, 201, 202, 204]
+Percentage covered: 80.47%
+=========
+
+
+## Response
+The output must be a YAML object equivalent to type $NewTests, according to the following Pydantic definitions:
+=====
+class SingleTest(BaseModel):
+    test_behavior: str = Field(description="Short description of the behavior the test covers")
+    lines_to_cover: str = Field(description="A list of line numbers, currently uncovered, that this specific new test aims to cover")
+    test_name: str = Field(description=" A short test name, in snake case, that reflects the behaviour to test")
+    test_code: str = Field(description="A new 'pytest' test function that extends the existing test suite, and tests the behavior described in 'test_behavior'. The test should be a written like its a part of the existing test suite, if there is one, and it can use existing helper functions, setup, or teardown code. Don't iclude new imports here, use 'new_imports_code' section instead.")
+    new_imports_code: str = Field(description="New imports that are required to run the new test function, and are not already imported in the test file. Give an empty string if no new imports are required. If relevant, add new imports as  'import ...' lines.")
+    test_tags: str = Field(description="A single label that best describes the test, out of: ['happy path', 'edge case','other']")
+
+class NewTests(BaseModel):
+    language: str = Field(description="The programming language of the source code")
+    existing_test_function_signature: str = Field(description="A single line repeating a signature header of one of the existing test functions")
+    new_tests: List[SingleTest] = Field(min_items=1, max_items=4, description="A list of new test functions to append to the existing test suite, aiming to increase the code coverage. Each test should run as-is, without requiring any additional inputs or setup code. Don't introduce new dependencies")
+=====
+
+
+Example output:
+
+```yaml
+language: python
+existing_test_function_signature: |
+  ...
+new_tests:
+- test_behavior: |
+    Test that the function returns the correct output for a single element list
+  lines_to_cover: |
+    [1,2,5, ...]
+  test_name: |
+    test_single_element_list
+  test_code: |
+    def ...
+  new_imports_code: |
+    ""
+  test_tags: happy path
+    ...
+```
+
+
+Use block scalar('|') to format each YAML output.
+
+Response (should be a valid YAML, and nothing else):
+```yaml
+
+system: 
+user: ## Overview
+You are a code assistant that accepts a python source file, and a python test file.
+Your goal is to generate additional comprehensive unit tests to complement the existing test suite, in order to increase the code coverage against the source file.
+
+Additional guidelines:
+- Step by step carefully analyze the provided code. Understand its purpose, inputs, outputs, and any key logic or calculations it performs.
+- Brainstorm a list of diverse and meaningful test cases you think will be necessary to fully validate the correctness and functionality of the code, and achieve 100% code coverage.
+- After each individual test has been added, review all tests to ensure they cover the full range of scenarios, including how to handle exceptions or errors.
+- If the original test file contains a test suite, assume that each generated test will be a part of the same suite. Ensure that the new tests are consistent with the existing test suite in terms of style, naming conventions, and structure.
+- You may need to use **Equivalent Partitioning** strategy to cover as many test scenarios as possible and reduce the number of test cases while maintaing good code coverage.
+- There are some cases that result multiple correct answers, you should consider it carefully and define the assertions not so strictly.
+
+## Source File
+Here is the source file that you will be writing tests against, called `src/app.py`.
+Note that we have manually added line numbers for each line of code, to help you understand the code coverage report.
+Those numbers are not a part of the original code.
+=========
+1 #!/usr/bin/env python3
+2 """
+3 This file is a Python translation of the provided C++ A* code.
+4 It implements a simple A* (greedy best-first) search over a grid.
+5 """
+6 
+7 import heapq
+8 import random
+9 from dataclasses import dataclass
+10 from typing import List, Tuple
+11 
+12 @dataclass
+13 class Node:
+14     x: int
+15     y: int
+16     id: int = 0    # Unique identifier, computed as x * n + y
+17     pid: int = 0   # Parent id
+18     h_cost: int = 0  # Heuristic cost (here, Manhattan distance)
+19 
+20     def __add__(self, other):
+21         # Allow adding a motion (as a Node with offset values) to the current node.
+22         return Node(self.x + other.x, self.y + other.y)
+23 
+24     def __eq__(self, other):
+25         if not isinstance(other, Node):
+26             return False
+27         return self.x == other.x and self.y == other.y
+28 
+29     def __hash__(self):
+30         # Two nodes are considered the same (for our closed list) if they have the same coordinates.
+31         return hash((self.x, self.y))
+32 
+33     def __lt__(self, other):
+34         # For the priority queue: compare based on the heuristic cost.
+35         return self.h_cost < other.h_cost
+36 
+37 class Planner:
+38     def __init__(self, grid: List[List[int]]):
+39         # Save a copy of the original grid and store the grid dimensions.
+40         self.original_grid = [row[:] for row in grid]
+41         self.grid = [row[:] for row in grid]
+42         self.n = len(grid)
+43 
+44 def get_motion() -> List[Node]:
+45     """
+46     Returns a list of possible moves (4-connected grid).
+47     Each move is represented as a Node with the corresponding offset.
+48     """
+49     # Movements: up, down, left, right.
+50     return [Node(-1, 0), Node(1, 0), Node(0, -1), Node(0, 1)]
+51 
+52 def check_outside_boundary(node: Node, n: int) -> bool:
+53     """Return True if the node is outside the grid boundaries."""
+54     return node.x < 0 or node.x >= n or node.y < 0 or node.y >= n
+55 
+56 def compare_coordinates(node1: Node, node2: Node) -> bool:
+57     """Return True if node1 and node2 share the same coordinates."""
+58     return node1.x == node2.x and node1.y == node2.y
+59 
+60 class AStar(Planner):
+61     def __init__(self, grid: List[List[int]]):
+62         super().__init__(grid)
+63 
+64     def plan(self, start: Node, goal: Node) -> Tuple[bool, List[Node]]:
+65         """
+66         Executes the A* (greedy best-first) search.
+67         Returns a tuple: (True, path_list) if the goal is found,
+68         otherwise (False, empty_list).
+69         """
+70         # Reset grid to the original configuration.
+71         self.grid = [row[:] for row in self.original_grid]
+72         open_list = []  # priority queue (heap)
+73         closed_list = set()  # set of visited nodes
+74 
+75         motion = get_motion()
+76         heapq.heappush(open_list, start)
+77 
+78         # Main loop
+79         while open_list:
+80             current = heapq.heappop(open_list)
+81             current.id = current.x * self.n + current.y
+82 
+83             if current in closed_list:
+84                 continue
+85 
+86             if compare_coordinates(current, goal):
+87                 closed_list.add(current)
+88                 self.grid[current.x][current.y] = 2
+89                 return True, self.convert_closed_list_to_path(closed_list, start, goal)
+90 
+91             self.grid[current.x][current.y] = 2  # Mark current as opened/visited.
+92 
+93             for m in motion:
+94                 new_point = current + m
+95                 if new_point in closed_list:
+96                     continue
+97                 new_point.id = new_point.x * self.n + new_point.y
+98                 new_point.pid = current.id
+99                 new_point.h_cost = abs(new_point.x - goal.x) + abs(new_point.y - goal.y)
+100                 if compare_coordinates(new_point, goal):
+101                     heapq.heappush(open_list, new_point)
+102                     break
+103                 if check_outside_boundary(new_point, self.n):
+104                     continue  # Out of boundary.
+105                 if self.grid[new_point.x][new_point.y] != 0:
+106                     continue  # Skip obstacles or already visited.
+107                 heapq.heappush(open_list, new_point)
+108 
+109             closed_list.add(current)
+110         return False, []
+111 
+112     def convert_closed_list_to_path(self, closed_list: set, start: Node, goal: Node) -> List[Node]:
+113         """
+114         Reconstructs the path from goal to start using the parent pointers (pid)
+115         stored in the nodes in the closed list.
+116         """
+117         current = None
+118         # Find the node in closed_list that matches the goal.
+119         for node in closed_list:
+120             if compare_coordinates(node, goal):
+121                 current = node
+122                 break
+123         if current is None:
+124             print("Error: Goal not found in closed list")
+125             return []
+126 
+127         path = []
+128         # Traverse backwards from goal to start.
+129         while not compare_coordinates(current, start):
+130             path.append(current)
+131             # Reconstruct the parent coordinates from the stored pid.
+132             parent = Node(current.pid // self.n, current.pid % self.n)
+133             parent_node = None
+134             for node in closed_list:
+135                 if compare_coordinates(node, parent):
+136                     parent_node = node
+137                     break
+138             if parent_node is None:
+139                 print("Error in calculating path")
+140                 return []
+141             current = parent_node
+142         path.append(start)
+143         return path
+144 
+145 def make_grid(grid: List[List[int]]):
+146     """
+147     A dummy grid creation function.
+148     In the original C++ code, obstacles may be added here.
+149     For simplicity, this version leaves the grid unchanged.
+150     """
+151     pass
+152 
+153 def print_grid(grid: List[List[int]]):
+154     """Prints the grid row by row."""
+155     for row in grid:
+156         print(" ".join(map(str, row)))
+157 
+158 def print_path(path: List[Node], start: Node, goal: Node, grid: List[List[int]]):
+159     """
+160     Prints the grid with the path marked (using the value 8).
+161     The path is taken as returned (from goal to start).
+162     """
+163     grid_copy = [row[:] for row in grid]
+164     for node in path:
+165         grid_copy[node.x][node.y] = 8  # Mark path cells with an 8.
+166     print("Grid with path:")
+167     print_grid(grid_copy)
+168 
+169 if __name__ == '__main__':
+170     # Example usage similar to the C++ main inside BUILD_INDIVIDUAL.
+171     n = 11
+172     grid = [[0 for _ in range(n)] for _ in range(n)]
+173     make_grid(grid)
+174 
+175     # Randomly select start and goal positions.
+176     start = Node(random.randint(0, n - 1), random.randint(0, n - 1))
+177     goal = Node(random.randint(0, n - 1), random.randint(0, n - 1))
+178 
+179     # Initialize start and goal ids.
+180     start.id = start.x * n + start.y
+181     start.pid = start.id  # For the start, set the parent id to itself.
+182     goal.id = goal.x * n + goal.y
+183     start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)
+184 
+185     # Ensure start and goal cells are free.
+186     grid[start.x][start.y] = 0
+187     grid[goal.x][goal.y] = 0
+188 
+189     print("Start:", start)
+190     print("Goal:", goal)
+191     print("Initial Grid:")
+192     print_grid(grid)
+193 
+194     astar = AStar(grid)
+195     path_found, path = astar.plan(start, goal)
+196 
+197     if path_found:
+198         print("\nPath found:")
+199         for node in path:
+200             print(node)
+201         print()
+202         print_path(path, start, goal, grid)
+203     else:
+204         print("No path found.")
+205
+=========
+
+
+## Test File
+Here is the file that contains the existing tests, called `test/test_app.py`:
+=========
+#!/usr/bin/env python3
+"""
+Unit tests for the AStar algorithm using pytest.
+To run these tests, execute:
+    pytest test_astar.py
+"""
+
+import pytest
+from src.app import Node, AStar, compare_coordinates
+from src.app import make_grid, print_path
+from src.app import print_grid
+from src.app import make_grid
+
+def test_start_equals_goal():
+    """
+    Test the trivial case where the start and goal are the same.
+    The expected result is an immediate success with a path containing only the start.
+    """
+    grid = [
+        [0, 0],
+        [0, 0]
+    ]
+    start = Node(0, 0)
+    goal = Node(0, 0)
+    # Set the start node's id and parent id.
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is True, "Path should be found when start equals goal"
+    # The path should consist of only one node (start).
+    assert len(path) == 1
+    assert compare_coordinates(path[0], start), "The only node in the path should be the start"
+
+def test_simple_path():
+    """
+    Test a simple 5x5 grid with no obstacles.
+    The start is at the top‐left and the goal at the bottom‐right.
+    The algorithm should find a path.
+    """
+    n = 5
+    grid = [[0 for _ in range(n)] for _ in range(n)]
+    start = Node(0, 0)
+    goal = Node(4, 4)
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is True, "A path should be found in an open grid"
+    # According to our conversion, the returned path is from goal to start.
+    assert compare_coordinates(path[0], goal), "The first node in the path should be the goal"
+    assert compare_coordinates(path[-1], start), "The last node in the path should be the start"
+
+def test_no_path():
+    """
+    Test a grid where obstacles block any possible path from start to goal.
+    Obstacles are represented by any non-zero cell.
+    """
+    grid = [
+        [0, 1, 1],
+        [1, 1, 1],
+        [1, 1, 0]
+    ]
+    start = Node(0, 0)
+    goal = Node(2, 2)
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is False, "No path should be found when obstacles block the way"
+    assert path == [], "The path should be empty when no path exists"
+
+
+def test_no_path_outside_boundary():
+    grid = [
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0]
+    ]
+    start = Node(-1, -1)  # Outside the grid
+    goal = Node(2, 2)     # Inside the grid
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is False, "No path should be found when start is outside the grid"
+    assert path == [], "The path should be empty when no path exists"
+
+
+def test_edge_case_start_goal():
+    grid = [
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0]
+    ]
+    start = Node(0, 0)  # Top-left corner
+    goal = Node(2, 2)   # Bottom-right corner
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is True, "A path should be found from top-left to bottom-right"
+    assert len(path) > 0, "The path should not be empty"
+
+
+def test_no_path_both_outside_boundary():
+    grid = [
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0]
+    ]
+    start = Node(-1, -1)  # Outside the grid
+    goal = Node(-2, -2)    # Outside the grid
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is False, "No path should be found when both start and goal are outside the grid"
+    assert path == [], "The path should be empty when no path exists"
+
+
+def test_parent_node_not_found():
+    grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+    start = Node(0, 0)
+    goal = Node(2, 2)
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    closed_list = {Node(0, 0), Node(1, 1), Node(2, 2)}
+    # Modify the goal node's pid to point to a non-existent parent.
+    for node in closed_list:
+        if compare_coordinates(node, goal):
+            node.pid = 999  # Non-existent ID
+            break
+    path = astar.convert_closed_list_to_path(closed_list, start, goal)
+    assert path == [], "Path should be empty when parent node is not found"
+
+
+def test_goal_not_found_in_closed_list():
+    grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+    start = Node(0, 0)
+    goal = Node(2, 2)
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    closed_list = {Node(0, 0), Node(1, 1)}  # Goal is not in closed_list
+    path = astar.convert_closed_list_to_path(closed_list, start, goal)
+    assert path == [], "Path should be empty when goal is not found in closed list"
+
+def test_print_grid():
+    grid = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+    # Call print_grid and check that it doesn't raise an exception.
+    try:
+        print_grid(grid)
+    except Exception as e:
+        assert False, f"print_grid raised an exception: {e}"
+    assert True  # If no exception was raised, the test passes.
+
+
+def test_make_grid_call():
+    grid = [[0, 0], [0, 0]]
+    try:
+        make_grid(grid)
+    except Exception as e:
+        assert False, f"make_grid raised an exception: {e}"
+    assert True
+
+
+def test_print_path():
+    grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+    start = Node(0, 0)
+    goal = Node(2, 2)
+    path = [Node(2, 2), Node(1, 1), Node(0, 0)]  # Example path
+    try:
+        print_path(path, start, goal, grid)
+    except Exception as e:
+        assert False, f"print_path raised an exception: {e}"
+    assert True
+
+
+def test_path_with_obstacle():
+    n = 3
+    grid = [[0 for _ in range(n)] for _ in range(n)]
+    grid[1][1] = 1  # Add an obstacle in the middle
+    start = Node(0, 0)
+    goal = Node(2, 2)
+    start.id = start.x * n + start.y
+    start.pid = start.id
+    goal.id = goal.x * n + goal.y
+    start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)
+    grid[start.x][start.y] = 0
+    grid[goal.x][goal.y] = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is True
+    assert len(path) > 0
+    assert compare_coordinates(path[0], goal)
+    assert compare_coordinates(path[-1], start)
+
+
+
+def test_main_execution():
+    n = 5  # Reduced grid size for faster testing
+    grid = [[0 for _ in range(n)] for _ in range(n)]
+    make_grid(grid)
+
+    # Randomly select start and goal positions.
+    start = Node(0, 0)
+    goal = Node(n - 1, n - 1)
+
+    # Initialize start and goal ids.
+    start.id = start.x * n + start.y
+    start.pid = start.id  # For the start, set the parent id to itself.
+    goal.id = goal.x * n + goal.y
+    start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)
+
+    # Ensure start and goal cells are free.
+    grid[start.x][start.y] = 0
+    grid[goal.x][goal.y] = 0
+
+    astar = AStar(grid)
+    path_found, path = astar.plan(start, goal)
+
+    assert isinstance(path_found, bool), "path_found should be a boolean"
+    assert isinstance(path, list), "path should be a list"
+
+
+def test_main_execution_no_random():
+    n = 5  # Reduced grid size for faster testing
+    grid = [[0 for _ in range(n)] for _ in range(n)]
+    make_grid(grid)
+
+    # Randomly select start and goal positions.
+    start = Node(0, 0)
+    goal = Node(n - 1, n - 1)
+
+    # Initialize start and goal ids.
+    start.id = start.x * n + start.y
+    start.pid = start.id  # For the start, set the parent id to itself.
+    goal.id = goal.x * n + goal.y
+    start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)
+
+    # Ensure start and goal cells are free.
+    grid[start.x][start.y] = 0
+    grid[goal.x][goal.y] = 0
+
+    astar = AStar(grid)
+    path_found, path = astar.plan(start, goal)
+
+    assert isinstance(path_found, bool), "path_found should be a boolean"
+    assert isinstance(path, list), "path should be a list"
+
+
+def test_node_equality_non_node():
+    node = Node(1, 2)
+    assert (node == 1) is False
+=========
+
+
+### Test Framework
+The test framework used for running tests is `pytest`.
+If the current tests are part of a class and contain a 'self' input, than the generated tests should also include the `self` parameter in the test function signature.
+
+
+## Previous Iterations Failed Tests
+Below is a list of failed tests that were generated in previous iterations. Do not generate the same tests again, and take the failed tests into account when generating new tests.
+======
+Failed Test:
+```
+{"test_behavior": "Test case where the current node is already in the closed list. This ensures that the algorithm skips nodes that have already been visited.\n", "lines_to_cover": "[84]\n", "test_name": "test_node_already_in_closed_list\n", "test_code": "def test_node_already_in_closed_list():\n    grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]\n    start = Node(0, 0)\n    goal = Node(2, 2)\n    start.id = 0\n    start.pid = 0\n    astar = AStar(grid)\n    open_list = [start]\n    closed_list = {start}  # Add start node to closed list initially\n    astar.plan(start, goal)\n    # The assertion is implicit: the test should not get stuck in a loop.\n    assert True\n", "new_imports_code": "\"\"\n", "test_tags": "edge case"}
+```
+Test execution error analysis:
+Code coverage did not increase
+
+
+Failed Test:
+```
+{"test_behavior": "Test the scenario where no path is found, covering the lines related to example usage in `if __name__ == '__main__'` block.\n", "lines_to_cover": "[171, 172, 173, 176, 177, 180, 181, 182, 183, 186, 187, 189, 190, 191, 192, 194, 195, 197, 198, 199, 200, 201, 202, 204]\n", "test_name": "test_main_execution_no_path\n", "test_code": "def test_main_execution_no_path():\n    n = 3\n    grid = [[1 for _ in range(n)] for _ in range(n)]\n    start = Node(0, 0)\n    goal = Node(n - 1, n - 1)\n\n    # Initialize start and goal ids.\n    start.id = start.x * n + start.y\n    start.pid = start.id  # For the start, set the parent id to itself.\n    goal.id = goal.x * n + goal.y\n    start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)\n\n    # Ensure start and goal cells are free.\n    grid[start.x][start.y] = 0\n    grid[goal.x][goal.y] = 0\n\n    astar = AStar(grid)\n    path_found, path = astar.plan(start, goal)\n\n    assert path_found is False, \"path_found should be False\"\n    assert isinstance(path, list), \"path should be a list\"\n    assert len(path) == 0, \"Path should be empty\"\n", "new_imports_code": "\"\"\n", "test_tags": "edge case"}
+```
+Test execution error analysis:
+Code coverage did not increase
+
+
+Failed Test:
+```
+{"test_behavior": "Test case where the current node is already in the closed list. This ensures that the algorithm skips nodes that have already been visited.\n", "lines_to_cover": "[84]\n", "test_name": "test_node_already_in_closed_list\n", "test_code": "def test_node_already_in_closed_list():\n    grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]\n    start = Node(0, 0)\n    goal = Node(2, 2)\n    start.id = 0\n    start.pid = 0\n    astar = AStar(grid)\n    open_list = [start]\n    closed_list = {start}\n    # Manually add the start node to the closed list before planning.\n    astar.plan(start, goal)\n    assert True\n", "new_imports_code": "\"\"\n", "test_tags": "edge case"}
+```
+Test execution error analysis:
+Code coverage did not increase
+
+
+Failed Test:
+```
+{"test_behavior": "Test the scenario where no path is found, covering the lines related to example usage in `if __name__ == '__main__'` block.\n", "lines_to_cover": "[171, 172, 173, 176, 177, 180, 181, 182, 183, 186, 187, 189, 190, 191, 192, 194, 195, 197, 198, 199, 200, 201, 202, 204]\n", "test_name": "test_main_execution_no_path\n", "test_code": "def test_main_execution_no_path():\n    n = 3\n    grid = [[1 for _ in range(n)] for _ in range(n)]\n    start = Node(0, 0)\n    goal = Node(n - 1, n - 1)\n\n    # Initialize start and goal ids.\n    start.id = start.x * n + start.y\n    start.pid = start.id  # For the start, set the parent id to itself.\n    goal.id = goal.x * n + goal.y\n    start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)\n\n    # Ensure start and goal cells are free.\n    grid[start.x][start.y] = 0\n    grid[goal.x][goal.y] = 0\n\n    astar = AStar(grid)\n    path_found, path = astar.plan(start, goal)\n\n    assert path_found is False\n    assert isinstance(path, list)\n    assert len(path) == 0\n", "new_imports_code": "\"\"\n", "test_tags": "edge case"}
+```
+Test execution error analysis:
+Code coverage did not increase
+
+
+Failed Test:
+```
+{"test_behavior": "Test the case where the start and goal are adjacent and there is a clear path.\n", "lines_to_cover": "[]\n", "test_name": "test_adjacent_start_goal\n", "test_code": "def test_adjacent_start_goal():\n    n = 3\n    grid = [[0 for _ in range(n)] for _ in range(n)]\n    start = Node(0, 0)\n    goal = Node(0, 1)\n    start.id = start.x * n + start.y\n    start.pid = start.id\n    astar = AStar(grid)\n    found, path = astar.plan(start, goal)\n    assert found is True\n    assert len(path) > 0\n    assert compare_coordinates(path[0], goal)\n    assert compare_coordinates(path[-1], start)\n", "new_imports_code": "\"\"\n", "test_tags": "happy path"}
+```
+Test execution error analysis:
+Code coverage did not increase
+
+
+Failed Test:
+```
+{"test_behavior": "Test the node equality when the other object is not a Node instance.\n", "lines_to_cover": "[25, 26, 27]\n", "test_name": "test_node_equality_non_node_different_type\n", "test_code": "def test_node_equality_non_node_different_type():\n    node = Node(1, 2)\n    assert (node == \"string\") is False\n", "new_imports_code": "\"\"\n", "test_tags": "edge case"}
+```
+Test execution error analysis:
+Code coverage did not increase
+
+
+
+======
+
+
+
+
+## Results of Mutation Testing
+**Mutation Score**: 46.15%
+**Nodes Covered**: 0/0
+The following mutants **survived**:
+1) line 50, operator: Arithmetic Operator Replacement
+2) line 50, operator: Arithmetic Operator Replacement
+3) line 182, operator: Arithmetic Operator Replacement
+4) line 183, operator: Arithmetic Operator Replacement
+5) line 122, operator: Break Continue Replacement
+6) line 54, operator: Relational Operator Replacement
+7) line 54, operator: Relational Operator Replacement
+
+**Goal**: Please generate or refine tests so that these surviving mutants are killed.
+Focus on the lines and operators that survived. For each, we need a test scenario that fails if that mutation occurs.
+
+
+
+
+## Additional Instructions
+======
+However, do not assert exception messages or any string-based messages in assertions, as these may lead to test failures due to minor variations.
+======
+
+
+
+## Code Coverage
+Based on the code coverage report below, your goal is to suggest new test cases for the test file `test/test_app.py` against the source file `src/app.py` that would increase the coverage, meaning cover missing lines of code.
+=========
+Lines covered: [7, 8, 9, 10, 12, 13, 14, 15, 16, 17, 18, 20, 22, 24, 25, 26, 27, 29, 31, 33, 35, 37, 38, 40, 41, 42, 44, 50, 52, 54, 56, 58, 60, 61, 62, 64, 71, 72, 73, 75, 76, 79, 80, 81, 83, 86, 87, 88, 89, 91, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 109, 110, 112, 117, 119, 120, 121, 122, 123, 124, 125, 127, 129, 130, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 145, 151, 153, 155, 156, 158, 163, 164, 165, 166, 167, 169]
+Lines missed: [84, 171, 172, 173, 176, 177, 180, 181, 182, 183, 186, 187, 189, 190, 191, 192, 194, 195, 197, 198, 199, 200, 201, 202, 204]
+Percentage covered: 80.47%
+=========
+
+
+## Response
+The output must be a YAML object equivalent to type $NewTests, according to the following Pydantic definitions:
+=====
+class SingleTest(BaseModel):
+    test_behavior: str = Field(description="Short description of the behavior the test covers")
+    lines_to_cover: str = Field(description="A list of line numbers, currently uncovered, that this specific new test aims to cover")
+    test_name: str = Field(description=" A short test name, in snake case, that reflects the behaviour to test")
+    test_code: str = Field(description="A new 'pytest' test function that extends the existing test suite, and tests the behavior described in 'test_behavior'. The test should be a written like its a part of the existing test suite, if there is one, and it can use existing helper functions, setup, or teardown code. Don't iclude new imports here, use 'new_imports_code' section instead.")
+    new_imports_code: str = Field(description="New imports that are required to run the new test function, and are not already imported in the test file. Give an empty string if no new imports are required. If relevant, add new imports as  'import ...' lines.")
+    test_tags: str = Field(description="A single label that best describes the test, out of: ['happy path', 'edge case','other']")
+
+class NewTests(BaseModel):
+    language: str = Field(description="The programming language of the source code")
+    existing_test_function_signature: str = Field(description="A single line repeating a signature header of one of the existing test functions")
+    new_tests: List[SingleTest] = Field(min_items=1, max_items=4, description="A list of new test functions to append to the existing test suite, aiming to increase the code coverage. Each test should run as-is, without requiring any additional inputs or setup code. Don't introduce new dependencies")
+=====
+
+
+Example output:
+
+```yaml
+language: python
+existing_test_function_signature: |
+  ...
+new_tests:
+- test_behavior: |
+    Test that the function returns the correct output for a single element list
+  lines_to_cover: |
+    [1,2,5, ...]
+  test_name: |
+    test_single_element_list
+  test_code: |
+    def ...
+  new_imports_code: |
+    ""
+  test_tags: happy path
+    ...
+```
+
+
+Use block scalar('|') to format each YAML output.
+
+Response (should be a valid YAML, and nothing else):
+```yaml
+
+system: 
+user: ## Overview
+You are a code assistant that accepts a python source file, and a python test file.
+Your goal is to generate additional comprehensive unit tests to complement the existing test suite, in order to increase the code coverage against the source file.
+
+Additional guidelines:
+- Step by step carefully analyze the provided code. Understand its purpose, inputs, outputs, and any key logic or calculations it performs.
+- Brainstorm a list of diverse and meaningful test cases you think will be necessary to fully validate the correctness and functionality of the code, and achieve 100% code coverage.
+- After each individual test has been added, review all tests to ensure they cover the full range of scenarios, including how to handle exceptions or errors.
+- If the original test file contains a test suite, assume that each generated test will be a part of the same suite. Ensure that the new tests are consistent with the existing test suite in terms of style, naming conventions, and structure.
+- You may need to use **Equivalent Partitioning** strategy to cover as many test scenarios as possible and reduce the number of test cases while maintaing good code coverage.
+- There are some cases that result multiple correct answers, you should consider it carefully and define the assertions not so strictly.
+
+## Source File
+Here is the source file that you will be writing tests against, called `src/app.py`.
+Note that we have manually added line numbers for each line of code, to help you understand the code coverage report.
+Those numbers are not a part of the original code.
+=========
+1 #!/usr/bin/env python3
+2 """
+3 This file is a Python translation of the provided C++ A* code.
+4 It implements a simple A* (greedy best-first) search over a grid.
+5 """
+6 
+7 import heapq
+8 import random
+9 from dataclasses import dataclass
+10 from typing import List, Tuple
+11 
+12 @dataclass
+13 class Node:
+14     x: int
+15     y: int
+16     id: int = 0    # Unique identifier, computed as x * n + y
+17     pid: int = 0   # Parent id
+18     h_cost: int = 0  # Heuristic cost (here, Manhattan distance)
+19 
+20     def __add__(self, other):
+21         # Allow adding a motion (as a Node with offset values) to the current node.
+22         return Node(self.x + other.x, self.y + other.y)
+23 
+24     def __eq__(self, other):
+25         if not isinstance(other, Node):
+26             return False
+27         return self.x == other.x and self.y == other.y
+28 
+29     def __hash__(self):
+30         # Two nodes are considered the same (for our closed list) if they have the same coordinates.
+31         return hash((self.x, self.y))
+32 
+33     def __lt__(self, other):
+34         # For the priority queue: compare based on the heuristic cost.
+35         return self.h_cost < other.h_cost
+36 
+37 class Planner:
+38     def __init__(self, grid: List[List[int]]):
+39         # Save a copy of the original grid and store the grid dimensions.
+40         self.original_grid = [row[:] for row in grid]
+41         self.grid = [row[:] for row in grid]
+42         self.n = len(grid)
+43 
+44 def get_motion() -> List[Node]:
+45     """
+46     Returns a list of possible moves (4-connected grid).
+47     Each move is represented as a Node with the corresponding offset.
+48     """
+49     # Movements: up, down, left, right.
+50     return [Node(-1, 0), Node(1, 0), Node(0, -1), Node(0, 1)]
+51 
+52 def check_outside_boundary(node: Node, n: int) -> bool:
+53     """Return True if the node is outside the grid boundaries."""
+54     return node.x < 0 or node.x >= n or node.y < 0 or node.y >= n
+55 
+56 def compare_coordinates(node1: Node, node2: Node) -> bool:
+57     """Return True if node1 and node2 share the same coordinates."""
+58     return node1.x == node2.x and node1.y == node2.y
+59 
+60 class AStar(Planner):
+61     def __init__(self, grid: List[List[int]]):
+62         super().__init__(grid)
+63 
+64     def plan(self, start: Node, goal: Node) -> Tuple[bool, List[Node]]:
+65         """
+66         Executes the A* (greedy best-first) search.
+67         Returns a tuple: (True, path_list) if the goal is found,
+68         otherwise (False, empty_list).
+69         """
+70         # Reset grid to the original configuration.
+71         self.grid = [row[:] for row in self.original_grid]
+72         open_list = []  # priority queue (heap)
+73         closed_list = set()  # set of visited nodes
+74 
+75         motion = get_motion()
+76         heapq.heappush(open_list, start)
+77 
+78         # Main loop
+79         while open_list:
+80             current = heapq.heappop(open_list)
+81             current.id = current.x * self.n + current.y
+82 
+83             if current in closed_list:
+84                 continue
+85 
+86             if compare_coordinates(current, goal):
+87                 closed_list.add(current)
+88                 self.grid[current.x][current.y] = 2
+89                 return True, self.convert_closed_list_to_path(closed_list, start, goal)
+90 
+91             self.grid[current.x][current.y] = 2  # Mark current as opened/visited.
+92 
+93             for m in motion:
+94                 new_point = current + m
+95                 if new_point in closed_list:
+96                     continue
+97                 new_point.id = new_point.x * self.n + new_point.y
+98                 new_point.pid = current.id
+99                 new_point.h_cost = abs(new_point.x - goal.x) + abs(new_point.y - goal.y)
+100                 if compare_coordinates(new_point, goal):
+101                     heapq.heappush(open_list, new_point)
+102                     break
+103                 if check_outside_boundary(new_point, self.n):
+104                     continue  # Out of boundary.
+105                 if self.grid[new_point.x][new_point.y] != 0:
+106                     continue  # Skip obstacles or already visited.
+107                 heapq.heappush(open_list, new_point)
+108 
+109             closed_list.add(current)
+110         return False, []
+111 
+112     def convert_closed_list_to_path(self, closed_list: set, start: Node, goal: Node) -> List[Node]:
+113         """
+114         Reconstructs the path from goal to start using the parent pointers (pid)
+115         stored in the nodes in the closed list.
+116         """
+117         current = None
+118         # Find the node in closed_list that matches the goal.
+119         for node in closed_list:
+120             if compare_coordinates(node, goal):
+121                 current = node
+122                 break
+123         if current is None:
+124             print("Error: Goal not found in closed list")
+125             return []
+126 
+127         path = []
+128         # Traverse backwards from goal to start.
+129         while not compare_coordinates(current, start):
+130             path.append(current)
+131             # Reconstruct the parent coordinates from the stored pid.
+132             parent = Node(current.pid // self.n, current.pid % self.n)
+133             parent_node = None
+134             for node in closed_list:
+135                 if compare_coordinates(node, parent):
+136                     parent_node = node
+137                     break
+138             if parent_node is None:
+139                 print("Error in calculating path")
+140                 return []
+141             current = parent_node
+142         path.append(start)
+143         return path
+144 
+145 def make_grid(grid: List[List[int]]):
+146     """
+147     A dummy grid creation function.
+148     In the original C++ code, obstacles may be added here.
+149     For simplicity, this version leaves the grid unchanged.
+150     """
+151     pass
+152 
+153 def print_grid(grid: List[List[int]]):
+154     """Prints the grid row by row."""
+155     for row in grid:
+156         print(" ".join(map(str, row)))
+157 
+158 def print_path(path: List[Node], start: Node, goal: Node, grid: List[List[int]]):
+159     """
+160     Prints the grid with the path marked (using the value 8).
+161     The path is taken as returned (from goal to start).
+162     """
+163     grid_copy = [row[:] for row in grid]
+164     for node in path:
+165         grid_copy[node.x][node.y] = 8  # Mark path cells with an 8.
+166     print("Grid with path:")
+167     print_grid(grid_copy)
+168 
+169 if __name__ == '__main__':
+170     # Example usage similar to the C++ main inside BUILD_INDIVIDUAL.
+171     n = 11
+172     grid = [[0 for _ in range(n)] for _ in range(n)]
+173     make_grid(grid)
+174 
+175     # Randomly select start and goal positions.
+176     start = Node(random.randint(0, n - 1), random.randint(0, n - 1))
+177     goal = Node(random.randint(0, n - 1), random.randint(0, n - 1))
+178 
+179     # Initialize start and goal ids.
+180     start.id = start.x * n + start.y
+181     start.pid = start.id  # For the start, set the parent id to itself.
+182     goal.id = goal.x * n + goal.y
+183     start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)
+184 
+185     # Ensure start and goal cells are free.
+186     grid[start.x][start.y] = 0
+187     grid[goal.x][goal.y] = 0
+188 
+189     print("Start:", start)
+190     print("Goal:", goal)
+191     print("Initial Grid:")
+192     print_grid(grid)
+193 
+194     astar = AStar(grid)
+195     path_found, path = astar.plan(start, goal)
+196 
+197     if path_found:
+198         print("\nPath found:")
+199         for node in path:
+200             print(node)
+201         print()
+202         print_path(path, start, goal, grid)
+203     else:
+204         print("No path found.")
+205
+=========
+
+
+## Test File
+Here is the file that contains the existing tests, called `test/test_app.py`:
+=========
+#!/usr/bin/env python3
+"""
+Unit tests for the AStar algorithm using pytest.
+To run these tests, execute:
+    pytest test_astar.py
+"""
+
+import pytest
+from src.app import Node, AStar, compare_coordinates
+from src.app import make_grid, print_path
+from src.app import print_grid
+from src.app import make_grid
+
+def test_start_equals_goal():
+    """
+    Test the trivial case where the start and goal are the same.
+    The expected result is an immediate success with a path containing only the start.
+    """
+    grid = [
+        [0, 0],
+        [0, 0]
+    ]
+    start = Node(0, 0)
+    goal = Node(0, 0)
+    # Set the start node's id and parent id.
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is True, "Path should be found when start equals goal"
+    # The path should consist of only one node (start).
+    assert len(path) == 1
+    assert compare_coordinates(path[0], start), "The only node in the path should be the start"
+
+def test_simple_path():
+    """
+    Test a simple 5x5 grid with no obstacles.
+    The start is at the top‐left and the goal at the bottom‐right.
+    The algorithm should find a path.
+    """
+    n = 5
+    grid = [[0 for _ in range(n)] for _ in range(n)]
+    start = Node(0, 0)
+    goal = Node(4, 4)
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is True, "A path should be found in an open grid"
+    # According to our conversion, the returned path is from goal to start.
+    assert compare_coordinates(path[0], goal), "The first node in the path should be the goal"
+    assert compare_coordinates(path[-1], start), "The last node in the path should be the start"
+
+def test_no_path():
+    """
+    Test a grid where obstacles block any possible path from start to goal.
+    Obstacles are represented by any non-zero cell.
+    """
+    grid = [
+        [0, 1, 1],
+        [1, 1, 1],
+        [1, 1, 0]
+    ]
+    start = Node(0, 0)
+    goal = Node(2, 2)
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is False, "No path should be found when obstacles block the way"
+    assert path == [], "The path should be empty when no path exists"
+
+
+def test_no_path_outside_boundary():
+    grid = [
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0]
+    ]
+    start = Node(-1, -1)  # Outside the grid
+    goal = Node(2, 2)     # Inside the grid
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is False, "No path should be found when start is outside the grid"
+    assert path == [], "The path should be empty when no path exists"
+
+
+def test_edge_case_start_goal():
+    grid = [
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0]
+    ]
+    start = Node(0, 0)  # Top-left corner
+    goal = Node(2, 2)   # Bottom-right corner
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is True, "A path should be found from top-left to bottom-right"
+    assert len(path) > 0, "The path should not be empty"
+
+
+def test_no_path_both_outside_boundary():
+    grid = [
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0]
+    ]
+    start = Node(-1, -1)  # Outside the grid
+    goal = Node(-2, -2)    # Outside the grid
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is False, "No path should be found when both start and goal are outside the grid"
+    assert path == [], "The path should be empty when no path exists"
+
+
+def test_parent_node_not_found():
+    grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+    start = Node(0, 0)
+    goal = Node(2, 2)
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    closed_list = {Node(0, 0), Node(1, 1), Node(2, 2)}
+    # Modify the goal node's pid to point to a non-existent parent.
+    for node in closed_list:
+        if compare_coordinates(node, goal):
+            node.pid = 999  # Non-existent ID
+            break
+    path = astar.convert_closed_list_to_path(closed_list, start, goal)
+    assert path == [], "Path should be empty when parent node is not found"
+
+
+def test_goal_not_found_in_closed_list():
+    grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+    start = Node(0, 0)
+    goal = Node(2, 2)
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    closed_list = {Node(0, 0), Node(1, 1)}  # Goal is not in closed_list
+    path = astar.convert_closed_list_to_path(closed_list, start, goal)
+    assert path == [], "Path should be empty when goal is not found in closed list"
+
+def test_print_grid():
+    grid = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+    # Call print_grid and check that it doesn't raise an exception.
+    try:
+        print_grid(grid)
+    except Exception as e:
+        assert False, f"print_grid raised an exception: {e}"
+    assert True  # If no exception was raised, the test passes.
+
+
+def test_make_grid_call():
+    grid = [[0, 0], [0, 0]]
+    try:
+        make_grid(grid)
+    except Exception as e:
+        assert False, f"make_grid raised an exception: {e}"
+    assert True
+
+
+def test_print_path():
+    grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+    start = Node(0, 0)
+    goal = Node(2, 2)
+    path = [Node(2, 2), Node(1, 1), Node(0, 0)]  # Example path
+    try:
+        print_path(path, start, goal, grid)
+    except Exception as e:
+        assert False, f"print_path raised an exception: {e}"
+    assert True
+
+
+def test_path_with_obstacle():
+    n = 3
+    grid = [[0 for _ in range(n)] for _ in range(n)]
+    grid[1][1] = 1  # Add an obstacle in the middle
+    start = Node(0, 0)
+    goal = Node(2, 2)
+    start.id = start.x * n + start.y
+    start.pid = start.id
+    goal.id = goal.x * n + goal.y
+    start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)
+    grid[start.x][start.y] = 0
+    grid[goal.x][goal.y] = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is True
+    assert len(path) > 0
+    assert compare_coordinates(path[0], goal)
+    assert compare_coordinates(path[-1], start)
+
+
+
+def test_main_execution():
+    n = 5  # Reduced grid size for faster testing
+    grid = [[0 for _ in range(n)] for _ in range(n)]
+    make_grid(grid)
+
+    # Randomly select start and goal positions.
+    start = Node(0, 0)
+    goal = Node(n - 1, n - 1)
+
+    # Initialize start and goal ids.
+    start.id = start.x * n + start.y
+    start.pid = start.id  # For the start, set the parent id to itself.
+    goal.id = goal.x * n + goal.y
+    start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)
+
+    # Ensure start and goal cells are free.
+    grid[start.x][start.y] = 0
+    grid[goal.x][goal.y] = 0
+
+    astar = AStar(grid)
+    path_found, path = astar.plan(start, goal)
+
+    assert isinstance(path_found, bool), "path_found should be a boolean"
+    assert isinstance(path, list), "path should be a list"
+
+
+def test_main_execution_no_random():
+    n = 5  # Reduced grid size for faster testing
+    grid = [[0 for _ in range(n)] for _ in range(n)]
+    make_grid(grid)
+
+    # Randomly select start and goal positions.
+    start = Node(0, 0)
+    goal = Node(n - 1, n - 1)
+
+    # Initialize start and goal ids.
+    start.id = start.x * n + start.y
+    start.pid = start.id  # For the start, set the parent id to itself.
+    goal.id = goal.x * n + goal.y
+    start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)
+
+    # Ensure start and goal cells are free.
+    grid[start.x][start.y] = 0
+    grid[goal.x][goal.y] = 0
+
+    astar = AStar(grid)
+    path_found, path = astar.plan(start, goal)
+
+    assert isinstance(path_found, bool), "path_found should be a boolean"
+    assert isinstance(path, list), "path should be a list"
+
+
+def test_node_equality_non_node():
+    node = Node(1, 2)
+    assert (node == 1) is False
+=========
+
+
+### Test Framework
+The test framework used for running tests is `pytest`.
+If the current tests are part of a class and contain a 'self' input, than the generated tests should also include the `self` parameter in the test function signature.
+
+
+## Previous Iterations Failed Tests
+Below is a list of failed tests that were generated in previous iterations. Do not generate the same tests again, and take the failed tests into account when generating new tests.
+======
+Failed Test:
+```
+{"test_behavior": "Test case where the current node is already in the closed list. This ensures that the algorithm skips nodes that have already been visited.\n", "lines_to_cover": "[84]\n", "test_name": "test_node_already_in_closed_list\n", "test_code": "def test_node_already_in_closed_list():\n    grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]\n    start = Node(0, 0)\n    goal = Node(2, 2)\n    start.id = 0\n    start.pid = 0\n    astar = AStar(grid)\n    open_list = [start]\n    closed_list = {start}  # Add start node to closed list initially\n    astar.plan(start, goal)\n    # The assertion is implicit: the test should not get stuck in a loop.\n    assert True\n", "new_imports_code": "\"\"\n", "test_tags": "edge case"}
+```
+Test execution error analysis:
+Code coverage did not increase
+
+
+Failed Test:
+```
+{"test_behavior": "Test the scenario where no path is found, covering the lines related to example usage in `if __name__ == '__main__'` block.\n", "lines_to_cover": "[171, 172, 173, 176, 177, 180, 181, 182, 183, 186, 187, 189, 190, 191, 192, 194, 195, 197, 198, 199, 200, 201, 202, 204]\n", "test_name": "test_main_execution_no_path\n", "test_code": "def test_main_execution_no_path():\n    n = 3\n    grid = [[1 for _ in range(n)] for _ in range(n)]\n    start = Node(0, 0)\n    goal = Node(n - 1, n - 1)\n\n    # Initialize start and goal ids.\n    start.id = start.x * n + start.y\n    start.pid = start.id  # For the start, set the parent id to itself.\n    goal.id = goal.x * n + goal.y\n    start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)\n\n    # Ensure start and goal cells are free.\n    grid[start.x][start.y] = 0\n    grid[goal.x][goal.y] = 0\n\n    astar = AStar(grid)\n    path_found, path = astar.plan(start, goal)\n\n    assert path_found is False, \"path_found should be False\"\n    assert isinstance(path, list), \"path should be a list\"\n    assert len(path) == 0, \"Path should be empty\"\n", "new_imports_code": "\"\"\n", "test_tags": "edge case"}
+```
+Test execution error analysis:
+Code coverage did not increase
+
+
+Failed Test:
+```
+{"test_behavior": "Test case where the current node is already in the closed list. This ensures that the algorithm skips nodes that have already been visited.\n", "lines_to_cover": "[84]\n", "test_name": "test_node_already_in_closed_list\n", "test_code": "def test_node_already_in_closed_list():\n    grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]\n    start = Node(0, 0)\n    goal = Node(2, 2)\n    start.id = 0\n    start.pid = 0\n    astar = AStar(grid)\n    open_list = [start]\n    closed_list = {start}\n    # Manually add the start node to the closed list before planning.\n    astar.plan(start, goal)\n    assert True\n", "new_imports_code": "\"\"\n", "test_tags": "edge case"}
+```
+Test execution error analysis:
+Code coverage did not increase
+
+
+Failed Test:
+```
+{"test_behavior": "Test the scenario where no path is found, covering the lines related to example usage in `if __name__ == '__main__'` block.\n", "lines_to_cover": "[171, 172, 173, 176, 177, 180, 181, 182, 183, 186, 187, 189, 190, 191, 192, 194, 195, 197, 198, 199, 200, 201, 202, 204]\n", "test_name": "test_main_execution_no_path\n", "test_code": "def test_main_execution_no_path():\n    n = 3\n    grid = [[1 for _ in range(n)] for _ in range(n)]\n    start = Node(0, 0)\n    goal = Node(n - 1, n - 1)\n\n    # Initialize start and goal ids.\n    start.id = start.x * n + start.y\n    start.pid = start.id  # For the start, set the parent id to itself.\n    goal.id = goal.x * n + goal.y\n    start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)\n\n    # Ensure start and goal cells are free.\n    grid[start.x][start.y] = 0\n    grid[goal.x][goal.y] = 0\n\n    astar = AStar(grid)\n    path_found, path = astar.plan(start, goal)\n\n    assert path_found is False\n    assert isinstance(path, list)\n    assert len(path) == 0\n", "new_imports_code": "\"\"\n", "test_tags": "edge case"}
+```
+Test execution error analysis:
+Code coverage did not increase
+
+
+Failed Test:
+```
+{"test_behavior": "Test the case where the start and goal are adjacent and there is a clear path.\n", "lines_to_cover": "[]\n", "test_name": "test_adjacent_start_goal\n", "test_code": "def test_adjacent_start_goal():\n    n = 3\n    grid = [[0 for _ in range(n)] for _ in range(n)]\n    start = Node(0, 0)\n    goal = Node(0, 1)\n    start.id = start.x * n + start.y\n    start.pid = start.id\n    astar = AStar(grid)\n    found, path = astar.plan(start, goal)\n    assert found is True\n    assert len(path) > 0\n    assert compare_coordinates(path[0], goal)\n    assert compare_coordinates(path[-1], start)\n", "new_imports_code": "\"\"\n", "test_tags": "happy path"}
+```
+Test execution error analysis:
+Code coverage did not increase
+
+
+Failed Test:
+```
+{"test_behavior": "Test the node equality when the other object is not a Node instance.\n", "lines_to_cover": "[25, 26, 27]\n", "test_name": "test_node_equality_non_node_different_type\n", "test_code": "def test_node_equality_non_node_different_type():\n    node = Node(1, 2)\n    assert (node == \"string\") is False\n", "new_imports_code": "\"\"\n", "test_tags": "edge case"}
+```
+Test execution error analysis:
+Code coverage did not increase
+
+
+Failed Test:
+```
+{"test_behavior": "Test the scenario where no path is found, covering the lines related to example usage in `if __name__ == '__main__'` block.\n", "lines_to_cover": "[171, 172, 173, 176, 177, 180, 181, 182, 183, 186, 187, 189, 190, 191, 192, 194, 195, 197, 198, 199, 200, 201, 202, 204]\n", "test_name": "test_main_execution_no_path\n", "test_code": "def test_main_execution_no_path():\n    n = 3\n    grid = [[1 for _ in range(n)] for _ in range(n)]\n    start = Node(0, 0)\n    goal = Node(n - 1, n - 1)\n\n    # Initialize start and goal ids.\n    start.id = start.x * n + start.y\n    start.pid = start.id  # For the start, set the parent id to itself.\n    goal.id = goal.x * n + goal.y\n    start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)\n\n    # Ensure start and goal cells are free.\n    grid[start.x][start.y] = 1\n    grid[goal.x][goal.y] = 1\n\n    astar = AStar(grid)\n    path_found, path = astar.plan(start, goal)\n\n    assert path_found is False\n    assert isinstance(path, list)\n    assert len(path) == 0\n", "new_imports_code": "\"\"\n", "test_tags": "edge case"}
+```
+Test execution error analysis:
+Code coverage did not increase
+
+
+Failed Test:
+```
+{"test_behavior": "Test the scenario where the goal is found immediately.\n", "lines_to_cover": "[84]\n", "test_name": "test_goal_found_immediately\n", "test_code": "def test_goal_found_immediately():\n    grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]\n    start = Node(0, 0)\n    goal = Node(0, 0)\n    start.id = 0\n    start.pid = 0\n    astar = AStar(grid)\n    found, path = astar.plan(start, goal)\n    assert found is True\n    assert len(path) == 1\n    assert compare_coordinates(path[0], start)\n", "new_imports_code": "\"\"\n", "test_tags": "happy path"}
+```
+Test execution error analysis:
+Code coverage did not increase
+
+
+Failed Test:
+```
+{"test_behavior": "Test the case where the start and goal are adjacent and there is a clear path.\n", "lines_to_cover": "[]\n", "test_name": "test_adjacent_start_goal\n", "test_code": "def test_adjacent_start_goal():\n    n = 3\n    grid = [[0 for _ in range(n)] for _ in range(n)]\n    start = Node(0, 0)\n    goal = Node(0, 1)\n    start.id = start.x * n + start.y\n    start.pid = start.id\n    astar = AStar(grid)\n    found, path = astar.plan(start, goal)\n    assert found is True\n    assert len(path) > 0\n    assert compare_coordinates(path[0], goal)\n    assert compare_coordinates(path[-1], start)\n", "new_imports_code": "\"\"\n", "test_tags": "happy path"}
+```
+Test execution error analysis:
+Code coverage did not increase
+
+
+
+======
+
+
+
+
+## Results of Mutation Testing
+**Mutation Score**: 33.33%
+**Nodes Covered**: 0/0
+The following mutants **survived**:
+1) line 50, operator: Arithmetic Operator Deletion
+2) line 97, operator: Arithmetic Operator Replacement
+3) line 177, operator: Arithmetic Operator Replacement
+4) line 122, operator: Break Continue Replacement
+
+**Goal**: Please generate or refine tests so that these surviving mutants are killed.
+Focus on the lines and operators that survived. For each, we need a test scenario that fails if that mutation occurs.
+
+
+
+
+## Additional Instructions
+======
+However, do not assert exception messages or any string-based messages in assertions, as these may lead to test failures due to minor variations.
+======
+
+
+
+## Code Coverage
+Based on the code coverage report below, your goal is to suggest new test cases for the test file `test/test_app.py` against the source file `src/app.py` that would increase the coverage, meaning cover missing lines of code.
+=========
+Lines covered: [7, 8, 9, 10, 12, 13, 14, 15, 16, 17, 18, 20, 22, 24, 25, 26, 27, 29, 31, 33, 35, 37, 38, 40, 41, 42, 44, 50, 52, 54, 56, 58, 60, 61, 62, 64, 71, 72, 73, 75, 76, 79, 80, 81, 83, 86, 87, 88, 89, 91, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 109, 110, 112, 117, 119, 120, 121, 122, 123, 124, 125, 127, 129, 130, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 145, 151, 153, 155, 156, 158, 163, 164, 165, 166, 167, 169]
+Lines missed: [84, 171, 172, 173, 176, 177, 180, 181, 182, 183, 186, 187, 189, 190, 191, 192, 194, 195, 197, 198, 199, 200, 201, 202, 204]
+Percentage covered: 80.47%
+=========
+
+
+## Response
+The output must be a YAML object equivalent to type $NewTests, according to the following Pydantic definitions:
+=====
+class SingleTest(BaseModel):
+    test_behavior: str = Field(description="Short description of the behavior the test covers")
+    lines_to_cover: str = Field(description="A list of line numbers, currently uncovered, that this specific new test aims to cover")
+    test_name: str = Field(description=" A short test name, in snake case, that reflects the behaviour to test")
+    test_code: str = Field(description="A new 'pytest' test function that extends the existing test suite, and tests the behavior described in 'test_behavior'. The test should be a written like its a part of the existing test suite, if there is one, and it can use existing helper functions, setup, or teardown code. Don't iclude new imports here, use 'new_imports_code' section instead.")
+    new_imports_code: str = Field(description="New imports that are required to run the new test function, and are not already imported in the test file. Give an empty string if no new imports are required. If relevant, add new imports as  'import ...' lines.")
+    test_tags: str = Field(description="A single label that best describes the test, out of: ['happy path', 'edge case','other']")
+
+class NewTests(BaseModel):
+    language: str = Field(description="The programming language of the source code")
+    existing_test_function_signature: str = Field(description="A single line repeating a signature header of one of the existing test functions")
+    new_tests: List[SingleTest] = Field(min_items=1, max_items=4, description="A list of new test functions to append to the existing test suite, aiming to increase the code coverage. Each test should run as-is, without requiring any additional inputs or setup code. Don't introduce new dependencies")
+=====
+
+
+Example output:
+
+```yaml
+language: python
+existing_test_function_signature: |
+  ...
+new_tests:
+- test_behavior: |
+    Test that the function returns the correct output for a single element list
+  lines_to_cover: |
+    [1,2,5, ...]
+  test_name: |
+    test_single_element_list
+  test_code: |
+    def ...
+  new_imports_code: |
+    ""
+  test_tags: happy path
+    ...
+```
+
+
+Use block scalar('|') to format each YAML output.
+
+Response (should be a valid YAML, and nothing else):
+```yaml
+
+system: 
+user: ## Overview
+You are a code assistant that accepts a python source file, and a python test file.
+Your goal is to generate additional comprehensive unit tests to complement the existing test suite, in order to increase the code coverage against the source file.
+
+Additional guidelines:
+- Step by step carefully analyze the provided code. Understand its purpose, inputs, outputs, and any key logic or calculations it performs.
+- Brainstorm a list of diverse and meaningful test cases you think will be necessary to fully validate the correctness and functionality of the code, and achieve 100% code coverage.
+- After each individual test has been added, review all tests to ensure they cover the full range of scenarios, including how to handle exceptions or errors.
+- If the original test file contains a test suite, assume that each generated test will be a part of the same suite. Ensure that the new tests are consistent with the existing test suite in terms of style, naming conventions, and structure.
+- You may need to use **Equivalent Partitioning** strategy to cover as many test scenarios as possible and reduce the number of test cases while maintaing good code coverage.
+- There are some cases that result multiple correct answers, you should consider it carefully and define the assertions not so strictly.
+
+## Source File
+Here is the source file that you will be writing tests against, called `src/app.py`.
+Note that we have manually added line numbers for each line of code, to help you understand the code coverage report.
+Those numbers are not a part of the original code.
+=========
+1 #!/usr/bin/env python3
+2 """
+3 This file is a Python translation of the provided C++ A* code.
+4 It implements a simple A* (greedy best-first) search over a grid.
+5 """
+6 
+7 import heapq
+8 import random
+9 from dataclasses import dataclass
+10 from typing import List, Tuple
+11 
+12 @dataclass
+13 class Node:
+14     x: int
+15     y: int
+16     id: int = 0    # Unique identifier, computed as x * n + y
+17     pid: int = 0   # Parent id
+18     h_cost: int = 0  # Heuristic cost (here, Manhattan distance)
+19 
+20     def __add__(self, other):
+21         # Allow adding a motion (as a Node with offset values) to the current node.
+22         return Node(self.x + other.x, self.y + other.y)
+23 
+24     def __eq__(self, other):
+25         if not isinstance(other, Node):
+26             return False
+27         return self.x == other.x and self.y == other.y
+28 
+29     def __hash__(self):
+30         # Two nodes are considered the same (for our closed list) if they have the same coordinates.
+31         return hash((self.x, self.y))
+32 
+33     def __lt__(self, other):
+34         # For the priority queue: compare based on the heuristic cost.
+35         return self.h_cost < other.h_cost
+36 
+37 class Planner:
+38     def __init__(self, grid: List[List[int]]):
+39         # Save a copy of the original grid and store the grid dimensions.
+40         self.original_grid = [row[:] for row in grid]
+41         self.grid = [row[:] for row in grid]
+42         self.n = len(grid)
+43 
+44 def get_motion() -> List[Node]:
+45     """
+46     Returns a list of possible moves (4-connected grid).
+47     Each move is represented as a Node with the corresponding offset.
+48     """
+49     # Movements: up, down, left, right.
+50     return [Node(-1, 0), Node(1, 0), Node(0, -1), Node(0, 1)]
+51 
+52 def check_outside_boundary(node: Node, n: int) -> bool:
+53     """Return True if the node is outside the grid boundaries."""
+54     return node.x < 0 or node.x >= n or node.y < 0 or node.y >= n
+55 
+56 def compare_coordinates(node1: Node, node2: Node) -> bool:
+57     """Return True if node1 and node2 share the same coordinates."""
+58     return node1.x == node2.x and node1.y == node2.y
+59 
+60 class AStar(Planner):
+61     def __init__(self, grid: List[List[int]]):
+62         super().__init__(grid)
+63 
+64     def plan(self, start: Node, goal: Node) -> Tuple[bool, List[Node]]:
+65         """
+66         Executes the A* (greedy best-first) search.
+67         Returns a tuple: (True, path_list) if the goal is found,
+68         otherwise (False, empty_list).
+69         """
+70         # Reset grid to the original configuration.
+71         self.grid = [row[:] for row in self.original_grid]
+72         open_list = []  # priority queue (heap)
+73         closed_list = set()  # set of visited nodes
+74 
+75         motion = get_motion()
+76         heapq.heappush(open_list, start)
+77 
+78         # Main loop
+79         while open_list:
+80             current = heapq.heappop(open_list)
+81             current.id = current.x * self.n + current.y
+82 
+83             if current in closed_list:
+84                 continue
+85 
+86             if compare_coordinates(current, goal):
+87                 closed_list.add(current)
+88                 self.grid[current.x][current.y] = 2
+89                 return True, self.convert_closed_list_to_path(closed_list, start, goal)
+90 
+91             self.grid[current.x][current.y] = 2  # Mark current as opened/visited.
+92 
+93             for m in motion:
+94                 new_point = current + m
+95                 if new_point in closed_list:
+96                     continue
+97                 new_point.id = new_point.x * self.n + new_point.y
+98                 new_point.pid = current.id
+99                 new_point.h_cost = abs(new_point.x - goal.x) + abs(new_point.y - goal.y)
+100                 if compare_coordinates(new_point, goal):
+101                     heapq.heappush(open_list, new_point)
+102                     break
+103                 if check_outside_boundary(new_point, self.n):
+104                     continue  # Out of boundary.
+105                 if self.grid[new_point.x][new_point.y] != 0:
+106                     continue  # Skip obstacles or already visited.
+107                 heapq.heappush(open_list, new_point)
+108 
+109             closed_list.add(current)
+110         return False, []
+111 
+112     def convert_closed_list_to_path(self, closed_list: set, start: Node, goal: Node) -> List[Node]:
+113         """
+114         Reconstructs the path from goal to start using the parent pointers (pid)
+115         stored in the nodes in the closed list.
+116         """
+117         current = None
+118         # Find the node in closed_list that matches the goal.
+119         for node in closed_list:
+120             if compare_coordinates(node, goal):
+121                 current = node
+122                 break
+123         if current is None:
+124             print("Error: Goal not found in closed list")
+125             return []
+126 
+127         path = []
+128         # Traverse backwards from goal to start.
+129         while not compare_coordinates(current, start):
+130             path.append(current)
+131             # Reconstruct the parent coordinates from the stored pid.
+132             parent = Node(current.pid // self.n, current.pid % self.n)
+133             parent_node = None
+134             for node in closed_list:
+135                 if compare_coordinates(node, parent):
+136                     parent_node = node
+137                     break
+138             if parent_node is None:
+139                 print("Error in calculating path")
+140                 return []
+141             current = parent_node
+142         path.append(start)
+143         return path
+144 
+145 def make_grid(grid: List[List[int]]):
+146     """
+147     A dummy grid creation function.
+148     In the original C++ code, obstacles may be added here.
+149     For simplicity, this version leaves the grid unchanged.
+150     """
+151     pass
+152 
+153 def print_grid(grid: List[List[int]]):
+154     """Prints the grid row by row."""
+155     for row in grid:
+156         print(" ".join(map(str, row)))
+157 
+158 def print_path(path: List[Node], start: Node, goal: Node, grid: List[List[int]]):
+159     """
+160     Prints the grid with the path marked (using the value 8).
+161     The path is taken as returned (from goal to start).
+162     """
+163     grid_copy = [row[:] for row in grid]
+164     for node in path:
+165         grid_copy[node.x][node.y] = 8  # Mark path cells with an 8.
+166     print("Grid with path:")
+167     print_grid(grid_copy)
+168 
+169 if __name__ == '__main__':
+170     # Example usage similar to the C++ main inside BUILD_INDIVIDUAL.
+171     n = 11
+172     grid = [[0 for _ in range(n)] for _ in range(n)]
+173     make_grid(grid)
+174 
+175     # Randomly select start and goal positions.
+176     start = Node(random.randint(0, n - 1), random.randint(0, n - 1))
+177     goal = Node(random.randint(0, n - 1), random.randint(0, n - 1))
+178 
+179     # Initialize start and goal ids.
+180     start.id = start.x * n + start.y
+181     start.pid = start.id  # For the start, set the parent id to itself.
+182     goal.id = goal.x * n + goal.y
+183     start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)
+184 
+185     # Ensure start and goal cells are free.
+186     grid[start.x][start.y] = 0
+187     grid[goal.x][goal.y] = 0
+188 
+189     print("Start:", start)
+190     print("Goal:", goal)
+191     print("Initial Grid:")
+192     print_grid(grid)
+193 
+194     astar = AStar(grid)
+195     path_found, path = astar.plan(start, goal)
+196 
+197     if path_found:
+198         print("\nPath found:")
+199         for node in path:
+200             print(node)
+201         print()
+202         print_path(path, start, goal, grid)
+203     else:
+204         print("No path found.")
+205
+=========
+
+
+## Test File
+Here is the file that contains the existing tests, called `test/test_app.py`:
+=========
+#!/usr/bin/env python3
+"""
+Unit tests for the AStar algorithm using pytest.
+To run these tests, execute:
+    pytest test_astar.py
+"""
+
+import pytest
+from src.app import Node, AStar, compare_coordinates
+from src.app import make_grid, print_path
+from src.app import print_grid
+from src.app import make_grid
+
+def test_start_equals_goal():
+    """
+    Test the trivial case where the start and goal are the same.
+    The expected result is an immediate success with a path containing only the start.
+    """
+    grid = [
+        [0, 0],
+        [0, 0]
+    ]
+    start = Node(0, 0)
+    goal = Node(0, 0)
+    # Set the start node's id and parent id.
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is True, "Path should be found when start equals goal"
+    # The path should consist of only one node (start).
+    assert len(path) == 1
+    assert compare_coordinates(path[0], start), "The only node in the path should be the start"
+
+def test_simple_path():
+    """
+    Test a simple 5x5 grid with no obstacles.
+    The start is at the top‐left and the goal at the bottom‐right.
+    The algorithm should find a path.
+    """
+    n = 5
+    grid = [[0 for _ in range(n)] for _ in range(n)]
+    start = Node(0, 0)
+    goal = Node(4, 4)
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is True, "A path should be found in an open grid"
+    # According to our conversion, the returned path is from goal to start.
+    assert compare_coordinates(path[0], goal), "The first node in the path should be the goal"
+    assert compare_coordinates(path[-1], start), "The last node in the path should be the start"
+
+def test_no_path():
+    """
+    Test a grid where obstacles block any possible path from start to goal.
+    Obstacles are represented by any non-zero cell.
+    """
+    grid = [
+        [0, 1, 1],
+        [1, 1, 1],
+        [1, 1, 0]
+    ]
+    start = Node(0, 0)
+    goal = Node(2, 2)
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is False, "No path should be found when obstacles block the way"
+    assert path == [], "The path should be empty when no path exists"
+
+
+def test_no_path_outside_boundary():
+    grid = [
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0]
+    ]
+    start = Node(-1, -1)  # Outside the grid
+    goal = Node(2, 2)     # Inside the grid
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is False, "No path should be found when start is outside the grid"
+    assert path == [], "The path should be empty when no path exists"
+
+
+def test_edge_case_start_goal():
+    grid = [
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0]
+    ]
+    start = Node(0, 0)  # Top-left corner
+    goal = Node(2, 2)   # Bottom-right corner
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is True, "A path should be found from top-left to bottom-right"
+    assert len(path) > 0, "The path should not be empty"
+
+
+def test_no_path_both_outside_boundary():
+    grid = [
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0]
+    ]
+    start = Node(-1, -1)  # Outside the grid
+    goal = Node(-2, -2)    # Outside the grid
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is False, "No path should be found when both start and goal are outside the grid"
+    assert path == [], "The path should be empty when no path exists"
+
+
+def test_parent_node_not_found():
+    grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+    start = Node(0, 0)
+    goal = Node(2, 2)
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    closed_list = {Node(0, 0), Node(1, 1), Node(2, 2)}
+    # Modify the goal node's pid to point to a non-existent parent.
+    for node in closed_list:
+        if compare_coordinates(node, goal):
+            node.pid = 999  # Non-existent ID
+            break
+    path = astar.convert_closed_list_to_path(closed_list, start, goal)
+    assert path == [], "Path should be empty when parent node is not found"
+
+
+def test_goal_not_found_in_closed_list():
+    grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+    start = Node(0, 0)
+    goal = Node(2, 2)
+    start.id = 0
+    start.pid = 0
+    astar = AStar(grid)
+    closed_list = {Node(0, 0), Node(1, 1)}  # Goal is not in closed_list
+    path = astar.convert_closed_list_to_path(closed_list, start, goal)
+    assert path == [], "Path should be empty when goal is not found in closed list"
+
+def test_print_grid():
+    grid = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+    # Call print_grid and check that it doesn't raise an exception.
+    try:
+        print_grid(grid)
+    except Exception as e:
+        assert False, f"print_grid raised an exception: {e}"
+    assert True  # If no exception was raised, the test passes.
+
+
+def test_make_grid_call():
+    grid = [[0, 0], [0, 0]]
+    try:
+        make_grid(grid)
+    except Exception as e:
+        assert False, f"make_grid raised an exception: {e}"
+    assert True
+
+
+def test_print_path():
+    grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+    start = Node(0, 0)
+    goal = Node(2, 2)
+    path = [Node(2, 2), Node(1, 1), Node(0, 0)]  # Example path
+    try:
+        print_path(path, start, goal, grid)
+    except Exception as e:
+        assert False, f"print_path raised an exception: {e}"
+    assert True
+
+
+def test_path_with_obstacle():
+    n = 3
+    grid = [[0 for _ in range(n)] for _ in range(n)]
+    grid[1][1] = 1  # Add an obstacle in the middle
+    start = Node(0, 0)
+    goal = Node(2, 2)
+    start.id = start.x * n + start.y
+    start.pid = start.id
+    goal.id = goal.x * n + goal.y
+    start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)
+    grid[start.x][start.y] = 0
+    grid[goal.x][goal.y] = 0
+    astar = AStar(grid)
+    found, path = astar.plan(start, goal)
+    assert found is True
+    assert len(path) > 0
+    assert compare_coordinates(path[0], goal)
+    assert compare_coordinates(path[-1], start)
+
+
+
+def test_main_execution():
+    n = 5  # Reduced grid size for faster testing
+    grid = [[0 for _ in range(n)] for _ in range(n)]
+    make_grid(grid)
+
+    # Randomly select start and goal positions.
+    start = Node(0, 0)
+    goal = Node(n - 1, n - 1)
+
+    # Initialize start and goal ids.
+    start.id = start.x * n + start.y
+    start.pid = start.id  # For the start, set the parent id to itself.
+    goal.id = goal.x * n + goal.y
+    start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)
+
+    # Ensure start and goal cells are free.
+    grid[start.x][start.y] = 0
+    grid[goal.x][goal.y] = 0
+
+    astar = AStar(grid)
+    path_found, path = astar.plan(start, goal)
+
+    assert isinstance(path_found, bool), "path_found should be a boolean"
+    assert isinstance(path, list), "path should be a list"
+
+
+def test_main_execution_no_random():
+    n = 5  # Reduced grid size for faster testing
+    grid = [[0 for _ in range(n)] for _ in range(n)]
+    make_grid(grid)
+
+    # Randomly select start and goal positions.
+    start = Node(0, 0)
+    goal = Node(n - 1, n - 1)
+
+    # Initialize start and goal ids.
+    start.id = start.x * n + start.y
+    start.pid = start.id  # For the start, set the parent id to itself.
+    goal.id = goal.x * n + goal.y
+    start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)
+
+    # Ensure start and goal cells are free.
+    grid[start.x][start.y] = 0
+    grid[goal.x][goal.y] = 0
+
+    astar = AStar(grid)
+    path_found, path = astar.plan(start, goal)
+
+    assert isinstance(path_found, bool), "path_found should be a boolean"
+    assert isinstance(path, list), "path should be a list"
+
+
+def test_node_equality_non_node():
+    node = Node(1, 2)
+    assert (node == 1) is False
+=========
+
+
+### Test Framework
+The test framework used for running tests is `pytest`.
+If the current tests are part of a class and contain a 'self' input, than the generated tests should also include the `self` parameter in the test function signature.
+
+
+## Previous Iterations Failed Tests
+Below is a list of failed tests that were generated in previous iterations. Do not generate the same tests again, and take the failed tests into account when generating new tests.
+======
+Failed Test:
+```
+{"test_behavior": "Test case where the current node is already in the closed list. This ensures that the algorithm skips nodes that have already been visited.\n", "lines_to_cover": "[84]\n", "test_name": "test_node_already_in_closed_list\n", "test_code": "def test_node_already_in_closed_list():\n    grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]\n    start = Node(0, 0)\n    goal = Node(2, 2)\n    start.id = 0\n    start.pid = 0\n    astar = AStar(grid)\n    open_list = [start]\n    closed_list = {start}  # Add start node to closed list initially\n    astar.plan(start, goal)\n    # The assertion is implicit: the test should not get stuck in a loop.\n    assert True\n", "new_imports_code": "\"\"\n", "test_tags": "edge case"}
+```
+Test execution error analysis:
+Code coverage did not increase
+
+
+Failed Test:
+```
+{"test_behavior": "Test the scenario where no path is found, covering the lines related to example usage in `if __name__ == '__main__'` block.\n", "lines_to_cover": "[171, 172, 173, 176, 177, 180, 181, 182, 183, 186, 187, 189, 190, 191, 192, 194, 195, 197, 198, 199, 200, 201, 202, 204]\n", "test_name": "test_main_execution_no_path\n", "test_code": "def test_main_execution_no_path():\n    n = 3\n    grid = [[1 for _ in range(n)] for _ in range(n)]\n    start = Node(0, 0)\n    goal = Node(n - 1, n - 1)\n\n    # Initialize start and goal ids.\n    start.id = start.x * n + start.y\n    start.pid = start.id  # For the start, set the parent id to itself.\n    goal.id = goal.x * n + goal.y\n    start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)\n\n    # Ensure start and goal cells are free.\n    grid[start.x][start.y] = 0\n    grid[goal.x][goal.y] = 0\n\n    astar = AStar(grid)\n    path_found, path = astar.plan(start, goal)\n\n    assert path_found is False, \"path_found should be False\"\n    assert isinstance(path, list), \"path should be a list\"\n    assert len(path) == 0, \"Path should be empty\"\n", "new_imports_code": "\"\"\n", "test_tags": "edge case"}
+```
+Test execution error analysis:
+Code coverage did not increase
+
+
+Failed Test:
+```
+{"test_behavior": "Test case where the current node is already in the closed list. This ensures that the algorithm skips nodes that have already been visited.\n", "lines_to_cover": "[84]\n", "test_name": "test_node_already_in_closed_list\n", "test_code": "def test_node_already_in_closed_list():\n    grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]\n    start = Node(0, 0)\n    goal = Node(2, 2)\n    start.id = 0\n    start.pid = 0\n    astar = AStar(grid)\n    open_list = [start]\n    closed_list = {start}\n    # Manually add the start node to the closed list before planning.\n    astar.plan(start, goal)\n    assert True\n", "new_imports_code": "\"\"\n", "test_tags": "edge case"}
+```
+Test execution error analysis:
+Code coverage did not increase
+
+
+Failed Test:
+```
+{"test_behavior": "Test the scenario where no path is found, covering the lines related to example usage in `if __name__ == '__main__'` block.\n", "lines_to_cover": "[171, 172, 173, 176, 177, 180, 181, 182, 183, 186, 187, 189, 190, 191, 192, 194, 195, 197, 198, 199, 200, 201, 202, 204]\n", "test_name": "test_main_execution_no_path\n", "test_code": "def test_main_execution_no_path():\n    n = 3\n    grid = [[1 for _ in range(n)] for _ in range(n)]\n    start = Node(0, 0)\n    goal = Node(n - 1, n - 1)\n\n    # Initialize start and goal ids.\n    start.id = start.x * n + start.y\n    start.pid = start.id  # For the start, set the parent id to itself.\n    goal.id = goal.x * n + goal.y\n    start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)\n\n    # Ensure start and goal cells are free.\n    grid[start.x][start.y] = 0\n    grid[goal.x][goal.y] = 0\n\n    astar = AStar(grid)\n    path_found, path = astar.plan(start, goal)\n\n    assert path_found is False\n    assert isinstance(path, list)\n    assert len(path) == 0\n", "new_imports_code": "\"\"\n", "test_tags": "edge case"}
+```
+Test execution error analysis:
+Code coverage did not increase
+
+
+Failed Test:
+```
+{"test_behavior": "Test the case where the start and goal are adjacent and there is a clear path.\n", "lines_to_cover": "[]\n", "test_name": "test_adjacent_start_goal\n", "test_code": "def test_adjacent_start_goal():\n    n = 3\n    grid = [[0 for _ in range(n)] for _ in range(n)]\n    start = Node(0, 0)\n    goal = Node(0, 1)\n    start.id = start.x * n + start.y\n    start.pid = start.id\n    astar = AStar(grid)\n    found, path = astar.plan(start, goal)\n    assert found is True\n    assert len(path) > 0\n    assert compare_coordinates(path[0], goal)\n    assert compare_coordinates(path[-1], start)\n", "new_imports_code": "\"\"\n", "test_tags": "happy path"}
+```
+Test execution error analysis:
+Code coverage did not increase
+
+
+Failed Test:
+```
+{"test_behavior": "Test the node equality when the other object is not a Node instance.\n", "lines_to_cover": "[25, 26, 27]\n", "test_name": "test_node_equality_non_node_different_type\n", "test_code": "def test_node_equality_non_node_different_type():\n    node = Node(1, 2)\n    assert (node == \"string\") is False\n", "new_imports_code": "\"\"\n", "test_tags": "edge case"}
+```
+Test execution error analysis:
+Code coverage did not increase
+
+
+Failed Test:
+```
+{"test_behavior": "Test the scenario where no path is found, covering the lines related to example usage in `if __name__ == '__main__'` block.\n", "lines_to_cover": "[171, 172, 173, 176, 177, 180, 181, 182, 183, 186, 187, 189, 190, 191, 192, 194, 195, 197, 198, 199, 200, 201, 202, 204]\n", "test_name": "test_main_execution_no_path\n", "test_code": "def test_main_execution_no_path():\n    n = 3\n    grid = [[1 for _ in range(n)] for _ in range(n)]\n    start = Node(0, 0)\n    goal = Node(n - 1, n - 1)\n\n    # Initialize start and goal ids.\n    start.id = start.x * n + start.y\n    start.pid = start.id  # For the start, set the parent id to itself.\n    goal.id = goal.x * n + goal.y\n    start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)\n\n    # Ensure start and goal cells are free.\n    grid[start.x][start.y] = 1\n    grid[goal.x][goal.y] = 1\n\n    astar = AStar(grid)\n    path_found, path = astar.plan(start, goal)\n\n    assert path_found is False\n    assert isinstance(path, list)\n    assert len(path) == 0\n", "new_imports_code": "\"\"\n", "test_tags": "edge case"}
+```
+Test execution error analysis:
+Code coverage did not increase
+
+
+Failed Test:
+```
+{"test_behavior": "Test the scenario where the goal is found immediately.\n", "lines_to_cover": "[84]\n", "test_name": "test_goal_found_immediately\n", "test_code": "def test_goal_found_immediately():\n    grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]\n    start = Node(0, 0)\n    goal = Node(0, 0)\n    start.id = 0\n    start.pid = 0\n    astar = AStar(grid)\n    found, path = astar.plan(start, goal)\n    assert found is True\n    assert len(path) == 1\n    assert compare_coordinates(path[0], start)\n", "new_imports_code": "\"\"\n", "test_tags": "happy path"}
+```
+Test execution error analysis:
+Code coverage did not increase
+
+
+Failed Test:
+```
+{"test_behavior": "Test the case where the start and goal are adjacent and there is a clear path.\n", "lines_to_cover": "[]\n", "test_name": "test_adjacent_start_goal\n", "test_code": "def test_adjacent_start_goal():\n    n = 3\n    grid = [[0 for _ in range(n)] for _ in range(n)]\n    start = Node(0, 0)\n    goal = Node(0, 1)\n    start.id = start.x * n + start.y\n    start.pid = start.id\n    astar = AStar(grid)\n    found, path = astar.plan(start, goal)\n    assert found is True\n    assert len(path) > 0\n    assert compare_coordinates(path[0], goal)\n    assert compare_coordinates(path[-1], start)\n", "new_imports_code": "\"\"\n", "test_tags": "happy path"}
+```
+Test execution error analysis:
+Code coverage did not increase
+
+
+Failed Test:
+```
+{"test_behavior": "Test case where the current node is already in the closed list. This ensures that the algorithm skips nodes that have already been visited.\n", "lines_to_cover": "[84]\n", "test_name": "test_node_already_in_closed_list\n", "test_code": "def test_node_already_in_closed_list():\n    grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]\n    start = Node(0, 0)\n    goal = Node(2, 2)\n    start.id = 0\n    start.pid = 0\n    astar = AStar(grid)\n    closed_list = {Node(0,0)}\n    astar.plan(start, goal)\n    assert True\n", "new_imports_code": "\"\"\n", "test_tags": "edge case"}
+```
+Test execution error analysis:
+Code coverage did not increase
+
+
+Failed Test:
+```
+{"test_behavior": "Test the scenario where no path is found, covering the lines related to example usage in `if __name__ == '__main__'` block.\n", "lines_to_cover": "[171, 172, 173, 176, 177, 180, 181, 182, 183, 186, 187, 189, 190, 191, 192, 194, 195, 197, 198, 199, 200, 201, 202, 204]\n", "test_name": "test_main_execution_no_path\n", "test_code": "def test_main_execution_no_path():\n    n = 3\n    grid = [[1 for _ in range(n)] for _ in range(n)]\n    start = Node(0, 0)\n    goal = Node(n - 1, n - 1)\n\n    # Initialize start and goal ids.\n    start.id = start.x * n + start.y\n    start.pid = start.id  # For the start, set the parent id to itself.\n    goal.id = goal.x * n + goal.y\n    start.h_cost = abs(start.x - goal.x) + abs(start.y - goal.y)\n\n    # Ensure start and goal cells are free.\n    grid[start.x][start.y] = 0\n    grid[goal.x][goal.y] = 0\n\n    astar = AStar(grid)\n    path_found, path = astar.plan(start, goal)\n\n    assert path_found is False\n    assert isinstance(path, list)\n    assert len(path) == 0\n", "new_imports_code": "\"\"\n", "test_tags": "edge case"}
+```
+Test execution error analysis:
+Code coverage did not increase
+
+
+Failed Test:
+```
+{"test_behavior": "Test the scenario where the goal is found immediately.\n", "lines_to_cover": "[84]\n", "test_name": "test_goal_found_immediately\n", "test_code": "def test_goal_found_immediately():\n    grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]\n    start = Node(0, 0)\n    goal = Node(0, 0)\n    start.id = 0\n    start.pid = 0\n    astar = AStar(grid)\n    found, path = astar.plan(start, goal)\n    assert found is True\n    assert len(path) == 1\n    assert compare_coordinates(path[0], start)\n", "new_imports_code": "\"\"\n", "test_tags": "happy path"}
+```
+Test execution error analysis:
+Code coverage did not increase
+
+
+
+======
+
+
+
+
+## Results of Mutation Testing
+**Mutation Score**: 33.33%
+**Nodes Covered**: 0/0
+The following mutants **survived**:
+1) line 50, operator: Arithmetic Operator Deletion
+2) line 99, operator: Arithmetic Operator Replacement
+3) line 84, operator: Break Continue Replacement
+4) line 102, operator: Break Continue Replacement
+5) line 122, operator: Break Continue Replacement
+6) line 169, operator: Relational Operator Replacement
+
+**Goal**: Please generate or refine tests so that these surviving mutants are killed.
+Focus on the lines and operators that survived. For each, we need a test scenario that fails if that mutation occurs.
+
+
+
+
+## Additional Instructions
+======
+However, do not assert exception messages or any string-based messages in assertions, as these may lead to test failures due to minor variations.
+======
+
+
+
+## Code Coverage
+Based on the code coverage report below, your goal is to suggest new test cases for the test file `test/test_app.py` against the source file `src/app.py` that would increase the coverage, meaning cover missing lines of code.
+=========
+Lines covered: [7, 8, 9, 10, 12, 13, 14, 15, 16, 17, 18, 20, 22, 24, 25, 26, 27, 29, 31, 33, 35, 37, 38, 40, 41, 42, 44, 50, 52, 54, 56, 58, 60, 61, 62, 64, 71, 72, 73, 75, 76, 79, 80, 81, 83, 86, 87, 88, 89, 91, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 109, 110, 112, 117, 119, 120, 121, 122, 123, 124, 125, 127, 129, 130, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 145, 151, 153, 155, 156, 158, 163, 164, 165, 166, 167, 169]
+Lines missed: [84, 171, 172, 173, 176, 177, 180, 181, 182, 183, 186, 187, 189, 190, 191, 192, 194, 195, 197, 198, 199, 200, 201, 202, 204]
+Percentage covered: 80.47%
+=========
+
+
+## Response
+The output must be a YAML object equivalent to type $NewTests, according to the following Pydantic definitions:
+=====
+class SingleTest(BaseModel):
+    test_behavior: str = Field(description="Short description of the behavior the test covers")
+    lines_to_cover: str = Field(description="A list of line numbers, currently uncovered, that this specific new test aims to cover")
+    test_name: str = Field(description=" A short test name, in snake case, that reflects the behaviour to test")
+    test_code: str = Field(description="A new 'pytest' test function that extends the existing test suite, and tests the behavior described in 'test_behavior'. The test should be a written like its a part of the existing test suite, if there is one, and it can use existing helper functions, setup, or teardown code. Don't iclude new imports here, use 'new_imports_code' section instead.")
+    new_imports_code: str = Field(description="New imports that are required to run the new test function, and are not already imported in the test file. Give an empty string if no new imports are required. If relevant, add new imports as  'import ...' lines.")
+    test_tags: str = Field(description="A single label that best describes the test, out of: ['happy path', 'edge case','other']")
+
+class NewTests(BaseModel):
+    language: str = Field(description="The programming language of the source code")
+    existing_test_function_signature: str = Field(description="A single line repeating a signature header of one of the existing test functions")
+    new_tests: List[SingleTest] = Field(min_items=1, max_items=4, description="A list of new test functions to append to the existing test suite, aiming to increase the code coverage. Each test should run as-is, without requiring any additional inputs or setup code. Don't introduce new dependencies")
+=====
+
+
+Example output:
+
+```yaml
+language: python
+existing_test_function_signature: |
+  ...
+new_tests:
+- test_behavior: |
+    Test that the function returns the correct output for a single element list
+  lines_to_cover: |
+    [1,2,5, ...]
+  test_name: |
+    test_single_element_list
+  test_code: |
+    def ...
+  new_imports_code: |
+    ""
+  test_tags: happy path
+    ...
+```
+
+
+Use block scalar('|') to format each YAML output.
+
+Response (should be a valid YAML, and nothing else):
+```yaml
+

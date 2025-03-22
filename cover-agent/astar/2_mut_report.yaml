@@ -1,0 +1,113 @@
+coverage:
+  all_nodes: 0
+  covered_nodes: 0
+mutation_score: 25.0
+mutations:
+- exception_traceback: null
+  killer: null
+  module: &id001 !!python/module:app ''
+  mutations:
+  - lineno: 176
+    operator: AOR
+  number: 1
+  status: survived
+  tests_run: 16
+  time: 0.0476231575012207
+- exception_traceback: null
+  killer: null
+  module: *id001
+  mutations:
+  - lineno: 180
+    operator: AOR
+  number: 2
+  status: survived
+  tests_run: 16
+  time: 0.057685136795043945
+- exception_traceback: null
+  killer: null
+  module: *id001
+  mutations:
+  - lineno: 183
+    operator: AOR
+  number: 3
+  status: survived
+  tests_run: 16
+  time: 0.05845069885253906
+- exception_traceback: "def test_node_equality_non_node():\n        node = Node(1,\
+    \ 2)\n>       assert (node == 1) is False\n\ntest/test_app.py:256: \n_ _ _ _ _\
+    \ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself\
+    \ = Node(x=1, y=2, id=0, pid=0, h_cost=0), other = 1\n\n>   ???\nE   AttributeError:\
+    \ 'int' object has no attribute 'x'\n\napp:27: AttributeError"
+  killer: test/test_app.py::test_node_equality_non_node
+  module: *id001
+  mutations:
+  - lineno: 25
+    operator: COI
+  number: 4
+  status: killed
+  tests_run: 15
+  time: 0.09195995330810547
+- exception_traceback: "def test_simple_path():\n        \"\"\"\n        Test a simple\
+    \ 5x5 grid with no obstacles.\n        The start is at the top\u2010left and the\
+    \ goal at the bottom\u2010right.\n        The algorithm should find a path.\n\
+    \        \"\"\"\n        n = 5\n        grid = [[0 for _ in range(n)] for _ in\
+    \ range(n)]\n        start = Node(0, 0)\n        goal = Node(4, 4)\n        start.id\
+    \ = 0\n        start.pid = 0\n        astar = AStar(grid)\n        found, path\
+    \ = astar.plan(start, goal)\n>       assert found is True, \"A path should be\
+    \ found in an open grid\"\nE       AssertionError: A path should be found in an\
+    \ open grid\n\ntest/test_app.py:49: AssertionError"
+  killer: test/test_app.py::test_simple_path
+  module: *id001
+  mutations:
+  - lineno: 95
+    operator: COI
+  number: 5
+  status: killed
+  tests_run: 2
+  time: 0.07466340065002441
+- exception_traceback: null
+  killer: null
+  module: *id001
+  mutations:
+  - lineno: 197
+    operator: COI
+  number: 6
+  status: survived
+  tests_run: 16
+  time: 0.05458521842956543
+- exception_traceback: null
+  killer: null
+  module: *id001
+  mutations:
+  - lineno: 27
+    operator: LCR
+  number: 7
+  status: survived
+  tests_run: 16
+  time: 0.05909466743469238
+- exception_traceback: null
+  killer: null
+  module: *id001
+  mutations:
+  - lineno: 169
+    operator: ROR
+  number: 8
+  status: survived
+  tests_run: 16
+  time: 0.05323362350463867
+number_of_tests: 16
+targets:
+- src
+tests:
+- name: test_app
+  target: null
+  time: 0.11504125595092773
+- name: conftest
+  target: null
+  time: 0.030173540115356445
+time_stats:
+  create_mutant_module: 0.012815713882446289
+  create_target_ast: 0.005247354507446289
+  mutate_module: 1.8656339645385742
+  run_tests_with_mutant: 0.5005390644073486
+total_time: 2.015352249145508

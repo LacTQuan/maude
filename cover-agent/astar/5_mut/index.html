@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MutPy mutation report</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
+    
+    
+    <script src="https://code.jquery.com/jquery.js"></script>
+    <script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+    
+    
+</head>
+<body>
+    <div class="container">
+        
+<div class="page-header">
+    <h1>MutPy mutation report</h1>
+    <p><span class="glyphicon glyphicon-time"></span> 22.03.2025 22:44</p>
+</div>
+<h4>Target</h4>
+<ul>
+    
+    <li><code>src</code></li>
+    
+</ul>
+<h4>Tests [16]</h4>
+<ul>
+    
+    <li><code>test_app</code> [0.116 s]</li>
+    
+    <li><code>conftest</code> [0.032 s]</li>
+    
+</ul>
+<h4>Result summary</h4>
+<ul>
+    <li><strong><span class="glyphicon glyphicon-signal"></span> Score</strong> - 66.7%</li>
+    <li><strong><span class="glyphicon glyphicon-time"></span> Time</strong> - 2.3 s</li>
+    
+</ul>
+<h4>Mutants [9]</h4>
+<ul>
+    <li><span class="label label-success">killed</span> - 6</li>
+    <li><span class="label label-danger">survived</span> - 3</li>
+    <li><span class="label label-warning">incompetent</span> - 0</li>
+    <li><span class="label label-info">timeout</span> - 0</li>
+</ul>
+<div class="progress">
+    <div title="killed - 6" class="progress-bar progress-bar-success" style="width: 66.66666666666667%">
+        66.7%
+    </div>
+    <div title="survived - 3" class="progress-bar progress-bar-danger" style="width: 33.333333333333336%">
+        33.3%
+    </div>
+    <div title="incompetent - 0" class="progress-bar progress-bar-warning" style="width: 0.0%">
+        0.0%
+    </div>
+    <div title="timeout - 0" class="progress-bar progress-bar-info" style="width: 0.0%">
+        0.0%
+    </div>
+</div>
+<table class="table">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Module</th>
+            <th>Operator</th>
+            <th>Tests run</th>
+            <th>Duration</th>
+            <th>Result</th>
+            <th></th>
+        </tr>
+    </thead>
+    
+    <tr>
+        <td><a href="1.html">1</a></td>
+        <td><code><module 'app' from '/home/thiuquan/code/maude/cover-agent/astar/src/app.py'></code></td>
+        <td>AOR [97]</td>
+        <td>16</td>
+        <td>0.049 s</td>
+        <td><span class="label label-danger">survived</span></td>
+        <td><a href="mutants/1.html"><span class="glyphicon glyphicon-arrow-right"></span></a></td>
+    </tr>
+    
+    <tr>
+        <td><a href="2.html">2</a></td>
+        <td><code><module 'app' from '/home/thiuquan/code/maude/cover-agent/astar/src/app.py'></code></td>
+        <td>AOR [132]</td>
+        <td>2</td>
+        <td>0.065 s</td>
+        <td><span class="label label-success">killed</span></td>
+        <td><a href="mutants/2.html"><span class="glyphicon glyphicon-arrow-right"></span></a></td>
+    </tr>
+    
+    <tr>
+        <td><a href="3.html">3</a></td>
+        <td><code><module 'app' from '/home/thiuquan/code/maude/cover-agent/astar/src/app.py'></code></td>
+        <td>AOR [182]</td>
+        <td>16</td>
+        <td>0.054 s</td>
+        <td><span class="label label-danger">survived</span></td>
+        <td><a href="mutants/3.html"><span class="glyphicon glyphicon-arrow-right"></span></a></td>
+    </tr>
+    
+    <tr>
+        <td><a href="4.html">4</a></td>
+        <td><code><module 'app' from '/home/thiuquan/code/maude/cover-agent/astar/src/app.py'></code></td>
+        <td>BCR [96]</td>
+        <td>2</td>
+        <td>0.069 s</td>
+        <td><span class="label label-success">killed</span></td>
+        <td><a href="mutants/4.html"><span class="glyphicon glyphicon-arrow-right"></span></a></td>
+    </tr>
+    
+    <tr>
+        <td><a href="5.html">5</a></td>
+        <td><code><module 'app' from '/home/thiuquan/code/maude/cover-agent/astar/src/app.py'></code></td>
+        <td>BCR [104]</td>
+        <td>2</td>
+        <td>0.096 s</td>
+        <td><span class="label label-success">killed</span></td>
+        <td><a href="mutants/5.html"><span class="glyphicon glyphicon-arrow-right"></span></a></td>
+    </tr>
+    
+    <tr>
+        <td><a href="6.html">6</a></td>
+        <td><code><module 'app' from '/home/thiuquan/code/maude/cover-agent/astar/src/app.py'></code></td>
+        <td>COI [83]</td>
+        <td>1</td>
+        <td>0.073 s</td>
+        <td><span class="label label-success">killed</span></td>
+        <td><a href="mutants/6.html"><span class="glyphicon glyphicon-arrow-right"></span></a></td>
+    </tr>
+    
+    <tr>
+        <td><a href="7.html">7</a></td>
+        <td><code><module 'app' from '/home/thiuquan/code/maude/cover-agent/astar/src/app.py'></code></td>
+        <td>COI [86]</td>
+        <td>2</td>
+        <td>0.09 s</td>
+        <td><span class="label label-success">killed</span></td>
+        <td><a href="mutants/7.html"><span class="glyphicon glyphicon-arrow-right"></span></a></td>
+    </tr>
+    
+    <tr>
+        <td><a href="8.html">8</a></td>
+        <td><code><module 'app' from '/home/thiuquan/code/maude/cover-agent/astar/src/app.py'></code></td>
+        <td>COI [120]</td>
+        <td>1</td>
+        <td>0.074 s</td>
+        <td><span class="label label-success">killed</span></td>
+        <td><a href="mutants/8.html"><span class="glyphicon glyphicon-arrow-right"></span></a></td>
+    </tr>
+    
+    <tr>
+        <td><a href="9.html">9</a></td>
+        <td><code><module 'app' from '/home/thiuquan/code/maude/cover-agent/astar/src/app.py'></code></td>
+        <td>ROR [27]</td>
+        <td>16</td>
+        <td>0.062 s</td>
+        <td><span class="label label-danger">survived</span></td>
+        <td><a href="mutants/9.html"><span class="glyphicon glyphicon-arrow-right"></span></a></td>
+    </tr>
+    
+</table>
+
+    </div>
+</body>
+</html>
